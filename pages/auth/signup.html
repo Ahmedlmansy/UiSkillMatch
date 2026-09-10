@@ -34,7 +34,6 @@
   }
   a{ color:inherit; text-decoration:none; }
 
-  /* ---------- Top bar ---------- */
   .topbar{
     display:flex;
     align-items:center;
@@ -67,7 +66,6 @@
     color:var(--text-muted);
   }
 
-  /* ---------- Progress rail ---------- */
   .progress-wrap{
     max-width:640px;
     margin:0 auto;
@@ -106,7 +104,6 @@
   .progress-step.active .label,
   .progress-step.done .label{ color:var(--primary); }
 
-  /* ---------- Card shell ---------- */
   .stage{
     max-width:640px;
     margin:0 auto;
@@ -147,7 +144,9 @@
     gap:1rem;
   }
   .field label{
-    display:block;
+    display:flex;
+    align-items:center;
+    gap:0.4rem;
     font-size:12px;
     font-weight:600;
     color:var(--text-secondary);
@@ -163,7 +162,7 @@
     font-size:14px;
     color:var(--text-primary);
     outline:none;
-    transition:border-color 0.15s ease;
+    transition:border-color 0.15s ease, background 0.15s ease;
   }
   .field input, .field select{ height:48px; }
   .field textarea{
@@ -176,6 +175,26 @@
   .field input:focus, .field textarea:focus, .field select:focus{
     border:1.5px solid var(--primary);
   }
+  .field input.invalid{ border-color:#B3271E; }
+  .field-error{ display:none; font-size:12px; font-weight:600; color:#B3271E; margin-top:0.4rem; }
+  .field-error.show{ display:block; }
+
+  .field input.autofilled, .field select.autofilled{
+    background:#F2F6EF;
+    border-color:var(--match-forest);
+  }
+  .autofill-tag{
+    display:none;
+    align-items:center;
+    gap:3px;
+    font-size:10px;
+    font-weight:700;
+    color:var(--match-forest);
+    background:rgba(79,122,90,0.12);
+    border-radius:5px;
+    padding:1px 6px;
+  }
+  .autofill-tag.show{ display:inline-flex; }
 
   .terms{
     display:flex;
@@ -234,13 +253,55 @@
   }
   .btn-ghost:hover{ background:var(--canvas-cream); }
 
-  /* ---------- Step: Upload CV ---------- */
+  .otp-row{ display:flex; gap:0.6rem; margin-bottom:0.75rem; }
+  .otp-box{
+    width:100%; height:56px;
+    text-align:center;
+    font-family:'DM Sans', sans-serif;
+    font-weight:700;
+    font-size:20px;
+    border-radius:0.75rem;
+    border:1px solid var(--border-hairline);
+    background:var(--surface-white);
+    color:var(--text-primary);
+    outline:none;
+    transition:border-color 0.15s ease;
+  }
+  .otp-box:focus{ border:1.5px solid var(--primary); }
+  .otp-error{ display:none; font-size:12px; font-weight:600; color:#B3271E; margin-bottom:0.75rem; }
+  .otp-error.show{ display:block; }
+  .otp-resend{ font-size:13px; color:var(--text-muted); margin-bottom:0.25rem; }
+  .otp-resend strong{ color:var(--text-primary); }
+  .resend-link{ font-size:13px; font-weight:600; color:var(--primary); }
+
+  .cv-box{
+    border:1px solid var(--border-hairline);
+    border-radius:0.85rem;
+    background:var(--canvas-cream);
+    padding:1.1rem;
+    margin-bottom:1.75rem;
+  }
+  .cv-box .cv-box-title{
+    font-size:12px;
+    font-weight:700;
+    color:var(--text-secondary);
+    display:flex;
+    align-items:center;
+    gap:0.4rem;
+    margin-bottom:0.35rem;
+  }
+  .cv-box .cv-box-sub{
+    font-size:12.5px;
+    color:var(--text-muted);
+    margin-bottom:0.9rem;
+    line-height:1.4;
+  }
   .dropzone{
     border:1.5px dashed var(--border-hairline);
-    border-radius:1rem;
-    padding:2.5rem 1.5rem;
+    border-radius:0.85rem;
+    padding:1.5rem 1rem;
     text-align:center;
-    background:var(--canvas-cream);
+    background:var(--surface-white);
     cursor:pointer;
     transition:border-color 0.15s ease, background 0.15s ease;
   }
@@ -249,27 +310,21 @@
     background:#EFF3F8;
   }
   .dropzone .icon{
-    width:44px; height:44px;
-    margin:0 auto 1rem auto;
-    border-radius:10px;
-    background:var(--surface-white);
+    width:36px; height:36px;
+    margin:0 auto 0.6rem auto;
+    border-radius:9px;
+    background:var(--canvas-cream);
     border:1px solid var(--border-hairline);
     display:flex; align-items:center; justify-content:center;
   }
   .dropzone .title{
     font-family:'DM Sans', sans-serif;
     font-weight:600;
-    font-size:15px;
-    margin-bottom:0.3rem;
+    font-size:14px;
+    margin-bottom:0.25rem;
   }
-  .dropzone .hint{
-    font-size:12px;
-    color:var(--text-muted);
-  }
-  .dropzone .browse{
-    color:var(--primary);
-    font-weight:600;
-  }
+  .dropzone .hint{ font-size:11.5px; color:var(--text-muted); }
+  .dropzone .browse{ color:var(--primary); font-weight:600; }
   #cv-input{ display:none; }
 
   .file-chip{
@@ -278,40 +333,43 @@
     gap:0.75rem;
     border:1px solid var(--border-hairline);
     border-radius:0.75rem;
-    padding:0.75rem 1rem;
-    margin-top:1rem;
+    padding:0.65rem 0.9rem;
     background:var(--surface-white);
   }
   .file-chip.show{ display:flex; }
   .file-chip .doc-icon{
-    width:36px; height:36px;
+    width:34px; height:34px;
     border-radius:8px;
     background:rgba(31,54,92,0.08);
     color:var(--primary);
     display:flex; align-items:center; justify-content:center;
     flex-shrink:0;
-    font-size:12px;
+    font-size:11px;
     font-weight:700;
   }
   .file-chip .meta{ flex:1; min-width:0; }
   .file-chip .name{
-    font-size:13px;
-    font-weight:600;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    font-size:13px; font-weight:600;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
-  .file-chip .size{ font-size:12px; color:var(--text-muted); }
+  .file-chip .size{ font-size:11.5px; color:var(--text-muted); }
   .file-chip .remove{
-    font-size:12px;
-    font-weight:600;
-    color:var(--secondary);
-    cursor:pointer;
-    background:none;
-    border:none;
+    font-size:12px; font-weight:600; color:var(--secondary);
+    cursor:pointer; background:none; border:none;
   }
+  .file-chip .status{
+    font-size:11.5px; font-weight:700; color:var(--match-forest);
+    display:flex; align-items:center; gap:4px;
+  }
+  .cv-spinner{
+    width:13px; height:13px;
+    border-radius:50%;
+    border:2px solid var(--border-hairline);
+    border-top-color:var(--primary);
+    animation:spin 0.7s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
 
-  /* ---------- Step: AI extraction ---------- */
   .extract-status{
     display:flex;
     align-items:center;
@@ -330,7 +388,6 @@
     animation:spin 0.8s linear infinite;
     flex-shrink:0;
   }
-  @keyframes spin{ to{ transform:rotate(360deg); } }
   .extract-status .txt .t1{ font-size:13px; font-weight:600; color:var(--text-primary); }
   .extract-status .txt .t2{ font-size:12px; color:var(--text-muted); }
   .extract-status.done{ background:rgba(79,122,90,0.08); border-color:rgba(79,122,90,0.35); }
@@ -395,7 +452,6 @@
     flex-shrink:0;
   }
 
-  /* fields hidden until visible */
   .stepview{ display:none; }
   .stepview.active{ display:block; }
 
@@ -421,11 +477,11 @@
     </div>
     <div class="progress-step" data-step="1">
       <div class="progress-bar"><div class="fill"></div></div>
-      <div class="label">Complete profile</div>
+      <div class="label">Verify email</div>
     </div>
     <div class="progress-step" data-step="2">
       <div class="progress-bar"><div class="fill"></div></div>
-      <div class="label">Upload CV</div>
+      <div class="label">Complete profile</div>
     </div>
     <div class="progress-step" data-step="3">
       <div class="progress-bar"><div class="fill"></div></div>
@@ -437,7 +493,6 @@
 <div class="stage">
   <div class="card">
 
-    <!-- Step 1: Create account -->
     <div class="stepview active" data-view="0">
       <div class="step-eyebrow">STEP 1 OF 4</div>
       <h1>Create your account</h1>
@@ -455,6 +510,11 @@
         <label for="signup-password">Password</label>
         <input type="password" id="signup-password" placeholder="At least 8 characters">
       </div>
+      <div class="field">
+        <label for="signup-password-confirm">Confirm password</label>
+        <input type="password" id="signup-password-confirm" placeholder="Re-enter your password">
+        <p class="field-error" id="password-match-error">Passwords don't match — please check and try again.</p>
+      </div>
 
       <div class="terms">
         <input type="checkbox" id="terms">
@@ -462,27 +522,85 @@
       </div>
 
       <div class="actions">
-        <button class="btn-primary" onclick="goTo(1)">Create account</button>
+        <button class="btn-primary" onclick="startOtp()">Create account</button>
       </div>
     </div>
 
-    <!-- Step 2: Complete profile -->
     <div class="stepview" data-view="1">
       <div class="step-eyebrow">STEP 2 OF 4</div>
+      <h1>Verify your email</h1>
+      <p class="sub">We sent a 6-digit code to <strong id="otp-email-target" style="color:var(--text-primary);">your email</strong>. Enter it below to continue.</p>
+
+      <div class="otp-row" id="otp-row">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
+      </div>
+      <div class="otp-error" id="otp-error">That code doesn't look right — please try again.</div>
+
+      <div class="otp-resend">
+        <span id="resend-text">Resend code in <strong id="resend-timer">00:30</strong></span>
+        <a href="#" id="resend-link" class="resend-link" style="display:none;">Resend code</a>
+      </div>
+
+      <div class="actions" style="margin-top:1.75rem;">
+        <button class="btn-ghost" onclick="goTo(0)">Back</button>
+        <button class="btn-primary" id="otp-continue" disabled onclick="verifyOtp()">Verify &amp; continue</button>
+      </div>
+    </div>
+
+    <div class="stepview" data-view="2">
+      <div class="step-eyebrow">STEP 3 OF 4</div>
       <h1>Complete your profile</h1>
-      <p class="sub">This helps us match roles to where you actually are in your career.</p>
+      <p class="sub">Upload your CV and we'll fill in what we can — review and adjust anything before continuing.</p>
+
+      <div class="cv-box">
+        <div class="cv-box-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1F365C" stroke-width="2">
+            <path d="M12 3v12m0-12 4 4m-4-4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          UPLOAD CV FOR AUTO-FILL
+        </div>
+        <div class="cv-box-sub">Optional, but it saves time — we'll pull your job title, experience, and a short bio straight from it.</div>
+
+        <div class="dropzone" id="dropzone" onclick="document.getElementById('cv-input').click()">
+          <div class="icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1F365C" stroke-width="1.8">
+              <path d="M12 3v12m0-12 4 4m-4-4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="title">Drop your CV here, or <span class="browse">browse</span></div>
+          <div class="hint">PDF or DOCX, up to 10MB</div>
+        </div>
+        <input type="file" id="cv-input" accept=".pdf,.doc,.docx">
+
+        <div class="file-chip" id="file-chip" style="margin-top:0.75rem;">
+          <div class="doc-icon">PDF</div>
+          <div class="meta">
+            <div class="name" id="file-name">resume.pdf</div>
+            <div class="size" id="file-size">—</div>
+          </div>
+          <div class="status" id="cv-status"><div class="cv-spinner"></div> Reading…</div>
+          <button class="remove" id="file-remove">Remove</button>
+        </div>
+      </div>
 
       <div class="field">
-        <label for="job-title">Current or target job title</label>
+        <label for="job-title">Current or target job title <span class="autofill-tag" id="tag-job-title">✓ Auto-filled</span></label>
         <input type="text" id="job-title" placeholder="e.g. Frontend Developer">
       </div>
       <div class="field-row">
         <div class="field">
-          <label for="location">Location</label>
+          <label for="location">Location <span class="autofill-tag" id="tag-location">✓ Auto-filled</span></label>
           <input type="text" id="location" placeholder="City, Country">
         </div>
         <div class="field">
-          <label for="experience">Years of experience</label>
+          <label for="experience">Years of experience <span class="autofill-tag" id="tag-experience">✓ Auto-filled</span></label>
           <select id="experience">
             <option>Less than 1 year</option>
             <option>1–2 years</option>
@@ -493,50 +611,16 @@
         </div>
       </div>
       <div class="field">
-        <label for="bio">Short bio <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+        <label for="bio">Short bio <span style="font-weight:400;color:var(--text-muted);">(optional)</span> <span class="autofill-tag" id="tag-bio">✓ Auto-filled</span></label>
         <textarea id="bio" placeholder="A couple of lines about what you do and what you're looking for."></textarea>
       </div>
 
       <div class="actions">
-        <button class="btn-ghost" onclick="goTo(0)">Back</button>
-        <button class="btn-primary" onclick="goTo(2)">Continue</button>
-      </div>
-    </div>
-
-    <!-- Step 3: Upload CV -->
-    <div class="stepview" data-view="2">
-      <div class="step-eyebrow">STEP 3 OF 4</div>
-      <h1>Upload your CV</h1>
-      <p class="sub">We'll read it once, privately, to pull out your skills — nothing is shared without your say.</p>
-
-      <div class="dropzone" id="dropzone" onclick="document.getElementById('cv-input').click()">
-        <div class="icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1F365C" stroke-width="1.8">
-            <path d="M12 3v12m0-12 4 4m-4-4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div class="title">Drop your CV here, or <span class="browse">browse</span></div>
-        <div class="hint">PDF or DOCX, up to 10MB</div>
-      </div>
-      <input type="file" id="cv-input" accept=".pdf,.doc,.docx">
-
-      <div class="file-chip" id="file-chip">
-        <div class="doc-icon">PDF</div>
-        <div class="meta">
-          <div class="name" id="file-name">resume.pdf</div>
-          <div class="size" id="file-size">—</div>
-        </div>
-        <button class="remove" id="file-remove">Remove</button>
-      </div>
-
-      <div class="actions" style="margin-top:1.75rem;">
         <button class="btn-ghost" onclick="goTo(1)">Back</button>
-        <button class="btn-primary" id="upload-continue" disabled onclick="startExtraction()">Continue</button>
+        <button class="btn-primary" onclick="startExtraction()">Continue</button>
       </div>
     </div>
 
-    <!-- Step 4: AI extracts skills -->
     <div class="stepview" data-view="3">
       <div class="step-eyebrow">STEP 4 OF 4</div>
       <h1 id="extract-heading">Reading your CV</h1>
@@ -596,21 +680,140 @@
     window.scrollTo({top:0, behavior:'smooth'});
   }
 
-  // ---- Upload CV interactions ----
+  function startOtp(){
+    const pass = document.getElementById('signup-password');
+    const confirm = document.getElementById('signup-password-confirm');
+    const error = document.getElementById('password-match-error');
+
+    if(pass.value !== confirm.value || pass.value === ''){
+      confirm.classList.add('invalid');
+      error.classList.add('show');
+      return;
+    }
+    confirm.classList.remove('invalid');
+    error.classList.remove('show');
+
+    const emailVal = document.getElementById('signup-email').value.trim();
+    document.getElementById('otp-email-target').textContent = emailVal || 'your email';
+    otpBoxes.forEach(b => b.value = '');
+    otpError.classList.remove('show');
+    otpContinue.disabled = true;
+    goTo(1);
+    otpBoxes[0].focus();
+    runResendTimer();
+  }
+
+  document.getElementById('signup-password-confirm').addEventListener('input', function(){
+    this.classList.remove('invalid');
+    document.getElementById('password-match-error').classList.remove('show');
+  });
+
+  const otpBoxes = Array.from(document.querySelectorAll('.otp-box'));
+  const otpContinue = document.getElementById('otp-continue');
+  const otpError = document.getElementById('otp-error');
+  const resendText = document.getElementById('resend-text');
+  const resendLink = document.getElementById('resend-link');
+  const resendTimerEl = document.getElementById('resend-timer');
+  let resendInterval = null;
+
+  function checkOtpComplete(){
+    const complete = otpBoxes.every(b => b.value.length === 1);
+    otpContinue.disabled = !complete;
+    return complete;
+  }
+
+  otpBoxes.forEach((box, i) => {
+    box.addEventListener('input', () => {
+      box.value = box.value.replace(/[^0-9]/g, '');
+      otpError.classList.remove('show');
+      if(box.value && i < otpBoxes.length - 1){
+        otpBoxes[i + 1].focus();
+      }
+      checkOtpComplete();
+    });
+    box.addEventListener('keydown', e => {
+      if(e.key === 'Backspace' && !box.value && i > 0){
+        otpBoxes[i - 1].focus();
+      }
+    });
+    box.addEventListener('paste', e => {
+      e.preventDefault();
+      const digits = (e.clipboardData.getData('text').match(/\d/g) || []).slice(0, otpBoxes.length);
+      digits.forEach((d, idx) => { if(otpBoxes[idx]) otpBoxes[idx].value = d; });
+      const next = Math.min(digits.length, otpBoxes.length - 1);
+      otpBoxes[next].focus();
+      checkOtpComplete();
+    });
+  });
+
+  function verifyOtp(){
+    if(!checkOtpComplete()) return;
+    otpError.classList.remove('show');
+    clearInterval(resendInterval);
+    goTo(2);
+  }
+
+  function runResendTimer(){
+    let seconds = 30;
+    resendLink.style.display = 'none';
+    resendText.style.display = 'inline';
+    clearInterval(resendInterval);
+    resendInterval = setInterval(() => {
+      seconds--;
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      resendTimerEl.textContent = `${m}:${s}`;
+      if(seconds <= 0){
+        clearInterval(resendInterval);
+        resendText.style.display = 'none';
+        resendLink.style.display = 'inline';
+      }
+    }, 1000);
+  }
+
+  resendLink.addEventListener('click', e => {
+    e.preventDefault();
+    otpBoxes.forEach(b => b.value = '');
+    otpContinue.disabled = true;
+    otpBoxes[0].focus();
+    runResendTimer();
+  });
+
   const dropzone = document.getElementById('dropzone');
   const cvInput = document.getElementById('cv-input');
   const fileChip = document.getElementById('file-chip');
   const fileName = document.getElementById('file-name');
   const fileSize = document.getElementById('file-size');
-  const uploadContinue = document.getElementById('upload-continue');
   const fileRemove = document.getElementById('file-remove');
+  const cvStatus = document.getElementById('cv-status');
 
   function handleFile(file){
     if(!file) return;
     fileName.textContent = file.name;
     fileSize.textContent = (file.size / 1024).toFixed(0) + ' KB';
     fileChip.classList.add('show');
-    uploadContinue.disabled = false;
+    cvStatus.innerHTML = '<div class="cv-spinner"></div> Reading…';
+
+    setTimeout(() => autoFillFromCv(), 1400);
+  }
+
+  function autoFillFromCv(){
+    cvStatus.innerHTML = '✓ Auto-filled below';
+
+    const jobTitle = document.getElementById('job-title');
+    const location = document.getElementById('location');
+    const experience = document.getElementById('experience');
+    const bio = document.getElementById('bio');
+
+    jobTitle.value = 'Frontend Developer';
+    location.value = 'Damietta, Egypt';
+    experience.value = '3–5 years';
+    bio.value = 'Frontend developer specializing in React, Next.js, and TypeScript, currently freelancing while job searching.';
+
+    [jobTitle, location, experience, bio].forEach(el => el.classList.add('autofilled'));
+    ['tag-job-title','tag-location','tag-experience','tag-bio'].forEach(id => {
+      document.getElementById(id).classList.add('show');
+    });
   }
 
   cvInput.addEventListener('change', e => handleFile(e.target.files[0]));
@@ -630,13 +833,18 @@
     e.stopPropagation();
     cvInput.value = '';
     fileChip.classList.remove('show');
-    uploadContinue.disabled = true;
   });
 
-  // ---- AI extraction step ----
+  ['job-title','location','experience','bio'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function(){
+      this.classList.remove('autofilled');
+      document.getElementById('tag-' + id).classList.remove('show');
+    });
+  });
+
   function startExtraction(){
     goTo(3);
-    document.getElementById('status-t1').textContent = 'Analyzing ' + (fileName.textContent || 'your CV');
+    document.getElementById('status-t1').textContent = 'Analyzing ' + (fileName.textContent && fileChip.classList.contains('show') ? fileName.textContent : 'your profile');
     const statusBox = document.getElementById('extract-status');
     const results = document.getElementById('results');
     const finishBtn = document.getElementById('finish-btn');
