@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillMatch — Prototype Viewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5F6FA;
+    --surface:#FFFFFF;
+    --ink:#16182B;
+    --ink-soft:#5B5E78;
+    --ink-faint:#9497B0;
+    --line:#E4E6F0;
+    --primary:#4C3FE0;
+    --primary-dark:#3A2FBE;
+    --primary-tint:#EEEDFC;
+    --accent:#F0A430;
+    --accent-tint:#FDF2DF;
+    --success:#1E9E5A;
+    --success-tint:#E7F7EE;
+    --danger:#E24C4C;
+    --chrome:#ECEDF5;
+    --radius-s:8px;
+    --radius-m:14px;
+    --radius-l:20px;
+    --shadow:0 1px 2px rgba(22,24,43,.04), 0 8px 24px rgba(22,24,43,.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+  }
+  h1,h2,h3,h4,.brand,.addr-path{font-family:'Space Grotesk',sans-serif;}
+  button{font-family:inherit;}
+
+  .app{
+    display:flex;
+    height:100vh;
+    overflow:hidden;
+  }
+
+  /* ---------- Rail (flow map) ---------- */
+  .rail{
+    width:272px;
+    flex:none;
+    background:var(--surface);
+    border-right:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  .rail-head{
+    padding:20px 20px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .brand{
+    font-size:17px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:0 0 4px;
+  }
+  .brand-dot{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--primary);
+    box-shadow:0 0 0 4px var(--primary-tint);
+  }
+  .rail-head p{
+    margin:0;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  .rail-scroll{
+    flex:1;
+    overflow-y:auto;
+    padding:10px 10px 24px;
+  }
+  .rail-group{
+    margin-top:16px;
+  }
+  .rail-group:first-child{margin-top:6px;}
+  .rail-group-label{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--ink-faint);
+    padding:0 10px 6px;
+    letter-spacing:.2px;
+  }
+  .rail-item{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    width:100%;
+    text-align:left;
+    padding:8px 10px;
+    border-radius:var(--radius-s);
+    border:1px solid transparent;
+    background:transparent;
+    cursor:pointer;
+    color:var(--ink);
+    font-size:13.5px;
+    line-height:1.3;
+    margin-bottom:2px;
+    transition:background .12s ease;
+  }
+  .rail-item:hover{background:var(--bg);}
+  .rail-item.active{
+    background:var(--primary-tint);
+    border-color:#DCD9FB;
+    color:var(--primary-dark);
+    font-weight:600;
+  }
+  .rail-item .rdot{
+    width:5px;height:5px;border-radius:50%;
+    background:var(--ink-faint);
+    flex:none;
+  }
+  .rail-item.active .rdot{background:var(--primary);}
+  .rail-item .rname{flex:1;}
+  .rail-item .rlock{
+    font-size:10px;
+    color:var(--accent);
+    font-weight:700;
+  }
+
+  /* ---------- Main / device viewer ---------- */
+  .main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    padding:22px 26px;
+    overflow:hidden;
+  }
+  .browserbar{
+    background:var(--chrome);
+    border:1px solid var(--line);
+    border-radius:var(--radius-m) var(--radius-m) 0 0;
+    padding:12px 16px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex:none;
+  }
+  .traffic{display:flex;gap:6px;}
+  .traffic span{width:10px;height:10px;border-radius:50%;display:block;}
+  .traffic span:nth-child(1){background:#EF6A5F;}
+  .traffic span:nth-child(2){background:#F4BF4F;}
+  .traffic span:nth-child(3){background:#61C554;}
+  .navbtns{display:flex;gap:4px;}
+  .navbtns button{
+    width:26px;height:26px;
+    border-radius:7px;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink-soft);
+    cursor:pointer;
+    font-size:13px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .navbtns button:disabled{opacity:.35;cursor:default;}
+  .navbtns button:not(:disabled):hover{background:var(--bg);}
+  .addr{
+    flex:1;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:6px 12px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    min-width:0;
+  }
+  .addr .lock{color:var(--success);font-size:11px;}
+  .addr .host{color:var(--ink-faint);flex:none;}
+  .addr-path{
+    color:var(--ink);
+    font-weight:600;
+    font-size:12.5px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .phase2-chip{
+    flex:none;
+    font-size:10.5px;
+    font-weight:700;
+    color:var(--accent);
+    background:var(--accent-tint);
+    padding:3px 8px;
+    border-radius:20px;
+  }
+
+  .device{
+    flex:1;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-top:none;
+    border-radius:0 0 var(--radius-m) var(--radius-m);
+    overflow-y:auto;
+    box-shadow:var(--shadow);
+  }
+  .screen.narrow{max-width:460px;}
+
+  /* ---------- shared bits ---------- */
+  .eyebrow{
+    font-size:12px;
+    color:var(--ink-faint);
+    margin:0 0 6px;
+  }
+  .screen h1{font-size:24px;margin:0 0 8px;font-weight:700;}
+  .screen h2{font-size:16px;margin:0 0 4px;font-weight:700;}
+  .lede{color:var(--ink-soft);font-size:14px;line-height:1.6;margin:0 0 26px;}
+  .btn{
+    appearance:none;
+    border:1px solid transparent;
+    border-radius:10px;
+    padding:10px 16px;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-primary:hover{background:var(--primary-dark);}
+  .btn-ghost{background:var(--surface);border-color:var(--line);color:var(--ink);}
+  .btn-ghost:hover{background:var(--bg);}
+  .btn-soft{background:var(--primary-tint);color:var(--primary-dark);}
+  .btn-block{width:100%;justify-content:center;}
+  .btn-sm{padding:7px 12px;font-size:12.5px;border-radius:8px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;}
+  .field input{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:10px 12px;
+    font-size:13.5px;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  .field input:focus{outline:2px solid var(--primary);outline-offset:1px;}
+  .card{
+    border:1px solid var(--line);
+    border-radius:var(--radius-m);
+    padding:16px;
+    background:var(--surface);
+  }
+  .divider{height:1px;background:var(--line);margin:22px 0;border:none;}
+  .tag{
+    font-size:11px;
+    font-weight:600;
+    padding:3px 9px;
+    border-radius:20px;
+    background:var(--primary-tint);
+    color:var(--primary-dark);
+  }
+  .link-inline{color:var(--primary);font-weight:600;cursor:pointer;background:none;border:none;padding:0;font-size:inherit;}
+
+  /* app top nav */
+  .app-shell{margin:-36px -40px 26px;padding:16px 40px 16px;border-bottom:1px solid var(--line);}
+  .app-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .app-tabs{display:flex;gap:4px;flex-wrap:wrap;}
+  .app-tabs button{
+    border:none;background:none;
+    padding:7px 11px;
+    border-radius:8px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .app-tabs button:hover{background:var(--bg);}
+  .app-tabs button.on{background:var(--primary);color:#fff;}
+  .avatar{
+    width:32px;height:32px;border-radius:50%;
+    background:var(--primary);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12.5px;font-weight:700;
+    flex:none;cursor:pointer;
+  }
+
+  .job-card{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    padding:16px;
+    border:1px solid var(--line);
+    border-radius:var(--radius-m);
+    margin-bottom:10px;
+    align-items:flex-start;
+  }
+  .job-card:hover{border-color:#D6D8EE;}
+  .job-title{font-weight:700;font-size:14.5px;margin:0 0 4px;}
+  .job-meta{font-size:12.5px;color:var(--ink-soft);margin:0 0 8px;}
+  .match-badge{
+    font-size:12px;font-weight:700;
+    color:var(--success);background:var(--success-tint);
+    padding:4px 9px;border-radius:20px;
+    white-space:nowrap;
+  }
+  .job-actions{display:flex;gap:8px;}
+
+  .list-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 4px;border-bottom:1px solid var(--line);
+    cursor:pointer;
+  }
+  .list-row:last-child{border-bottom:none;}
+  .list-row:hover{background:var(--bg);}
+  .status-pill{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px;}
+  .status-review{background:var(--accent-tint);color:#946014;}
+  .status-interview{background:var(--primary-tint);color:var(--primary-dark);}
+  .status-offer{background:var(--success-tint);color:var(--success);}
+
+  .stat-row{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;}
+  .stat{
+    flex:1;min-width:130px;
+    border:1px solid var(--line);border-radius:var(--radius-m);
+    padding:14px 16px;
+  }
+  .stat .n{font-size:22px;font-weight:700;font-family:'Space Grotesk',sans-serif;}
+  .stat .l{font-size:12px;color:var(--ink-soft);}
+
+  .progress{
+    height:8px;background:var(--bg);border-radius:20px;overflow:hidden;border:1px solid var(--line);
+  }
+  .progress > span{display:block;height:100%;background:var(--primary);}
+
+  .toast{
+    position:fixed;
+    bottom:22px;left:50%;transform:translateX(-50%) translateY(12px);
+    background:var(--ink);color:#fff;
+    padding:11px 18px;border-radius:10px;
+    font-size:13px;font-weight:500;
+    opacity:0;pointer-events:none;
+    transition:opacity .18s ease, transform .18s ease;
+    z-index:50;
+    box-shadow:0 12px 30px rgba(0,0,0,.25);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+
+  .mentor-chat{
+    border:1px solid var(--line);border-radius:var(--radius-m);
+    margin-top:18px;overflow:hidden;display:none;
+  }
+  .mentor-chat.open{display:block;}
+  .mentor-chat-head{
+    background:var(--primary-tint);color:var(--primary-dark);
+    font-weight:700;font-size:13px;padding:10px 14px;
+  }
+  .mentor-chat-body{padding:14px;font-size:13px;color:var(--ink-soft);line-height:1.6;}
+  .bubble{background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:8px;max-width:80%;}
+  .bubble.me{background:var(--primary);color:#fff;margin-left:auto;}
+
+  .lockcard{
+    border:1px dashed var(--line);
+    border-radius:var(--radius-l);
+    padding:44px 30px;
+    text-align:center;
+    color:var(--ink-soft);
+  }
+  .lockcard .ic{font-size:26px;margin-bottom:10px;}
+
+  ::-webkit-scrollbar{width:10px;}
+  ::-webkit-scrollbar-thumb{background:#D8DAE8;border-radius:20px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  @media (max-width:820px){
+    .rail{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);transition:transform .2s ease;z-index:40;box-shadow:0 0 0 2000px rgba(0,0,0,.3);}
+    .rail.open{transform:translateX(0);}
+    .main{padding:12px;}
+    .screen{padding:24px 18px 50px;}
+    .app-shell{margin:-24px -18px 20px;padding:14px 18px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ============ RAIL: flow map ============ -->
+  <aside class="rail" id="rail">
+    <div class="rail-head">
+      <p class="brand"><span class="brand-dot"></span>SkillMatch</p>
+      <p>Prototype viewer — candidate flow. Click any screen below, or click buttons inside the preview to follow the flow.</p>
+    </div>
+    <nav class="rail-scroll" id="railScroll"></nav>
+  </aside>
+
+  <!-- ============ MAIN: device viewer ============ -->
+  <main class="main">
+    <div class="browserbar">
+      <div class="traffic"><span></span><span></span><span></span></div>
+      <div class="navbtns">
+        <button id="btnBack" onclick="goBack()" title="Back">&#8592;</button>
+        <button id="btnFwd" onclick="goForward()" title="Forward">&#8594;</button>
+      </div>
+      <div class="addr">
+        <span class="lock">&#128274;</span>
+        <span class="host">skillmatch.app</span>
+        <span class="addr-path" id="addrPath">/</span>
+      </div>
+      <span class="phase2-chip" id="phaseChip" style="display:none;">Phase 2</span>
+    </div>
+    <div class="device" id="device">
+      <div class="screen" id="screen"></div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   SCREEN DEFINITIONS
+   تم تعديل هذه الشاشات لتستقبل اسم ملف الـ HTML بدلاً من الكود اليدوي
+   ============================================================ */
+
+const screens = {
+  landing: { path:'/', group:'Auth', title:'Landing Page', file: 'home.html' },
+  login: { path:'auth/login.html', group:'Auth', title:'Login', file: 'auth/login.html' },
+  register: { path:'/register', group:'Auth', title:'Register', file: 'auth/signup.html' },
+  forgotPassword: { path:'/forgot-password', group:'Auth', title:'Forgot Password', file: 'auth/ForgotPasswordd.html' },
+  resetPassword: { path:'/reset-password', group:'Auth', title:'Reset Password', file: 'auth/SetNewPassword.html' },
+  dashboard: { path:'/app', group:'Core app', title:'User Dashboard', authed:true, file: 'coreApp/user-dashboard.html' },
+  jobsFeed: { path:'/app/jobs', group:'Core app', title:'Jobs & Internships Feed', authed:true, file: 'coreApp/Jobs_EN.html' },
+  jobDetails: { path:'/app/jobs/:jobId', group:'Core app', title:'Job Details + Match', authed:true, file: 'coreApp/job-details-states.html' },
+  savedJobs: { path:'/app/saved', group:'Core app', title:'Saved Jobs', authed:true, file: 'coreApp/saved-jobs-states.html' },
+  applications: { path:'/app/applications', group:'Core app', title:'Application Tracker', authed:true, file: 'applications.html' },
+  applicationDetails: { path:'/app/applications/:id', group:'Core app', title:'Application Details', authed:true, file: 'coreApp/app-application-details.html' },
+  notifications: { path:'/app/notifications', group:'Core app', title:'Notification Center', authed:true, file: 'coreApp/app-notification-center.html' },
+  profile: { path:'/app/profile', group:'Core app', title:'Profile', authed:true, file: 'coreApp/profile_en.html' },
+  onboarding: { path:'/onboarding', group:'Career growth', title:'Career Onboarding', authed:true, file: 'careerOnboarding/onboarding.html' },
+  roadmap: { path:'/app/roadmap', group:'Career growth', title:'Career Roadmap', authed:true, file: 'careerOnboarding/app-career-roadmap.html' },
+  mentor: { path:'/app/mentor', group:'Career growth', title:'AI Mentor', authed:true, file: 'careerOnboarding/app-ai-mentor-chat.html' },
+  cvManagement: { path:'/app/profile/cv', group:'Career growth', title:'CV Management', authed:true, file: 'careerOnboarding/cv_management_en.html' },
+  interviewPrep: { path:'/app/interview', group:'Phase 2', title:'Interview Preparation', authed:true, phase2:true, file: 'interviewPrep.html' },
+};
+
+/* ============================================================
+   NAVIGATION / STATE
+   ============================================================ */
+let hist = ['landing'];
+let ptr = 0;
+
+function renderRail(){
+  const groups = {};
+  Object.entries(screens).forEach(([id, s])=>{
+    (groups[s.group] = groups[s.group] || []).push([id, s]);
+  });
+  const order = ['Auth','Core app','Career growth','Phase 2'];
+  document.getElementById('railScroll').innerHTML = order.map(g=>`
+    <div class="rail-group">
+      <div class="rail-group-label">${g}</div>
+      ${groups[g].map(([id,s])=>`
+        <button class="rail-item" id="rail-${id}" onclick="go('${id}')">
+          <span class="rdot"></span>
+          <span class="rname">${s.title}</span>
+          ${s.phase2 ? '<span class="rlock">P2</span>' : ''}
+        </button>`).join('')}
+    </div>`).join('');
+}
+
+// تم تحويل هذه الدالة لتكون Async لتستطيع تحميل الملفات الخارجية
+async function render(){
+  const id = hist[ptr];
+  const s = screens[id];
+  
+  // تحديث مسار المتصفح الوهمي
+  document.getElementById('addrPath').textContent = s.path;
+  document.getElementById('phaseChip').style.display = s.phase2 ? 'inline-block' : 'none';
+  
+  // تحديث القائمة الجانبية
+  document.querySelectorAll('.rail-item').forEach(el=>el.classList.remove('active'));
+  const active = document.getElementById('rail-'+id);
+  if(active) active.classList.add('active');
+  
+  // تحديث أزرار التنقل
+  document.getElementById('btnBack').disabled = ptr<=0;
+  document.getElementById('btnFwd').disabled = ptr>=hist.length-1;
+
+  // جلب العنصر الذي سنعرض فيه المحتوى
+  const screenEl = document.getElementById('screen');
+  screenEl.innerHTML = '<p style="text-align:center; color:var(--ink-soft); margin-top:20px;">جاري التحميل...</p>';
+
+  try {
+    // محاولة جلب ملف الـ HTML (تأكد أن الملفات في نفس المجلد أو قم بتعديل المسار هنا)
+    const response = await fetch(`pages/${s.file}`); 
+    if(!response.ok) throw new Error('File not found');
+    
+    const htmlContent = await response.text();
+    screenEl.innerHTML = `
+  <iframe
+    src="pages/${s.file}"
+    style="
+      width:100%;
+      height:100%;
+      min-height:800px;
+      border:0;
+      display:block;
+    "
+  ></iframe>
+`;
+  } catch(error) {
+    screenEl.innerHTML = `<p style="text-align:center; color:var(--danger); margin-top:20px;">⚠️ لم يتم العثور على الملف: <b>${s.file}</b></p>`;
+  }
+
+  document.getElementById('device').scrollTop = 0;
+}
+
+function go(id){
+  if(!screens[id]) return;
+  hist = hist.slice(0, ptr+1);
+  hist.push(id);
+  ptr = hist.length-1;
+  render();
+}
+function goBack(){ if(ptr>0){ ptr--; render(); } }
+function goForward(){ if(ptr<hist.length-1){ ptr++; render(); } }
+
+function toggleMentorChat(){
+  const chat = document.getElementById('mentorChat');
+  if(chat) chat.classList.toggle('open');
+}
+function applyToJob(){
+  toast('Application submitted');
+  const actions = document.getElementById('jobDetailActions');
+  if(actions) {
+    actions.innerHTML = `
+      <button class="btn btn-ghost" disabled>Applied ✓</button>
+      <button class="btn btn-primary" onclick="go('applications')">View in applications</button>`;
+  }
+}
+
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+renderRail();
+render();
+</script>
+</body>
+</html>

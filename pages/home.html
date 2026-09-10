@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en" style=""><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>SkillMatch - AI-Powered Career Platform</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400..800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-12px) scale(1.04); }
+}
+@keyframes float-reverse {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(14px) scale(0.96); }
+}
+.animate-float-slow {
+  animation: float-slow 7s ease-in-out infinite;
+}
+.animate-float-rev {
+  animation: float-reverse 9s ease-in-out infinite;
+}
+</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-secondary": "#ffffff",
+          "tertiary": "#2c1f00",
+          "on-background": "#1b1c1a",
+          "secondary-container": "#ff9071",
+          "text-muted": "#707780",
+          "secondary-fixed": "#ffdbd1",
+          "inverse-on-surface": "#f2f0ed",
+          "error-container": "#ffdad6",
+          "primary-container": "#1f365c",
+          "surface-container-low": "#f5f3ef",
+          "surface-container-highest": "#e4e2de",
+          "primary-fixed-dim": "#b1c7f5",
+          "outline": "#74777f",
+          "border-hairline": "#E5E1DA",
+          "on-secondary-fixed-variant": "#7d2d16",
+          "tertiary-container": "#463400",
+          "on-primary": "#ffffff",
+          "surface-variant": "#e4e2de",
+          "surface-tint": "#495f87",
+          "surface": "#FAF8F4",
+          "surface-white": "#FFFFFF",
+          "on-tertiary": "#ffffff",
+          "surface-bright": "#fbf9f5",
+          "on-secondary-fixed": "#3b0900",
+          "primary-fixed": "#d7e2ff",
+          "match-forest": "#4F7A5A",
+          "on-error": "#ffffff",
+          "secondary": "#9c432a",
+          "on-tertiary-container": "#c59a1d",
+          "surface-container-high": "#eae8e4",
+          "text-primary": "#1B1C1A",
+          "tertiary-fixed": "#ffdf98",
+          "background": "#FAF8F4",
+          "on-secondary-container": "#762711",
+          "on-surface": "#1b1c1a",
+          "inverse-surface": "#052045",
+          "on-primary-fixed-variant": "#31476e",
+          "primary": "#1F365C",
+          "match-amber": "#C88A26",
+          "on-surface-variant": "#44474e",
+          "surface-container": "#efeeea",
+          "on-tertiary-fixed-variant": "#5a4300",
+          "outline-variant": "#c4c6cf",
+          "on-primary-container": "#8a9fcc",
+          "surface-container-lowest": "#ffffff",
+          "surface-dim": "#dbdad6",
+          "tertiary-fixed-dim": "#f0c044",
+          "text-secondary": "#44474E",
+          "on-error-container": "#93000a",
+          "secondary-fixed-dim": "#ffb5a1",
+          "on-tertiary-fixed": "#251a00",
+          "error": "#ba1a1a",
+          "canvas-cream": "#FAF8F4",
+          "on-primary-fixed": "#001b3f",
+          "inverse-primary": "#b1c7f5"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.75rem",
+          "xl": "1rem",
+          "2xl": "1.25rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-32": "2rem",
+          "space-40": "2.5rem",
+          "screen-padding": "1.25rem",
+          "space-16": "1rem",
+          "card-padding": "1rem",
+          "space-24": "1.5rem",
+          "space-8": "0.5rem",
+          "space-2": "0.125rem",
+          "space-20": "1.25rem",
+          "gutter": "0.75rem",
+          "space-48": "3rem",
+          "space-12": "0.75rem",
+          "space-4": "0.25rem",
+          "gutter-desktop": "2rem",
+          "gutter-tablet": "1.5rem",
+          "gutter-mobile": "1rem",
+          "space-xs": "0.5rem",
+          "space-sm": "0.75rem",
+          "space-md": "1rem",
+          "space-lg": "1.5rem",
+          "space-xl": "2rem",
+          "space-2xl": "3rem",
+          "space-3xl": "4rem",
+          "space-4xl": "6rem",
+          "space-5xl": "8rem",
+          "space-2xs": "0.25rem",
+          "space-3xs": "0.125rem"
+        },
+        "fontFamily": {
+          "body-lg": ["Inter", "sans-serif"],
+          "body-md": ["Inter", "sans-serif"],
+          "body-sm": ["Inter", "sans-serif"],
+          "body-xl": ["Inter", "sans-serif"],
+          "label-sm": ["Inter", "sans-serif"],
+          "label-md": ["Inter", "sans-serif"],
+          "label-lg": ["Inter", "sans-serif"],
+          "caption": ["Inter", "sans-serif"],
+          "headline-sm": ["DM Sans", "sans-serif"],
+          "headline-md": ["DM Sans", "sans-serif"],
+          "headline-lg": ["DM Sans", "sans-serif"],
+          "headline-xl": ["DM Sans", "sans-serif"],
+          "display": ["DM Sans", "sans-serif"],
+          "metric-display": ["DM Sans", "sans-serif"]
+        }
+      }
+    }
+  }
+</script></head><body class="bg-canvas-cream font-body-md text-text-primary antialiased min-h-screen flex flex-col selection:bg-secondary-fixed selection:text-secondary"><header class="fixed top-0 left-0 right-0 w-full z-50 bg-[#FAF8F4]/90 backdrop-blur-md border-b border-border-hairline shadow-[0_1px_4px_rgba(27,28,26,0.03)]"><div class="h-20 max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-tablet lg:px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-xl"><a class="flex items-center gap-space-xs group" data-path="home" href="#"><img alt="SkillMatch Logo" class="h-8 w-auto object-contain transition-transform group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1U2OhJ1t3vsfnoI0-ciE0mWieceX2EV7AqUVwOha8hzfVxYmGdkDTPsq0Qb8buw0OgKzE9RF1vOeNuwn--E7cC9sRCh2zOIXv6BFNfe8BdFDUwCCTHt-zfiVF-llksFsix7Oo3VmVQEzMes203FWNt6a-tPm6pi0xuBJsHRklynfixDPXxxrKrfuu09ms5a3G0ms8ouv7txo2_b52I18BqpmvlJt5pTq5e7A-Mr-94hWS-Hpsws-LOp19Y"/><span class="font-headline-sm text-[20px] font-bold text-primary tracking-tight">SkillMatch</span></a><nav class="hidden lg:flex items-center gap-space-lg" data-active-classes="text-primary font-bold"><a class="font-headline-sm text-[14px] font-medium text-text-secondary hover:text-primary transition-colors" data-path="explore-jobs" href="#">Explore Jobs</a><a class="font-headline-sm text-[14px] font-medium text-text-secondary hover:text-primary transition-colors" data-path="employers" href="#">Employers</a><a class="font-headline-sm text-[14px] font-medium text-text-secondary hover:text-primary transition-colors" data-path="ai-mentor" href="#">AI Mentor</a><a class="font-headline-sm text-[14px] font-medium text-text-secondary hover:text-primary transition-colors" data-path="pricing" href="#">Pricing</a><a class="font-headline-sm text-[14px] font-medium text-text-secondary hover:text-primary transition-colors" data-path="about" href="#">About</a></nav></div><div class="flex items-center gap-space-sm"><a class="hidden sm:inline-flex font-headline-sm text-[14px] font-medium text-text-secondary hover:text-primary px-space-sm py-space-xs transition-colors" data-path="sign-in" href="#">Sign In</a><a class="inline-flex items-center justify-center font-headline-sm text-[14px] font-semibold bg-primary hover:bg-[#052045] text-on-primary px-space-md py-[10px] rounded-[12px] transition-all shadow-sm hover:shadow" data-path="post-a-job" href="#">Post a Job</a><div class="w-9 h-9 rounded-full bg-surface-container-high border border-border-hairline flex items-center justify-center text-primary shadow-sm ml-space-xs cursor-pointer hover:bg-surface-white transition-colors"><span class="material-symbols-outlined text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 flex-1 bg-canvas-cream"><div class="flex flex-col w-full">
+<!-- 1. HERO SECTION -->
+<section class="relative w-full bg-[#1F365C] text-white pt-12 pb-16 lg:pt-16 lg:pb-24 overflow-hidden border-b border-border-hairline/20" id="hero-animated-section">
+<!-- Spotlight tracking layer -->
+<div class="hero-spotlight" id="hero-spotlight-layer" style="--mouse-x: 1272px; --mouse-y: 500px;"></div>
+<!-- Glowing Ambient Decorative Orbs -->
+<div class="absolute -top-32 -left-20 w-[520px] h-[520px] rounded-full bg-[#D4A72C]/20 blur-[120px] pointer-events-none" style="animation: glowPulse 8s ease-in-out infinite;"></div>
+<div class="absolute top-1/4 -right-28 w-[500px] h-[500px] rounded-full bg-[#D06B4F]/20 blur-[130px] pointer-events-none" style="animation: drift 10s ease-in-out infinite;"></div>
+<div class="absolute -bottom-24 left-1/3 w-[640px] h-[300px] rounded-full bg-cyan-500/15 blur-[100px] pointer-events-none"></div>
+<div class="absolute inset-0 opacity-[0.035] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] pointer-events-none"></div>
+<div class="relative max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-tablet lg:px-gutter-desktop flex flex-col items-center text-center z-10">
+<!-- Eyebrow Pill Badge -->
+<div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/[0.16] border border-white/20 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.25)] transition-all duration-300 cursor-default mb-6 group" style="animation: slideBadge 0.7s cubic-bezier(0.16, 1, 0.3, 1);">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4A72C] opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-[#D4A72C]"></span>
+</span>
+<span class="font-headline-sm text-[12px] sm:text-[13px] tracking-wide text-white/90 font-medium">
+<span class="text-[#f0c044] font-semibold">✦</span> AI-POWERED CAREER INTELLIGENCE
+      </span>
+</div>
+<!-- Headline with Shimmer & Animated Underline SVG -->
+<div class="max-w-4xl mx-auto mb-5">
+<h1 class="font-headline-xl text-[38px] sm:text-[50px] lg:text-[62px] font-bold text-white tracking-tight leading-[1.12]">
+        Your skills deserve the right <span class="relative inline-block"><span class="shimmer-text font-black">opportunity</span><svg class="absolute -bottom-2.5 left-0 w-full overflow-visible" fill="none" height="14" viewbox="0 0 260 14" xmlns="http://www.w3.org/2000/svg"><path class="curve-underline-path" d="M2 11C65 2.5 195 2.5 258 11" stroke="#D4A72C" stroke-linecap="round" stroke-width="4"></path></svg></span>
+</h1>
+</div>
+<!-- Subtitle -->
+<p class="font-body-lg text-white/80 leading-relaxed max-w-2xl text-[16px] sm:text-[18px] mb-8">
+      Upload your CV once. Our AI maps every skill, matches you to curated jobs, and builds a personalized roadmap to close every gap — with a mentor that never sleeps.
+    </p>
+<!-- Glassmorphic Search Bar with Autocomplete -->
+<div class="w-full max-w-3xl relative mb-4 z-30">
+<div class="w-full bg-white/[0.08] backdrop-blur-xl rounded-2xl md:rounded-full p-2 sm:p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.38)] border border-white/20 hover:border-white/40 transition-all duration-300 flex flex-col md:flex-row items-stretch gap-1 md:gap-0">
+<!-- Job Title / Keyword Input -->
+<div class="flex-1 relative flex items-center px-space-md py-2.5 group">
+<span class="material-symbols-outlined text-[#FAF8F4]/60 group-focus-within:text-[#D4A72C] text-[22px] mr-2.5 transition-colors">search</span>
+<input autocomplete="off" class="w-full bg-transparent font-body-md text-white placeholder:text-white/60 focus:outline-none text-[15px] font-medium border-0 focus:ring-0 p-0" id="hero-job-input" placeholder="Job title, skills, or company..." type="text"/>
+<button class="hidden text-white/50 hover:text-white transition-colors text-[18px] ml-1.5 cursor-pointer" id="hero-clear-btn" title="Clear search">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+<!-- Autocomplete Dropdown Menu -->
+<div class="hidden absolute left-0 top-full mt-2 w-full md:w-80 bg-[#1F365C]/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl p-2 z-50 text-left" id="hero-autocomplete-dropdown">
+<div class="text-[11px] font-semibold text-white/50 uppercase px-3 py-1 tracking-wider">Suggested Roles</div>
+<div class="autocomplete-item px-3 py-2 text-[14px] text-white hover:bg-white/10 rounded-lg cursor-pointer flex items-center justify-between transition-colors" data-value="Frontend Dev">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-[#f0c044]">code</span>Frontend Dev</span>
+<span class="text-[11px] text-white/50">940+ open</span>
+</div>
+<div class="autocomplete-item px-3 py-2 text-[14px] text-white hover:bg-white/10 rounded-lg cursor-pointer flex items-center justify-between transition-colors" data-value="Data Scientist">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-emerald-300">insights</span>Data Scientist</span>
+<span class="text-[11px] text-white/50">620+ open</span>
+</div>
+<div class="autocomplete-item px-3 py-2 text-[14px] text-white hover:bg-white/10 rounded-lg cursor-pointer flex items-center justify-between transition-colors" data-value="Product Manager">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-[#ffdbd1]">layers</span>Product Manager</span>
+<span class="text-[11px] text-white/50">410+ open</span>
+</div>
+<div class="autocomplete-item px-3 py-2 text-[14px] text-white hover:bg-white/10 rounded-lg cursor-pointer flex items-center justify-between transition-colors" data-value="Backend Engineer">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-cyan-300">dns</span>Backend Engineer</span>
+<span class="text-[11px] text-white/50">830+ open</span>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<div class="hidden md:block w-px bg-white/20 self-stretch my-2"></div>
+<!-- Location Input -->
+<div class="flex-1 flex items-center px-space-md py-2.5 border-t md:border-t-0 border-white/15 group">
+<span class="material-symbols-outlined text-[#FAF8F4]/60 group-focus-within:text-[#D4A72C] text-[21px] mr-2 transition-colors">location_on</span>
+<input class="w-full bg-transparent font-body-md text-white placeholder:text-white/60 focus:outline-none text-[15px] font-medium border-0 focus:ring-0 p-0" id="hero-location-input" placeholder="City, Country or Remote" type="text" value="Remote"/>
+</div>
+<!-- Submit Button with Terracotta accent and Ripple Effect -->
+<button class="ripple-container bg-[#D06B4F] hover:bg-[#bd5e43] text-white font-headline-sm font-semibold px-space-xl py-3.5 rounded-xl md:rounded-full flex items-center justify-center gap-space-xs transition-all duration-200 hover:scale-[1.02] active:scale-95 shrink-0 shadow-md hover:shadow-xl border border-white/20 cursor-pointer" id="hero-search-btn">
+<span class="material-symbols-outlined text-[20px]">search</span>
+<span class="tracking-wide">Search Jobs</span>
+</button>
+</div>
+</div>
+<!-- Popular Searches Chips -->
+<div class="flex flex-wrap items-center justify-center gap-2 text-[12px] sm:text-[13px] text-white/75 font-body-sm mb-4">
+<span class="text-white/60 font-medium">Popular:</span>
+<button class="popular-tag-btn px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 hover:text-white transition-all text-white/90 border border-white/10 backdrop-blur-md cursor-pointer" data-tag="Frontend Dev">Frontend Dev</button>
+<button class="popular-tag-btn px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 hover:text-white transition-all text-white/90 border border-white/10 backdrop-blur-md cursor-pointer" data-tag="Data Science">Data Science</button>
+<button class="popular-tag-btn px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 hover:text-white transition-all text-white/90 border border-white/10 backdrop-blur-md cursor-pointer" data-tag="Product Manager">Product Manager</button>
+<button class="popular-tag-btn px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 hover:text-white transition-all text-white/90 border border-white/10 backdrop-blur-md cursor-pointer" data-tag="Remote">Remote</button>
+</div>
+<!-- Secondary CTAs: Upload CV & Post a Job -->
+<!-- Featured Jobs Preview Grid (4 Live Cards) -->
+<!-- Live Metric Counters Pill -->
+<div class="w-full max-w-4xl bg-white/[0.07] backdrop-blur-xl border border-white/15 rounded-2xl p-4 sm:p-5 shadow-2xl mb-8 flex flex-wrap items-center justify-around gap-4 text-center">
+<div class="flex flex-col items-center px-3">
+<div class="font-headline-xl text-[24px] sm:text-[30px] font-bold text-white tracking-tight leading-none">
+<span class="count-up-metric" data-suffix="K+" data-target="180">180K+</span>
+</div>
+<span class="text-[12px] text-white/70 font-medium mt-1">Active Job Seekers</span>
+</div>
+<div class="hidden sm:block w-px h-8 bg-white/15"></div>
+<div class="flex flex-col items-center px-3">
+<div class="font-headline-xl text-[24px] sm:text-[30px] font-bold text-[#f0c044] tracking-tight leading-none">
+<span class="count-up-metric" data-suffix="+" data-target="4200">4,200+</span>
+</div>
+<span class="text-[12px] text-white/70 font-medium mt-1">Partner Companies</span>
+</div>
+<div class="hidden sm:block w-px h-8 bg-white/15"></div>
+<div class="flex flex-col items-center px-3">
+<div class="font-headline-xl text-[24px] sm:text-[30px] font-bold text-emerald-300 tracking-tight leading-none">
+<span class="count-up-metric" data-suffix="%" data-target="93">93%</span>
+</div>
+<span class="text-[12px] text-white/70 font-medium mt-1">Match Accuracy</span>
+</div>
+<div class="hidden sm:block w-px h-8 bg-white/15"></div>
+<div class="flex flex-col items-center px-3">
+<div class="font-headline-xl text-[24px] sm:text-[30px] font-bold text-[#ffdbd1] tracking-tight leading-none">
+<span class="count-up-metric" data-decimals="1" data-suffix="×" data-target="2.4">2.4×</span>
+</div>
+<span class="text-[12px] text-white/70 font-medium mt-1">Faster Hiring</span>
+</div>
+</div>
+<!-- Scroll Down Cue -->
+<a class="inline-flex flex-col items-center gap-1 text-white/60 hover:text-white transition-colors cursor-pointer group" href="#latest-roles-section">
+<span class="text-[11px] uppercase font-semibold tracking-widest">Scroll to Explore</span>
+<span class="material-symbols-outlined text-[20px] group-hover:translate-y-1 transition-transform animate-bounce">keyboard_arrow_down</span>
+</a>
+</div>
+<!-- Integrated Interactive Logic -->
+<script>
+    (function initAnimatedHero() {
+      const section = document.getElementById('hero-animated-section');
+      const spotlight = document.getElementById('hero-spotlight-layer');
+      const jobInput = document.getElementById('hero-job-input');
+      const clearBtn = document.getElementById('hero-clear-btn');
+      const dropdown = document.getElementById('hero-autocomplete-dropdown');
+      const popularBtns = document.querySelectorAll('.popular-tag-btn');
+      const searchBtn = document.getElementById('hero-search-btn');
+      const countMetrics = document.querySelectorAll('.count-up-metric');
+
+      // 1. Mouse Spotlight tracking
+      if (section && spotlight) {
+        section.addEventListener('mousemove', (e) => {
+          const rect = section.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          spotlight.style.setProperty('--mouse-x', `${x}px`);
+          spotlight.style.setProperty('--mouse-y', `${y}px`);
+        });
+      }
+
+      // 2. Input autocomplete & clear
+      if (jobInput && clearBtn && dropdown) {
+        jobInput.addEventListener('input', () => {
+          if (jobInput.value.trim().length > 0) {
+            clearBtn.classList.remove('hidden');
+            dropdown.classList.remove('hidden');
+          } else {
+            clearBtn.classList.add('hidden');
+            dropdown.classList.add('hidden');
+          }
+        });
+
+        jobInput.addEventListener('focus', () => {
+          if (jobInput.value.trim().length > 0) {
+            dropdown.classList.remove('hidden');
+          }
+        });
+
+        clearBtn.addEventListener('click', () => {
+          jobInput.value = '';
+          clearBtn.classList.add('hidden');
+          dropdown.classList.add('hidden');
+          jobInput.focus();
+        });
+
+        document.querySelectorAll('.autocomplete-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const val = item.getAttribute('data-value');
+            jobInput.value = val;
+            clearBtn.classList.remove('hidden');
+            dropdown.classList.add('hidden');
+          });
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!jobInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+          }
+        });
+      }
+
+      // 3. Popular tags click-to-fill
+      popularBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tag = btn.getAttribute('data-tag');
+          if (tag === 'Remote') {
+            const loc = document.getElementById('hero-location-input');
+            if (loc) loc.value = 'Remote';
+          } else if (jobInput) {
+            jobInput.value = tag;
+            if (clearBtn) clearBtn.classList.remove('hidden');
+          }
+        });
+      });
+
+      // 4. Button Ripple wave effect
+      if (searchBtn) {
+        searchBtn.addEventListener('click', function (e) {
+          const wave = document.createElement('span');
+          wave.classList.add('ripple-wave');
+          const rect = searchBtn.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          wave.style.width = wave.style.height = `${size}px`;
+          wave.style.left = `${e.clientX - rect.left - size / 2}px`;
+          wave.style.top = `${e.clientY - rect.top - size / 2}px`;
+          searchBtn.appendChild(wave);
+          setTimeout(() => wave.remove(), 600);
+        });
+      }
+
+      // 5. Count-up numbers animation
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              countMetrics.forEach(el => {
+                const target = parseFloat(el.getAttribute('data-target') || 0);
+                const suffix = el.getAttribute('data-suffix') || '';
+                const isDecimal = el.getAttribute('data-decimals') === '1';
+                let start = 0;
+                const duration = 1400;
+                const startTime = performance.now();
+                function step(currentTime) {
+                  const elapsed = currentTime - startTime;
+                  const progress = Math.min(elapsed / duration, 1);
+                  const currentVal = isDecimal
+                    ? (start + (target - start) * progress).toFixed(1)
+                    : Math.floor(start + (target - start) * progress).toLocaleString();
+                  el.textContent = currentVal + suffix;
+                  if (progress < 1) requestAnimationFrame(step);
+                }
+                requestAnimationFrame(step);
+              });
+              observer.disconnect();
+            }
+          });
+        }, { threshold: 0.3 });
+        observer.observe(section);
+      }
+    })();
+  </script>
+</section>
+<!-- 2. ABOUT SKILLMATCH SECTION -->
+<section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-tablet lg:px-gutter-desktop py-space-3xl lg:py-space-4xl"><div class="flex flex-col md:flex-row md:items-end justify-between mb-space-2xl gap-space-md"><div class="flex flex-col gap-space-xs max-w-2xl"><div class="inline-flex items-center gap-space-xs self-start bg-surface-white border border-border-hairline text-primary px-space-md py-[4px] rounded-full"><span class="font-body-sm text-[11px] uppercase tracking-wider font-semibold">Recent Opportunities</span></div><h2 class="font-headline-xl text-[32px] sm:text-[40px] text-text-primary font-bold tracking-tight">Latest Jobs &amp; Open Roles</h2><p class="font-body-lg text-body-lg text-text-secondary">Explore recently published roles with verified salaries and direct AI skill match scoring.</p></div><div class="flex items-center gap-space-xs"><span class="font-body-sm text-[13px] text-text-muted">Updated 12 mins ago</span><span class="w-2 h-2 rounded-full bg-[#4F7A5A]"></span></div></div><div class="flex flex-wrap items-center gap-space-xs mb-space-2xl pb-space-xs border-b border-border-hairline"><button class="bg-primary text-white font-headline-sm text-[13px] px-space-md py-[6px] rounded-full font-semibold transition-colors">All Roles</button><button class="bg-surface-white hover:bg-surface-container-high border border-border-hairline text-text-secondary hover:text-text-primary font-headline-sm text-[13px] px-space-md py-[6px] rounded-full font-medium transition-colors">Frontend</button><button class="bg-surface-white hover:bg-surface-container-high border border-border-hairline text-text-secondary hover:text-text-primary font-headline-sm text-[13px] px-space-md py-[6px] rounded-full font-medium transition-colors">Backend &amp; Fullstack</button><button class="bg-surface-white hover:bg-surface-container-high border border-border-hairline text-text-secondary hover:text-text-primary font-headline-sm text-[13px] px-space-md py-[6px] rounded-full font-medium transition-colors">UI/UX Design</button><button class="bg-surface-white hover:bg-surface-container-high border border-border-hairline text-text-secondary hover:text-text-primary font-headline-sm text-[13px] px-space-md py-[6px] rounded-full font-medium transition-colors">Data &amp; AI</button><button class="bg-surface-white hover:bg-surface-container-high border border-border-hairline text-text-secondary hover:text-text-primary font-headline-sm text-[13px] px-space-md py-[6px] rounded-full font-medium transition-colors">Remote</button></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg"><div class="bg-surface-white p-space-lg rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:border-primary/40 hover:shadow-md transition-all flex flex-col justify-between group"><div class="flex flex-col gap-space-sm"><div class="flex items-start justify-between"><div class="flex items-center gap-space-sm"><div class="w-11 h-11 rounded-[12px] bg-primary/10 text-primary font-headline-lg font-bold flex items-center justify-center text-[18px]">V</div><div class="flex flex-col"><span class="font-headline-sm text-[14px] font-semibold text-text-primary flex items-center gap-1">Vercel Partner<span class="material-symbols-outlined text-[#4F7A5A] text-[16px]" style='font-variation-settings: "FILL" 1;'>verified</span></span><span class="font-body-sm text-[12px] text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">public</span>Remote</span></div></div><div class="inline-flex items-center gap-1 bg-[#4F7A5A]/10 text-[#4F7A5A] px-2 py-0.5 rounded-full text-[12px] font-semibold"><span class="material-symbols-outlined text-[14px]">bolt</span>98% Match</div></div><div><h3 class="font-headline-sm text-[17px] font-bold text-text-primary group-hover:text-primary transition-colors">Senior Frontend Engineer (React / Next.js)</h3><p class="font-headline-sm text-[15px] font-semibold text-text-primary mt-1">$145,000 - $175,000 <span class="font-body-sm text-[12px] text-text-muted font-normal">/ yr</span></p></div><div class="flex flex-wrap gap-1.5 pt-1"><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">React</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">TypeScript</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">Tailwind CSS</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">Next.js 14</span></div></div><div class="mt-space-md pt-space-sm border-t border-border-hairline flex items-center justify-between"><span class="font-body-sm text-[12px] text-text-muted">Posted 2h ago</span><div class="flex items-center gap-2"><button class="w-8 h-8 rounded-full border border-border-hairline flex items-center justify-center text-text-muted hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">bookmark</span></button><button class="bg-primary hover:bg-[#052045] text-white font-headline-sm text-[12px] font-semibold px-space-md py-1.5 rounded-[8px] transition-colors">Quick Apply</button></div></div></div><div class="bg-surface-white p-space-lg rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:border-primary/40 hover:shadow-md transition-all flex flex-col justify-between group"><div class="flex flex-col gap-space-sm"><div class="flex items-start justify-between"><div class="flex items-center gap-space-sm"><div class="w-11 h-11 rounded-[12px] bg-secondary-fixed/50 text-secondary font-headline-lg font-bold flex items-center justify-center text-[18px]">S</div><div class="flex flex-col"><span class="font-headline-sm text-[14px] font-semibold text-text-primary flex items-center gap-1">Stripe Infrastructure<span class="material-symbols-outlined text-[#4F7A5A] text-[16px]" style='font-variation-settings: "FILL" 1;'>verified</span></span><span class="font-body-sm text-[12px] text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span>San Francisco / Hybrid</span></div></div><div class="inline-flex items-center gap-1 bg-[#4F7A5A]/10 text-[#4F7A5A] px-2 py-0.5 rounded-full text-[12px] font-semibold"><span class="material-symbols-outlined text-[14px]">bolt</span>95% Match</div></div><div><h3 class="font-headline-sm text-[17px] font-bold text-text-primary group-hover:text-primary transition-colors">Lead Frontend Architect</h3><p class="font-headline-sm text-[15px] font-semibold text-text-primary mt-1">$180,000 - $220,000 <span class="font-body-sm text-[12px] text-text-muted font-normal">/ yr</span></p></div><div class="flex flex-wrap gap-1.5 pt-1"><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">Design Systems</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">Performance</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">TypeScript</span></div></div><div class="mt-space-md pt-space-sm border-t border-border-hairline flex items-center justify-between"><span class="font-body-sm text-[12px] text-text-muted">Posted 5h ago</span><div class="flex items-center gap-2"><button class="w-8 h-8 rounded-full border border-border-hairline flex items-center justify-center text-text-muted hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">bookmark</span></button><button class="bg-primary hover:bg-[#052045] text-white font-headline-sm text-[12px] font-semibold px-space-md py-1.5 rounded-[8px] transition-colors">Quick Apply</button></div></div></div><div class="bg-surface-white p-space-lg rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:border-primary/40 hover:shadow-md transition-all flex flex-col justify-between group"><div class="flex flex-col gap-space-sm"><div class="flex items-start justify-between"><div class="flex items-center gap-space-sm"><div class="w-11 h-11 rounded-[12px] bg-[#fdf2d6] text-[#c59a1d] font-headline-lg font-bold flex items-center justify-center text-[18px]">F</div><div class="flex flex-col"><span class="font-headline-sm text-[14px] font-semibold text-text-primary flex items-center gap-1">Figma Partner Studio<span class="material-symbols-outlined text-[#4F7A5A] text-[16px]" style='font-variation-settings: "FILL" 1;'>verified</span></span><span class="font-body-sm text-[12px] text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">public</span>New York / Remote</span></div></div><div class="inline-flex items-center gap-1 bg-[#4F7A5A]/10 text-[#4F7A5A] px-2 py-0.5 rounded-full text-[12px] font-semibold"><span class="material-symbols-outlined text-[14px]">bolt</span>92% Match</div></div><div><h3 class="font-headline-sm text-[17px] font-bold text-text-primary group-hover:text-primary transition-colors">Frontend Developer (UI/UX Engineering)</h3><p class="font-headline-sm text-[15px] font-semibold text-text-primary mt-1">$130,000 - $155,000 <span class="font-body-sm text-[12px] text-text-muted font-normal">/ yr</span></p></div><div class="flex flex-wrap gap-1.5 pt-1"><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">CSS Architecture</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">Vue.js / Nuxt</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">Figma Tokens</span></div></div><div class="mt-space-md pt-space-sm border-t border-border-hairline flex items-center justify-between"><span class="font-body-sm text-[12px] text-text-muted">Posted 1d ago</span><div class="flex items-center gap-2"><button class="w-8 h-8 rounded-full border border-border-hairline flex items-center justify-center text-text-muted hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">bookmark</span></button><button class="bg-primary hover:bg-[#052045] text-white font-headline-sm text-[12px] font-semibold px-space-md py-1.5 rounded-[8px] transition-colors">Quick Apply</button></div></div></div><div class="bg-surface-white p-space-lg rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:border-primary/40 hover:shadow-md transition-all flex flex-col justify-between group"><div class="flex flex-col gap-space-sm"><div class="flex items-start justify-between"><div class="flex items-center gap-space-sm"><div class="w-11 h-11 rounded-[12px] bg-[#4F7A5A]/10 text-[#4F7A5A] font-headline-lg font-bold flex items-center justify-center text-[18px]">S</div><div class="flex flex-col"><span class="font-headline-sm text-[14px] font-semibold text-text-primary flex items-center gap-1">Supabase Cloud<span class="material-symbols-outlined text-[#4F7A5A] text-[16px]" style='font-variation-settings: "FILL" 1;'>verified</span></span><span class="font-body-sm text-[12px] text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">public</span>Remote</span></div></div><div class="inline-flex items-center gap-1 bg-[#4F7A5A]/10 text-[#4F7A5A] px-2 py-0.5 rounded-full text-[12px] font-semibold"><span class="material-symbols-outlined text-[14px]">bolt</span>94% Match</div></div><div><h3 class="font-headline-sm text-[17px] font-bold text-text-primary group-hover:text-primary transition-colors">Full Stack Engineer (Frontend Heavy)</h3><p class="font-headline-sm text-[15px] font-semibold text-text-primary mt-1">$140,000 - $170,000 <span class="font-body-sm text-[12px] text-text-muted font-normal">/ yr</span></p></div><div class="flex flex-wrap gap-1.5 pt-1"><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">React</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">Node.js</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">PostgreSQL</span></div></div><div class="mt-space-md pt-space-sm border-t border-border-hairline flex items-center justify-between"><span class="font-body-sm text-[12px] text-text-muted">Posted 1d ago</span><div class="flex items-center gap-2"><button class="w-8 h-8 rounded-full border border-border-hairline flex items-center justify-center text-text-muted hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">bookmark</span></button><button class="bg-primary hover:bg-[#052045] text-white font-headline-sm text-[12px] font-semibold px-space-md py-1.5 rounded-[8px] transition-colors">Quick Apply</button></div></div></div><div class="bg-surface-white p-space-lg rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:border-primary/40 hover:shadow-md transition-all flex flex-col justify-between group"><div class="flex flex-col gap-space-sm"><div class="flex items-start justify-between"><div class="flex items-center gap-space-sm"><div class="w-11 h-11 rounded-[12px] bg-secondary-fixed/50 text-secondary font-headline-lg font-bold flex items-center justify-center text-[18px]">R</div><div class="flex flex-col"><span class="font-headline-sm text-[14px] font-semibold text-text-primary flex items-center gap-1">Retool Core<span class="material-symbols-outlined text-[#4F7A5A] text-[16px]" style='font-variation-settings: "FILL" 1;'>verified</span></span><span class="font-body-sm text-[12px] text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span>Hybrid</span></div></div><div class="inline-flex items-center gap-1 bg-[#4F7A5A]/10 text-[#4F7A5A] px-2 py-0.5 rounded-full text-[12px] font-semibold"><span class="material-symbols-outlined text-[14px]">bolt</span>91% Match</div></div><div><h3 class="font-headline-sm text-[17px] font-bold text-text-primary group-hover:text-primary transition-colors">Mobile &amp; Web Frontend Engineer</h3><p class="font-headline-sm text-[15px] font-semibold text-text-primary mt-1">$150,000 - $180,000 <span class="font-body-sm text-[12px] text-text-muted font-normal">/ yr</span></p></div><div class="flex flex-wrap gap-1.5 pt-1"><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">React Native</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">TypeScript</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">Component Libraries</span></div></div><div class="mt-space-md pt-space-sm border-t border-border-hairline flex items-center justify-between"><span class="font-body-sm text-[12px] text-text-muted">Posted 2d ago</span><div class="flex items-center gap-2"><button class="w-8 h-8 rounded-full border border-border-hairline flex items-center justify-center text-text-muted hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">bookmark</span></button><button class="bg-primary hover:bg-[#052045] text-white font-headline-sm text-[12px] font-semibold px-space-md py-1.5 rounded-[8px] transition-colors">Quick Apply</button></div></div></div><div class="bg-surface-white p-space-lg rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:border-primary/40 hover:shadow-md transition-all flex flex-col justify-between group"><div class="flex flex-col gap-space-sm"><div class="flex items-start justify-between"><div class="flex items-center gap-space-sm"><div class="w-11 h-11 rounded-[12px] bg-primary/10 text-primary font-headline-lg font-bold flex items-center justify-center text-[18px]">D</div><div class="flex flex-col"><span class="font-headline-sm text-[14px] font-semibold text-text-primary flex items-center gap-1">Datadog Telemetry<span class="material-symbols-outlined text-[#4F7A5A] text-[16px]" style='font-variation-settings: "FILL" 1;'>verified</span></span><span class="font-body-sm text-[12px] text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">public</span>Remote / Boston</span></div></div><div class="inline-flex items-center gap-1 bg-[#4F7A5A]/10 text-[#4F7A5A] px-2 py-0.5 rounded-full text-[12px] font-semibold"><span class="material-symbols-outlined text-[14px]">bolt</span>96% Match</div></div><div><h3 class="font-headline-sm text-[17px] font-bold text-text-primary group-hover:text-primary transition-colors">Staff Frontend Infrastructure Engineer</h3><p class="font-headline-sm text-[15px] font-semibold text-text-primary mt-1">$190,000 - $235,000 <span class="font-body-sm text-[12px] text-text-muted font-normal">/ yr</span></p></div><div class="flex flex-wrap gap-1.5 pt-1"><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">Microfrontends</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">Webpack/Vite</span><span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-[6px] border border-border-hairline">CI/CD</span></div></div><div class="mt-space-md pt-space-sm border-t border-border-hairline flex items-center justify-between"><span class="font-body-sm text-[12px] text-text-muted">Posted 3d ago</span><div class="flex items-center gap-2"><button class="w-8 h-8 rounded-full border border-border-hairline flex items-center justify-center text-text-muted hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">bookmark</span></button><button class="bg-primary hover:bg-[#052045] text-white font-headline-sm text-[12px] font-semibold px-space-md py-1.5 rounded-[8px] transition-colors">Quick Apply</button></div></div></div></div><div class="mt-space-2xl text-center"><button class="inline-flex items-center gap-space-xs font-headline-sm text-[14px] font-semibold bg-surface-white hover:bg-surface-container-high text-primary border border-border-hairline px-space-xl py-space-md rounded-[12px] transition-all shadow-sm hover:shadow"><span class="">Explore All 12,000+ Open Positions</span><span class="material-symbols-outlined text-[18px]">arrow_forward</span></button></div></section><section class="w-full bg-[#f5f3ef] border-y border-border-hairline py-space-3xl lg:py-space-4xl mt-space-xl"><div class="max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-tablet lg:px-gutter-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-2xl items-center">
+<!-- Left Column: Layered Visual Product Showcase -->
+<div class="lg:col-span-6 relative pb-space-xl">
+<!-- Ambient Subtle Glow -->
+<div class="absolute -top-10 -left-10 w-72 h-72 bg-[#D4A72C]/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Main Visual Showcase Frame -->
+<div class="relative rounded-2xl overflow-hidden shadow-[0_14px_34px_rgba(0,0,0,0.08)] bg-surface-white p-2 border border-border-hairline group transition-all duration-300 hover:shadow-xl">
+<div class="relative aspect-[4/3] rounded-xl overflow-hidden">
+<img alt="SkillMatch Verified Evaluation Workspace" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AEtjO1Uw1KECO9sUl94WWIYf9gSSAgkkQM6pEvCwfv9cxoTNjf0FAp5_ZFZOn6JwzSABWZW2DkEt1B3eKozudAPDqAn77M4ANUY_jIkkwMebU4k-Ql-R2JE5gt5543xMAj2Mn0HrhpzErt7_h65a54kNRoSJtu8M8qu9JAZHbRx1zO0wJ-2QVsHpUH4MMkUAhfBbNmQqUHBjgBXGOKaaIISXAGlEnKYQPru8FCYhzGHqZ2DztD0YmTU_a-mG5w"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#052045]/60 via-transparent to-transparent"></div>
+</div>
+</div>
+<!-- Top-Right Floating Live Telemetry Pill -->
+<div class="absolute -top-3 right-3 sm:right-6 bg-surface-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-border-hairline shadow-md flex items-center gap-2">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4F7A5A] opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-[#4F7A5A]"></span>
+</span>
+<span class="font-headline-sm text-[12px] font-semibold text-primary tracking-wide">Live Evaluation Engine</span>
+</div>
+<!-- Floating Verified Candidate Placement Card -->
+<div class="absolute -bottom-4 left-2 sm:left-6 right-2 sm:right-auto bg-surface-white/95 backdrop-blur-xl p-space-md rounded-2xl border border-border-hairline shadow-[0_12px_32px_rgba(27,28,26,0.12)] flex flex-col gap-2.5 max-w-sm transition-all duration-300 hover:-translate-y-1">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2.5">
+<div class="w-10 h-10 rounded-full bg-primary/10 border border-border-hairline flex items-center justify-center font-headline-sm font-bold text-primary text-[15px]">
+              AL
+            </div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-[13px] font-bold text-text-primary flex items-center gap-1">
+                Alex Lin <span class="material-symbols-outlined text-[#4F7A5A] text-[15px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</span>
+<span class="font-body-sm text-[11px] text-text-muted">Staff Systems Architect</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 bg-[#4F7A5A]/10 text-[#4F7A5A] px-2 py-0.5 rounded-full text-[11px] font-bold">
+<span class="material-symbols-outlined text-[13px]">bolt</span> 98.8% Fit
+          </span>
+</div>
+<!-- Verified Competency Badges -->
+<div class="flex items-center gap-1.5 pt-1 border-t border-border-hairline/60">
+<span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-full border border-border-hairline font-medium">Distributed Systems</span>
+<span class="bg-surface-container-low text-text-secondary text-[11px] px-2 py-0.5 rounded-full border border-border-hairline font-medium">Go &amp; Rust</span>
+<span class="bg-[#fdf2d6] text-[#c59a1d] text-[11px] px-2 py-0.5 rounded-full font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span> Top 1%
+          </span>
+</div>
+</div>
+</div>
+<!-- Right Column: Editorial & Architectural Value Props -->
+<div class="lg:col-span-6 flex flex-col gap-space-md">
+<div class="inline-flex items-center gap-space-xs self-start bg-surface-white border border-border-hairline text-secondary px-space-md py-[4px] rounded-full shadow-sm">
+<span class="font-body-sm text-[11px] uppercase tracking-wider font-bold">The SkillMatch Philosophy</span>
+</div>
+<h2 class="font-headline-lg text-[32px] sm:text-[40px] text-text-primary font-bold tracking-tight leading-tight">
+        Hiring shouldn't be a game of buzzwords.
+      </h2>
+<p class="font-body-lg text-body-lg text-text-secondary leading-relaxed">
+        SkillMatch eliminates inflated resumes and keyword-stuffed applicant pipelines. By replacing guesswork with verifiable skill telemetry, we create mutual trust and match speed for high-impact teams.
+      </p>
+<!-- Two Refined Architectural Feature Tiles -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-space-xs">
+<div class="bg-surface-white p-space-md rounded-2xl border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex flex-col gap-1.5 hover:border-primary/40 transition-colors group">
+<div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-105">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+</div>
+<h3 class="font-headline-sm text-[15px] text-text-primary font-bold mt-1">Verifiable Skill Telemetry</h3>
+<p class="font-body-sm text-text-secondary leading-relaxed text-[13px]">
+            Deep-dive objective competency scores evaluated by graph neural benchmarks.
+          </p>
+</div>
+<div class="bg-surface-white p-space-md rounded-2xl border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex flex-col gap-1.5 hover:border-primary/40 transition-colors group">
+<div class="w-9 h-9 rounded-xl bg-[#D06B4F]/20 text-secondary flex items-center justify-center transition-transform group-hover:scale-105">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+<h3 class="font-headline-sm text-[15px] text-text-primary font-bold mt-1">Upfront Compensation Parity</h3>
+<p class="font-body-sm text-text-secondary leading-relaxed text-[13px]">
+            Guaranteed verified salary bands and clear expectations before either side commits.
+          </p>
+</div>
+</div>
+<!-- 3 Refined Micro-Benefit Rows with Minimal Pill Badges -->
+<div class="flex flex-col gap-2.5 pt-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="w-5 h-5 rounded-full bg-[#4F7A5A]/15 text-[#4F7A5A] flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[14px]">done</span>
+</span>
+<span class="font-body-md text-text-primary font-medium text-[14px]">Neural match accuracy across verified engineering &amp; design proficiencies</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="w-5 h-5 rounded-full bg-[#4F7A5A]/15 text-[#4F7A5A] flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[14px]">done</span>
+</span>
+<span class="font-body-md text-text-primary font-medium text-[14px]">Zero ghosting with enforceable 72-hour recruiter response SLAs</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="w-5 h-5 rounded-full bg-[#4F7A5A]/15 text-[#4F7A5A] flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[14px]">done</span>
+</span>
+<span class="font-body-md text-text-primary font-medium text-[14px]">Private candidate profiles protected by end-to-end cryptographic trust</span>
+</div>
+</div>
+<!-- Action Button & Editorial Link -->
+<div class="pt-space-sm flex flex-wrap items-center gap-space-md">
+<button class="font-headline-sm text-[14px] font-semibold bg-primary hover:bg-[#052045] text-on-primary px-space-xl py-3 rounded-xl transition-all shadow-sm hover:shadow-md flex items-center gap-space-xs group cursor-pointer">
+<span>Discover the Matching Engine</span>
+<span class="material-symbols-outlined text-[17px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<a class="font-headline-sm text-[14px] text-text-secondary hover:text-primary font-semibold transition-colors flex items-center gap-1 group" href="#">
+<span>Read our methodology</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">trending_flat</span>
+</a>
+</div>
+</div>
+</div>
+</div></section>
+<!-- 3. EXPLORE CATEGORIES + AI MENTOR SECTION -->
+<section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-tablet lg:px-gutter-desktop py-space-3xl lg:py-space-4xl">
+<!-- Header -->
+<div class="text-center max-w-2xl mx-auto mb-space-2xl flex flex-col gap-space-xs">
+<div class="inline-flex items-center gap-space-xs self-center bg-surface-white border border-border-hairline text-primary px-space-md py-[4px] rounded-full">
+<span class="font-body-sm text-[11px] uppercase tracking-wider font-semibold">Specialized Sectors</span>
+</div>
+<h2 class="font-headline-xl text-[34px] sm:text-[42px] text-text-primary font-bold tracking-tight">
+        One Platform for Every Career Path
+      </h2>
+<p class="font-body-lg text-body-lg text-text-secondary">
+        Browse curated categories and use AI-powered guidance to find opportunities that match your goals and skills.
+      </p>
+</div>
+<!-- 8 Categories Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md mb-space-2xl">
+<!-- 1. Development -->
+<div class="bg-surface-white hover:border-primary/40 transition-all duration-200 p-space-md rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between group cursor-pointer hover:shadow-md">
+<div class="flex items-center justify-between mb-space-md">
+<div class="w-11 h-11 rounded-[12px] bg-primary/10 text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">terminal</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-[18px]">arrow_forward</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-[17px] text-text-primary font-semibold">Development</h3>
+<p class="font-body-sm text-body-sm text-text-muted mt-space-3xs">3,420+ Open Jobs</p>
+</div>
+<div class="mt-space-md pt-space-xs border-t border-border-hairline flex items-center justify-between">
+<span class="font-headline-sm text-[12px] text-primary font-semibold group-hover:text-secondary transition-colors">View Roles</span>
+<span class="font-body-sm text-[11px] text-text-muted">Frontend, Back, AI</span>
+</div>
+</div>
+<!-- 2. Creative Design -->
+<div class="bg-surface-white hover:border-primary/40 transition-all duration-200 p-space-md rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between group cursor-pointer hover:shadow-md">
+<div class="flex items-center justify-between mb-space-md">
+<div class="w-11 h-11 rounded-[12px] bg-secondary-fixed/50 text-secondary flex items-center justify-center group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">design_services</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-[18px]">arrow_forward</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-[17px] text-text-primary font-semibold">Creative Design</h3>
+<p class="font-body-sm text-body-sm text-text-muted mt-space-3xs">1,280+ Open Jobs</p>
+</div>
+<div class="mt-space-md pt-space-xs border-t border-border-hairline flex items-center justify-between">
+<span class="font-headline-sm text-[12px] text-primary font-semibold group-hover:text-secondary transition-colors">View Roles</span>
+<span class="font-body-sm text-[11px] text-text-muted">UI/UX, Motion, 3D</span>
+</div>
+</div>
+<!-- 3. Digital Marketing -->
+<div class="bg-surface-white hover:border-primary/40 transition-all duration-200 p-space-md rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between group cursor-pointer hover:shadow-md">
+<div class="flex items-center justify-between mb-space-md">
+<div class="w-11 h-11 rounded-[12px] bg-[#fdf2d6] text-[#c59a1d] flex items-center justify-center group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">campaign</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-[18px]">arrow_forward</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-[17px] text-text-primary font-semibold">Digital Marketing</h3>
+<p class="font-body-sm text-body-sm text-text-muted mt-space-3xs">890+ Open Jobs</p>
+</div>
+<div class="mt-space-md pt-space-xs border-t border-border-hairline flex items-center justify-between">
+<span class="font-headline-sm text-[12px] text-primary font-semibold group-hover:text-secondary transition-colors">View Roles</span>
+<span class="font-body-sm text-[11px] text-text-muted">Growth, SEO, Brand</span>
+</div>
+</div>
+<!-- 4. Data Science -->
+<div class="bg-surface-white hover:border-primary/40 transition-all duration-200 p-space-md rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between group cursor-pointer hover:shadow-md">
+<div class="flex items-center justify-between mb-space-md">
+<div class="w-11 h-11 rounded-[12px] bg-primary/10 text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">insights</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-[18px]">arrow_forward</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-[17px] text-text-primary font-semibold">Data Science</h3>
+<p class="font-body-sm text-body-sm text-text-muted mt-space-3xs">1,640+ Open Jobs</p>
+</div>
+<div class="mt-space-md pt-space-xs border-t border-border-hairline flex items-center justify-between">
+<span class="font-headline-sm text-[12px] text-primary font-semibold group-hover:text-secondary transition-colors">View Roles</span>
+<span class="font-body-sm text-[11px] text-text-muted">MLOps, BI, Analytics</span>
+</div>
+</div>
+<!-- 5. Finance & Tax -->
+<div class="bg-surface-white hover:border-primary/40 transition-all duration-200 p-space-md rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between group cursor-pointer hover:shadow-md">
+<div class="flex items-center justify-between mb-space-md">
+<div class="w-11 h-11 rounded-[12px] bg-secondary-fixed/50 text-secondary flex items-center justify-center group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">account_balance</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-[18px]">arrow_forward</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-[17px] text-text-primary font-semibold">Finance &amp; Tax</h3>
+<p class="font-body-sm text-body-sm text-text-muted mt-space-3xs">720+ Open Jobs</p>
+</div>
+<div class="mt-space-md pt-space-xs border-t border-border-hairline flex items-center justify-between">
+<span class="font-headline-sm text-[12px] text-primary font-semibold group-hover:text-secondary transition-colors">View Roles</span>
+<span class="font-body-sm text-[11px] text-text-muted">FinOps, Audit, FP&amp;A</span>
+</div>
+</div>
+<!-- 6. Human Resources -->
+<div class="bg-surface-white hover:border-primary/40 transition-all duration-200 p-space-md rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between group cursor-pointer hover:shadow-md">
+<div class="flex items-center justify-between mb-space-md">
+<div class="w-11 h-11 rounded-[12px] bg-[#fdf2d6] text-[#c59a1d] flex items-center justify-center group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">groups</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-[18px]">arrow_forward</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-[17px] text-text-primary font-semibold">Human Resources</h3>
+<p class="font-body-sm text-body-sm text-text-muted mt-space-3xs">540+ Open Jobs</p>
+</div>
+<div class="mt-space-md pt-space-xs border-t border-border-hairline flex items-center justify-between">
+<span class="font-headline-sm text-[12px] text-primary font-semibold group-hover:text-secondary transition-colors">View Roles</span>
+<span class="font-body-sm text-[11px] text-text-muted">Talent, People Ops</span>
+</div>
+</div>
+<!-- 7. Customer Support -->
+<div class="bg-surface-white hover:border-primary/40 transition-all duration-200 p-space-md rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between group cursor-pointer hover:shadow-md">
+<div class="flex items-center justify-between mb-space-md">
+<div class="w-11 h-11 rounded-[12px] bg-primary/10 text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">support_agent</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-[18px]">arrow_forward</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-[17px] text-text-primary font-semibold">Customer Support</h3>
+<p class="font-body-sm text-body-sm text-text-muted mt-space-3xs">910+ Open Jobs</p>
+</div>
+<div class="mt-space-md pt-space-xs border-t border-border-hairline flex items-center justify-between">
+<span class="font-headline-sm text-[12px] text-primary font-semibold group-hover:text-secondary transition-colors">View Roles</span>
+<span class="font-body-sm text-[11px] text-text-muted">Success, Escalations</span>
+</div>
+</div>
+<!-- 8. Health & Science -->
+<div class="bg-surface-white hover:border-primary/40 transition-all duration-200 p-space-md rounded-[16px] border border-border-hairline shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between group cursor-pointer hover:shadow-md">
+<div class="flex items-center justify-between mb-space-md">
+<div class="w-11 h-11 rounded-[12px] bg-[#4F7A5A]/10 text-[#4F7A5A] flex items-center justify-center group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">biotech</span>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-[18px]">arrow_forward</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-[17px] text-text-primary font-semibold">Health &amp; Science</h3>
+<p class="font-body-sm text-body-sm text-text-muted mt-space-3xs">650+ Open Jobs</p>
+</div>
+<div class="mt-space-md pt-space-xs border-t border-border-hairline flex items-center justify-between">
+<span class="font-headline-sm text-[12px] text-primary font-semibold group-hover:text-secondary transition-colors">View Roles</span>
+<span class="font-body-sm text-[11px] text-text-muted">Clinical, BioTech</span>
+</div>
+</div>
+</div>
+<!-- Futuristic Editorial AI Career Mentor Feature Card -->
+<div class="relative w-full rounded-[20px] overflow-hidden p-space-xl lg:p-space-2xl bg-gradient-to-r from-[#052045] via-[#1F365C] to-[#12243d] border border-border-hairline/20 shadow-[0_16px_36px_rgba(5,32,69,0.18)] text-on-primary flex flex-col lg:flex-row items-center justify-between gap-space-xl">
+<!-- Ambient decorative glow -->
+<div class="absolute -right-20 -bottom-20 w-96 h-96 bg-[#ff9071]/15 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex flex-col gap-space-sm max-w-xl z-10">
+<div class="inline-flex items-center gap-space-xs self-start bg-white/10 backdrop-blur-md px-space-md py-[5px] rounded-full border border-white/15">
+<span class="material-symbols-outlined text-[#f0c044] text-[18px]" style='font-variation-settings: "FILL" 1;'>psychology</span>
+<span class="font-body-sm text-[11px] tracking-wider uppercase font-semibold text-[#f0c044]">Next-Gen Intelligence</span>
+</div>
+<h3 class="font-headline-xl text-[32px] sm:text-[40px] font-bold tracking-tight text-white">
+          AI Career Mentor
+        </h3>
+<p class="font-body-lg text-body-lg text-white/80 leading-relaxed">
+          Get personalized career guidance, identify skill gaps, build a learning roadmap, and prepare for your next opportunity with AI.
+        </p>
+<!-- Interactive Preview Chips -->
+<div class="flex flex-wrap gap-space-xs pt-space-xs">
+<span class="bg-white/10 hover:bg-white/20 border border-white/10 transition-colors cursor-pointer px-space-sm py-[6px] rounded-[8px] font-body-sm text-[12px] backdrop-blur-sm text-white/90">
+            Mock Interviews
+          </span>
+<span class="bg-white/10 hover:bg-white/20 border border-white/10 transition-colors cursor-pointer px-space-sm py-[6px] rounded-[8px] font-body-sm text-[12px] backdrop-blur-sm text-white/90">
+            Resume Gap Analysis
+          </span>
+<span class="bg-white/10 hover:bg-white/20 border border-white/10 transition-colors cursor-pointer px-space-sm py-[6px] rounded-[8px] font-body-sm text-[12px] backdrop-blur-sm text-white/90">
+            Skill Roadmap
+          </span>
+<span class="bg-white/10 hover:bg-white/20 border border-white/10 transition-colors cursor-pointer px-space-sm py-[6px] rounded-[8px] font-body-sm text-[12px] backdrop-blur-sm text-white/90">
+            Salary Benchmarking
+          </span>
+</div>
+</div>
+<!-- Action Card / Interactive Agent trigger -->
+<div class="z-10 flex flex-col items-center sm:items-start lg:items-end gap-space-md w-full lg:w-auto">
+<button class="w-full sm:w-auto font-headline-sm text-[14px] bg-surface-white text-primary hover:bg-[#fbf9f5] px-space-xl py-space-md rounded-[12px] transition-all shadow-md flex items-center justify-center gap-space-xs group">
+<span class="material-symbols-outlined text-secondary group-hover:rotate-12 transition-transform" style='font-variation-settings: "FILL" 1;'>smart_toy</span>
+<span class="font-bold">Talk to AI Mentor</span>
+<span class="material-symbols-outlined text-primary text-[17px]">arrow_forward</span>
+</button>
+<span class="font-body-sm text-[12px] text-white/70 text-center lg:text-right">
+          Available 24/7 • Instant Feedback • Free Plan Included
+        </span>
+</div>
+</div>
+</section>
+<!-- 4. WHY CHOOSE SKILLMATCH SECTION -->
+<section class="w-full bg-[#f5f3ef] border-y border-border-hairline py-space-3xl lg:py-space-4xl">
+<div class="max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-tablet lg:px-gutter-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-2xl items-center">
+<!-- Left Column: Copy & Value Props -->
+<div class="lg:col-span-6 flex flex-col gap-space-md">
+<div class="inline-flex items-center gap-space-xs self-start bg-surface-white border border-border-hairline text-secondary px-space-md py-[5px] rounded-full">
+<span class="font-body-sm text-[11px] uppercase tracking-wider font-semibold">Why SkillMatch</span>
+</div>
+<h2 class="font-headline-xl text-[34px] sm:text-[42px] text-text-primary font-bold tracking-tight">
+            Better Matches. Faster Hiring.
+          </h2>
+<p class="font-body-lg text-body-lg text-text-secondary leading-relaxed">
+            We simplify hiring for job seekers and employers with verified listings, AI-powered matching, clear workflows, and responsive support.
+          </p>
+<!-- 4 Distinct Benefits List -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-space-xs">
+<!-- 1. Verified Jobs -->
+<div class="flex gap-space-xs">
+<div class="w-8 h-8 rounded-[8px] bg-[#4F7A5A]/15 text-[#4F7A5A] flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<div class="flex flex-col">
+<h4 class="font-headline-sm text-[15px] font-bold text-text-primary">Verified Jobs</h4>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1 leading-relaxed">Every role is reviewed for quality and trust.</p>
+</div>
+</div>
+<!-- 2. AI-Powered Matching -->
+<div class="flex gap-space-xs">
+<div class="w-8 h-8 rounded-[8px] bg-secondary-fixed text-secondary flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+</div>
+<div class="flex flex-col">
+<h4 class="font-headline-sm text-[15px] font-bold text-text-primary">AI-Powered Matching</h4>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1 leading-relaxed">Find opportunities based on skills, experience, and goals.</p>
+</div>
+</div>
+<!-- 3. Fast Results -->
+<div class="flex gap-space-xs">
+<div class="w-8 h-8 rounded-[8px] bg-[#fdf2d6] text-[#c59a1d] flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">speed</span>
+</div>
+<div class="flex flex-col">
+<h4 class="font-headline-sm text-[15px] font-bold text-text-primary">Fast Results</h4>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1 leading-relaxed">Apply quickly and stay on top of your progress.</p>
+</div>
+</div>
+<!-- 4. Privacy First -->
+<div class="flex gap-space-xs">
+<div class="w-8 h-8 rounded-[8px] bg-primary/10 text-primary flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+<div class="flex flex-col">
+<h4 class="font-headline-sm text-[15px] font-bold text-text-primary">Privacy First</h4>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1 leading-relaxed">Protect user data with modern security standards.</p>
+</div>
+</div>
+</div>
+<!-- CTA Button -->
+<div class="pt-space-md">
+<button class="font-headline-sm text-[14px] font-semibold bg-primary hover:bg-[#052045] text-on-primary px-space-xl py-[11px] rounded-[12px] transition-all shadow-sm flex items-center gap-space-xs group">
+<span class="">Why SkillMatch</span>
+<span class="material-symbols-outlined text-[17px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Right Column: Visual with Play Button & Security Card -->
+<div class="lg:col-span-6 relative">
+<div class="relative w-full aspect-video rounded-[20px] overflow-hidden shadow-[0_12px_32px_rgba(27,28,26,0.08)] bg-surface-white border border-border-hairline p-1.5 group cursor-pointer">
+<div class="w-full h-full rounded-[16px] overflow-hidden relative">
+<img alt="SkillMatch Interactive Platform Preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AEtjO1WS_BMXOKA3JMyz3bTf_TEbGeHTceUfCjBjIxWO-D5hy466ksy_LLFHd07zYnrU-m97f8HwckwM8kXDpUmbfmLMbPwRK124iq2uczu4wtjePDTkd2khz1MG_mL2l84ZSPCNtS_bZGOI12R85U9G-GCdOVw_JMNtVm49QAu9H9p9uqUa1PPQg6WePLOO0LGi2fe5Pyd0070XZbFyd9-1L_0GIhQZ3l5J2nGPw5l225z8hlLR8YIHPKo0eNo"/>
+<!-- Dark Gradient Scrim -->
+<div class="absolute inset-0 bg-[#052045]/40 flex items-center justify-center">
+<!-- Glass Play Button Overlay -->
+<div class="bg-surface-white/90 hover:bg-surface-white backdrop-blur-md px-space-lg py-space-sm rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.15)] flex items-center gap-space-xs transition-transform group-hover:scale-105 border border-border-hairline">
+<div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style='font-variation-settings: "FILL" 1;'>play_arrow</span>
+</div>
+<span class="font-headline-sm text-[13px] font-bold text-text-primary">Watch How We Work (2 min video)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Security Badge Card -->
+<div class="absolute -bottom-6 -left-4 sm:left-6 bg-surface-white/95 backdrop-blur-md p-space-md rounded-[16px] border border-border-hairline shadow-[0_10px_24px_rgba(0,0,0,0.08)] flex items-center gap-space-sm max-w-sm">
+<div class="w-9 h-9 rounded-[10px] bg-[#4F7A5A]/15 flex items-center justify-center text-[#4F7A5A] flex-shrink-0">
+<span class="material-symbols-outlined text-[19px]" style='font-variation-settings: "FILL" 1;'>security</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-[13px] font-bold text-text-primary">Enterprise-Grade Security</span>
+<span class="font-body-sm text-[12px] text-text-muted">SOC2 Type II Certified &amp; End-to-End Encryption</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. STATISTICS SECTION (Full-Width High-Contrast Archival Navy Slate Section) -->
+<section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-tablet lg:px-gutter-desktop py-space-3xl lg:py-space-4xl">
+</section>
+<!-- 6. TRUSTED PARTNERS SECTION (Seamless Dark Continuum) -->
+<section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-tablet lg:px-gutter-desktop py-space-3xl lg:py-space-4xl">
+<div class="relative w-full rounded-[24px] overflow-hidden bg-surface-white border border-border-hairline p-space-xl sm:p-space-2xl lg:p-space-3xl shadow-[0_12px_32px_rgba(27,28,26,0.06)] flex flex-col items-center text-center">
+<div class="absolute -top-20 -right-20 w-80 h-80 bg-secondary-fixed/30 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col items-center max-w-3xl">
+<div class="inline-flex items-center gap-space-xs bg-canvas-cream border border-border-hairline text-primary px-space-md py-[5px] rounded-full mb-space-md">
+<span class="material-symbols-outlined text-secondary text-[17px]" style='font-variation-settings: "FILL" 1;'>rocket_launch</span>
+<span class="font-body-sm text-[11px] uppercase tracking-wider font-semibold">Start Your Journey</span>
+</div>
+<h2 class="font-headline-xl text-[34px] sm:text-[42px] lg:text-[48px] text-text-primary font-bold tracking-tight leading-tight mb-space-sm">
+        Ready to Find Your Next Opportunity?
+      </h2>
+<p class="font-body-lg text-body-lg text-text-secondary leading-relaxed max-w-2xl mb-space-xl">
+        Upload your CV to unlock instant AI skill scoring and curated match telemetry, or explore over 12,000+ verified engineering, design, and product roles.
+      </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-space-md w-full sm:w-auto mb-space-xl">
+<button class="w-full sm:w-auto font-headline-sm text-[15px] font-semibold bg-primary hover:bg-[#052045] text-on-primary px-space-xl py-[14px] rounded-[12px] transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-space-xs group cursor-pointer">
+<span class="material-symbols-outlined text-[20px] group-hover:-translate-y-0.5 transition-transform">upload_file</span>
+<span class="">Upload CV</span>
+</button>
+<button class="w-full sm:w-auto font-headline-sm text-[15px] font-semibold bg-surface-white hover:bg-surface-container-high text-primary border border-border-hairline px-space-xl py-[14px] rounded-[12px] transition-all shadow-sm flex items-center justify-center gap-space-xs group cursor-pointer">
+<span class="material-symbols-outlined text-[20px] text-text-muted group-hover:text-primary transition-colors">explore</span>
+<span class="">Browse Jobs</span>
+<span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-x-space-lg gap-y-space-xs font-body-sm text-[12px] text-text-muted">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[#4F7A5A] text-[16px]" style='font-variation-settings: "FILL" 1;'>check_circle</span>
+<span class="">Instant AI skill scoring</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[#4F7A5A] text-[16px]" style='font-variation-settings: "FILL" 1;'>check_circle</span>
+<span class="">No credit card required</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[#4F7A5A] text-[16px]" style='font-variation-settings: "FILL" 1;'>check_circle</span>
+<span class="">SOC-2 &amp; ISO 27001 Certified</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div></main><footer class="w-full bg-[#FAF8F4] border-t border-border-hairline"><div class="max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-tablet lg:px-gutter-desktop pt-space-4xl pb-space-3xl"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-2xl mb-space-3xl"><div class="lg:col-span-2 flex flex-col gap-space-md"><div class="flex items-center gap-space-xs"><img alt="SkillMatch Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1U2OhJ1t3vsfnoI0-ciE0mWieceX2EV7AqUVwOha8hzfVxYmGdkDTPsq0Qb8buw0OgKzE9RF1vOeNuwn--E7cC9sRCh2zOIXv6BFNfe8BdFDUwCCTHt-zfiVF-llksFsix7Oo3VmVQEzMes203FWNt6a-tPm6pi0xuBJsHRklynfixDPXxxrKrfuu09ms5a3G0ms8ouv7txo2_b52I18BqpmvlJt5pTq5e7A-Mr-94hWS-Hpsws-LOp19Y"/><span class="font-headline-sm text-[20px] font-bold text-primary tracking-tight">SkillMatch</span></div><p class="font-body-md text-body-md text-text-secondary max-w-sm leading-relaxed">High-signal talent matching and intelligent career mobility powered by deep graph neural network architecture.</p><div class="flex flex-col gap-space-xs mt-space-sm"><span class="font-headline-sm text-[13px] font-semibold text-text-primary">Subscribe to Career Intelligence</span><div class="flex items-center gap-2 max-w-md"><input class="flex-1 bg-surface-white font-body-sm text-body-sm text-text-primary placeholder:text-text-muted px-space-md py-[10px] rounded-[10px] border border-border-hairline outline-none focus:border-primary transition-colors shadow-sm" placeholder="Enter your work email" type="email"/><button class="font-headline-sm text-[13px] font-semibold bg-primary hover:bg-[#052045] text-on-primary px-space-md py-[10px] rounded-[10px] transition-all shadow-sm">Join</button></div></div></div><div class="flex flex-col gap-space-sm"><h4 class="font-headline-sm text-[14px] text-text-primary font-bold">Platform</h4><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-text-secondary"><li class=""><a class="hover:text-primary transition-colors" data-path="explore-jobs" href="#">Job Search Engine</a></li><li class=""><a class="hover:text-primary transition-colors" data-path="ai-mentor" href="#">AI Career Copilot</a></li><li class=""><a class="hover:text-primary transition-colors" data-path="employers" href="#">Talent Sourcing</a></li><li class=""><a class="hover:text-primary transition-colors" data-path="pricing" href="#">Subscription Plans</a></li><li class=""><a class="hover:text-primary transition-colors" href="#">Platform Status</a></li></ul></div><div class="flex flex-col gap-space-sm"><h4 class="font-headline-sm text-[14px] text-text-primary font-bold">Resources</h4><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-text-secondary"><li class=""><a class="hover:text-primary transition-colors" href="#">Tech Salary Benchmark</a></li><li class=""><a class="hover:text-primary transition-colors" href="#">Resume Score Analyzer</a></li><li class=""><a class="hover:text-primary transition-colors" href="#">Interview Intelligence</a></li><li class=""><a class="hover:text-primary transition-colors" href="#">Engineering Career Ladders</a></li><li class=""><a class="hover:text-primary transition-colors" href="#">Developer Community</a></li></ul></div><div class="flex flex-col gap-space-sm"><h4 class="font-headline-sm text-[14px] text-text-primary font-bold">Company</h4><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-text-secondary"><li class=""><a class="hover:text-primary transition-colors" data-path="about" href="#">About Us</a></li><li class=""><a class="hover:text-primary transition-colors" href="#">Leadership Team</a></li><li class=""><a class="hover:text-primary transition-colors" href="#">Careers at SkillMatch</a></li><li class=""><a class="hover:text-primary transition-colors" href="#">Security &amp; Trust</a></li><li class=""><a class="hover:text-primary transition-colors" href="#">Privacy Policy</a></li></ul></div></div><div class="pt-space-xl border-t border-border-hairline flex flex-col sm:flex-row items-center justify-between gap-space-md font-body-sm text-body-sm text-text-muted"><p class="">© 2025 SkillMatch Inc. All rights reserved.</p><div class="flex items-center gap-space-lg"><a class="hover:text-text-primary transition-colors" href="#">Security</a><a class="hover:text-text-primary transition-colors" href="#">Terms of Service</a><a class="hover:text-text-primary transition-colors" href="#">Cookie Settings</a></div></div></div></footer>
+</body></html>

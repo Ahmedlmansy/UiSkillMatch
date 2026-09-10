@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard — SkillMatch</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    .font-serif-heading { font-family: "Playfair Display", Georgia, serif; }
+    .skeleton{ background:linear-gradient(90deg,#eceae3 25%,#f4f2ec 37%,#eceae3 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+    @keyframes shimmer{ 0%{background-position:100% 0;} 100%{background-position:0 0;} }
+    .view{ display:none; }
+    .view.active{ display:block; }
+  </style>
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "navy-brand": "#182844",
+            "navy-brand-dark": "#121e33",
+            "navy-brand-light": "#21365c",
+            "warm-bg": "#f9f8f5",
+            "warm-bg-alt": "#f4f2ec",
+            "card-border": "#e5e3dc",
+            "card-border-subtle": "#eceae3",
+            "charcoal": "#1e2430",
+            "charcoal-muted": "#68707d",
+            "charcoal-light": "#969ea9",
+            "tag-active-bg": "#eef2f7",
+            "tag-active-border": "#3b557d",
+            "accent-green": "#206c39",
+            "accent-green-bg": "#edf7f0",
+            "accent-gold": "#b5791c",
+            "accent-gold-bg": "#fef8ee",
+            "accent-red": "#b02a2a",
+            "accent-red-bg": "#fdf2f2"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "system-ui", "sans-serif"],
+            serif: ["Playfair Display", "Georgia", "serif"]
+          },
+          borderRadius: { "xl": "0.75rem", "2xl": "1rem", "3xl": "1.25rem" },
+          boxShadow: {
+            "subtle": "0 1px 3px rgba(30, 36, 48, 0.04), 0 1px 2px rgba(30, 36, 48, 0.02)",
+            "hover": "0 4px 12px rgba(24, 40, 68, 0.06)"
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-warm-bg font-sans text-charcoal antialiased min-h-screen selection:bg-navy-brand selection:text-white">
+
+<!-- TOP HEADER CHROME -->
+<header class="fixed top-0 left-0 right-0 w-full z-50 bg-[#ffffff] border-b border-card-border/80 shadow-[0_1px_3px_rgba(24,40,68,0.03)]">
+<div class="h-[70px] max-w-[1360px] mx-auto px-6 flex items-center justify-between gap-4">
+<div class="flex items-center gap-8">
+<a class="flex items-center gap-3 group text-decoration-none" href="#">
+<div class="w-10 h-10 rounded-xl bg-navy-brand flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-white text-[20px]">explore</span>
+</div>
+<div class="flex flex-col">
+<span class="font-serif text-[20px] font-bold tracking-tight text-navy-brand leading-none">SkillMatch</span>
+<span class="text-[11px] text-charcoal-muted font-medium tracking-wide mt-0.5">Career Guidance</span>
+</div>
+</a>
+<nav class="hidden xl:flex items-center gap-1.5 p-1 rounded-xl bg-warm-bg-alt/70 border border-card-border/50">
+<a aria-current="page" class="px-3.5 py-1.5 rounded-lg transition-colors bg-white text-navy-brand font-semibold shadow-subtle border border-card-border/60 text-[13px]" href="#">Dashboard</a>
+<a class="px-3.5 py-1.5 rounded-lg text-charcoal-muted hover:text-charcoal hover:bg-white transition-colors text-[13px] font-medium" href="#">Explore Jobs</a>
+<a class="px-3.5 py-1.5 rounded-lg text-charcoal-muted hover:text-charcoal hover:bg-white transition-colors text-[13px] font-medium" href="#">Saved Jobs</a>
+<a class="px-3.5 py-1.5 rounded-lg text-charcoal-muted hover:text-charcoal hover:bg-white transition-colors text-[13px] font-medium" href="#">Application Tracker</a>
+<a class="px-3.5 py-1.5 rounded-lg text-charcoal-muted hover:text-charcoal hover:bg-white transition-colors text-[13px] font-medium" href="#">Mentor &amp; Roadmap</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-white border border-card-border rounded-xl px-3.5 py-2 w-64 lg:w-72 focus-within:border-navy-brand focus-within:ring-1 focus-within:ring-navy-brand transition-all shadow-subtle">
+<span class="material-symbols-outlined text-charcoal-light text-[18px] mr-2 select-none">search</span>
+<input class="w-full bg-transparent border-none p-0 text-[13px] text-charcoal placeholder:text-charcoal-light focus:outline-none" placeholder="Search roles, skills..." readonly="" type="text"/>
+<kbd class="text-[11px] text-charcoal-muted px-1.5 py-0.5 rounded bg-warm-bg border border-card-border shadow-xs font-mono">⌘K</kbd>
+</div>
+<div class="flex items-center gap-2 border-l border-card-border pl-4">
+<button aria-label="Notifications" class="relative p-2 rounded-xl text-charcoal-muted hover:bg-warm-bg-alt hover:text-charcoal transition-colors" type="button">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-navy-brand ring-2 ring-white"></span>
+</button>
+<div class="flex items-center gap-2.5 pl-1">
+<div class="relative flex items-center justify-center">
+<div class="w-9 h-9 rounded-full bg-navy-brand text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[19px]">person</span>
+</div>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-accent-green ring-2 ring-white"></span>
+</div>
+<div class="hidden lg:flex flex-col text-left">
+<span class="text-[13px] font-semibold leading-tight text-navy-brand">Alex Mercer</span>
+<span class="text-[11px] text-charcoal-muted leading-none">Senior Dev</span>
+</div>
+<span class="material-symbols-outlined text-charcoal-muted text-[18px] hidden lg:inline-block">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+
+<main class="w-full pt-[70px] min-h-screen bg-warm-bg">
+<div class="max-w-[1360px] mx-auto px-6 py-8">
+
+  <!-- PAGE HEADER + PREVIEW SWITCHER -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+    <div class="flex flex-col">
+      <div class="flex items-center gap-2 text-charcoal-muted text-[12px] uppercase tracking-wider font-semibold mb-1">
+        <span>Candidate Workspace</span><span>/</span><span class="text-navy-brand font-bold">Dashboard</span>
+      </div>
+      <h1 class="font-serif text-[32px] sm:text-[36px] font-bold text-navy-brand tracking-tight">Good morning, Alex</h1>
+      <p class="text-[13px] text-charcoal-muted mt-1">Here's where things stand with your job search today.</p>
+    </div>
+    <!-- Preview Mode Switcher (demo only) -->
+    <div class="flex items-center flex-wrap gap-1 bg-white border border-card-border p-1 rounded-xl shrink-0 shadow-subtle">
+      <button class="px-3 py-1 text-navy-brand bg-tag-active-bg border border-navy-brand/30 rounded-lg font-semibold text-[12px]" id="btn-loading" onclick="setView('loading')">Loading</button>
+      <button class="px-3 py-1 text-charcoal-muted hover:text-navy-brand rounded-lg font-medium text-[12px]" id="btn-loaded" onclick="setView('loaded')">Loaded</button>
+      <button class="px-3 py-1 text-charcoal-muted hover:text-navy-brand rounded-lg font-medium text-[12px]" id="btn-empty" onclick="setView('empty')">Empty</button>
+      <button class="px-3 py-1 text-charcoal-muted hover:text-navy-brand rounded-lg font-medium text-[12px]" id="btn-partial" onclick="setView('partial')">Partial Data</button>
+      <button class="px-3 py-1 text-charcoal-muted hover:text-navy-brand rounded-lg font-medium text-[12px]" id="btn-error" onclick="setView('error')">Error</button>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="flex items-center gap-2 flex-wrap mb-6">
+    <a class="px-4 py-2 rounded-xl bg-navy-brand hover:bg-navy-brand-light text-white text-[13px] font-semibold shadow-subtle flex items-center gap-2 transition-colors" href="#">
+      <span class="material-symbols-outlined text-[16px]">travel_explore</span> Browse Jobs
+    </a>
+    <a class="px-4 py-2 rounded-xl bg-white border border-card-border hover:bg-warm-bg-alt text-navy-brand text-[13px] font-semibold shadow-subtle flex items-center gap-2 transition-colors" href="#">
+      <span class="material-symbols-outlined text-[16px] text-charcoal-muted">send</span> View Applications
+    </a>
+    <a class="px-4 py-2 rounded-xl bg-white border border-card-border hover:bg-warm-bg-alt text-navy-brand text-[13px] font-semibold shadow-subtle flex items-center gap-2 transition-colors" href="#">
+      <span class="material-symbols-outlined text-[16px] text-charcoal-muted">bookmark</span> Saved Jobs
+    </a>
+    <a class="px-4 py-2 rounded-xl bg-white border border-card-border hover:bg-warm-bg-alt text-navy-brand text-[13px] font-semibold shadow-subtle flex items-center gap-2 transition-colors" href="#">
+      <span class="material-symbols-outlined text-[16px] text-charcoal-muted">route</span> Open Roadmap
+    </a>
+    <a class="px-4 py-2 rounded-xl bg-white border border-card-border hover:bg-warm-bg-alt text-navy-brand text-[13px] font-semibold shadow-subtle flex items-center gap-2 transition-colors" href="#">
+      <span class="material-symbols-outlined text-[16px] text-charcoal-muted">forum</span> Ask AI Mentor
+    </a>
+  </div>
+
+  <!-- ============ LOADING STATE ============ -->
+  <div class="view active" id="view-loading">
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+      <div class="xl:col-span-8 flex flex-col gap-4">
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle">
+          <div class="h-4 w-40 rounded skeleton mb-4"></div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="h-16 rounded-xl skeleton"></div>
+            <div class="h-16 rounded-xl skeleton"></div>
+            <div class="h-16 rounded-xl skeleton"></div>
+            <div class="h-16 rounded-xl skeleton"></div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle">
+          <div class="h-4 w-48 rounded skeleton mb-4"></div>
+          <div class="space-y-3">
+            <div class="h-16 rounded-xl skeleton"></div>
+            <div class="h-16 rounded-xl skeleton"></div>
+            <div class="h-16 rounded-xl skeleton"></div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle">
+          <div class="h-4 w-40 rounded skeleton mb-4"></div>
+          <div class="h-3 w-full rounded skeleton mb-2"></div>
+          <div class="h-3 w-3/4 rounded skeleton"></div>
+        </div>
+      </div>
+      <div class="xl:col-span-4 flex flex-col gap-4">
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle">
+          <div class="h-4 w-32 rounded skeleton mb-4"></div>
+          <div class="h-20 rounded-xl skeleton"></div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle">
+          <div class="h-4 w-32 rounded skeleton mb-4"></div>
+          <div class="h-20 rounded-xl skeleton"></div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle">
+          <div class="h-4 w-32 rounded skeleton mb-4"></div>
+          <div class="h-20 rounded-xl skeleton"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ERROR STATE ============ -->
+  <div class="view" id="view-error">
+    <div class="flex flex-col items-center justify-center py-20 px-6 bg-white rounded-2xl border border-card-border shadow-subtle text-center">
+      <div class="w-16 h-16 rounded-2xl bg-accent-red-bg border border-accent-red/20 flex items-center justify-center mb-5">
+        <span class="material-symbols-outlined text-accent-red text-[30px]">error_outline</span>
+      </div>
+      <h2 class="font-serif text-[22px] font-bold text-navy-brand mb-2">Couldn't load your dashboard</h2>
+      <p class="text-[14px] text-charcoal-muted max-w-sm mb-6 leading-relaxed">Something went wrong on our end. Your data is safe — please try again.</p>
+      <button class="px-5 py-2.5 rounded-xl bg-navy-brand hover:bg-navy-brand-light text-white text-[13px] font-semibold shadow-subtle flex items-center gap-2 transition-colors" onclick="setView('loaded')">
+        <span class="material-symbols-outlined text-[18px]">refresh</span> Retry
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ EMPTY STATE (brand-new user) ============ -->
+  <div class="view" id="view-empty">
+    <div class="flex flex-col items-center justify-center py-16 px-6 bg-white rounded-2xl border border-card-border shadow-subtle text-center">
+      <div class="relative w-24 h-24 mb-5 flex items-center justify-center">
+        <div class="absolute inset-0 bg-warm-bg rounded-full scale-110"></div>
+        <div class="relative w-18 h-18 rounded-2xl bg-warm-bg-alt border border-card-border flex items-center justify-center shadow-xs">
+          <span class="material-symbols-outlined text-charcoal-light text-[38px]">explore</span>
+        </div>
+      </div>
+      <h2 class="font-serif text-[24px] font-bold text-navy-brand tracking-tight mb-2">Welcome to SkillMatch, Alex</h2>
+      <p class="text-[14px] text-charcoal-muted max-w-md mb-6 leading-relaxed">You haven't browsed any jobs or built your roadmap yet. Complete your profile and explore your first matches to get started.</p>
+      <div class="flex items-center gap-3 flex-wrap justify-center">
+        <a class="px-5 py-2.5 rounded-xl bg-navy-brand hover:bg-navy-brand-light text-white text-[13px] font-semibold shadow-subtle transition-colors flex items-center gap-2" href="#">
+          <span class="material-symbols-outlined text-[18px]">travel_explore</span> Browse Jobs
+        </a>
+        <a class="px-4 py-2.5 rounded-xl bg-white border border-card-border hover:bg-warm-bg-alt text-charcoal text-[13px] font-semibold transition-colors flex items-center gap-2" href="#">
+          <span class="material-symbols-outlined text-[18px] text-charcoal-muted">person</span> Complete Profile
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ LOADED / PARTIAL DATA (shared markup, toggled by JS) ============ -->
+  <div class="view" id="view-loaded">
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+
+      <!-- LEFT / MAIN COLUMN -->
+      <div class="xl:col-span-8 flex flex-col gap-4">
+
+        <!-- Application Summary -->
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-serif text-[18px] font-bold text-navy-brand">Application summary</h2>
+            <a class="text-navy-brand font-semibold text-[13px] hover:underline flex items-center gap-1" href="#">View Applications <span class="material-symbols-outlined text-[15px]">arrow_forward</span></a>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-warm-bg rounded-xl p-3.5 border border-card-border/70">
+              <div class="text-[11px] uppercase tracking-wider text-charcoal-muted font-bold mb-1">Sent</div>
+              <div class="font-serif text-[24px] font-bold text-navy-brand">4</div>
+            </div>
+            <div class="bg-warm-bg rounded-xl p-3.5 border border-card-border/70">
+              <div class="text-[11px] uppercase tracking-wider text-charcoal-muted font-bold mb-1">In Review</div>
+              <div class="font-serif text-[24px] font-bold text-accent-green">2</div>
+            </div>
+            <div class="bg-warm-bg rounded-xl p-3.5 border border-card-border/70">
+              <div class="text-[11px] uppercase tracking-wider text-charcoal-muted font-bold mb-1">Interview</div>
+              <div class="font-serif text-[24px] font-bold text-accent-gold">1</div>
+            </div>
+            <div class="bg-warm-bg rounded-xl p-3.5 border border-card-border/70">
+              <div class="text-[11px] uppercase tracking-wider text-charcoal-muted font-bold mb-1">Offer</div>
+              <div class="font-serif text-[24px] font-bold text-charcoal-light">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommended Jobs -->
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle" id="recommended-jobs-card">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-serif text-[18px] font-bold text-navy-brand">Recommended for you</h2>
+            <a class="text-navy-brand font-semibold text-[13px] hover:underline flex items-center gap-1" href="#">Browse Jobs <span class="material-symbols-outlined text-[15px]">arrow_forward</span></a>
+          </div>
+          <div class="space-y-3 recommended-content">
+            <div class="flex items-center gap-3 p-3 border border-card-border rounded-xl hover:bg-warm-bg-alt transition-colors cursor-pointer">
+              <div class="w-11 h-11 rounded-xl bg-warm-bg-alt border border-card-border flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-navy-brand text-[22px]">terminal</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-[14px] font-semibold text-navy-brand truncate">Senior Frontend Engineer</div>
+                <div class="text-[12px] text-charcoal-muted">Vercel · Remote · $145K–$175K</div>
+              </div>
+              <span class="text-[12px] font-bold text-accent-green shrink-0">98% match</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 border border-card-border rounded-xl hover:bg-warm-bg-alt transition-colors cursor-pointer">
+              <div class="w-11 h-11 rounded-xl bg-warm-bg-alt border border-card-border flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-navy-brand text-[22px]">design_services</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-[14px] font-semibold text-navy-brand truncate">Lead Frontend Architect</div>
+                <div class="text-[12px] text-charcoal-muted">Stripe · San Francisco / Hybrid</div>
+              </div>
+              <span class="text-[12px] font-bold text-accent-green shrink-0">95% match</span>
+            </div>
+            <div class="flex items-center gap-3 p-3 border border-card-border rounded-xl hover:bg-warm-bg-alt transition-colors cursor-pointer">
+              <div class="w-11 h-11 rounded-xl bg-warm-bg-alt border border-card-border flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-navy-brand text-[22px]">vital_signs</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-[14px] font-semibold text-navy-brand truncate">Frontend Developer (UI/UX)</div>
+                <div class="text-[12px] text-charcoal-muted">PulseHealth · Remote</div>
+              </div>
+              <span class="text-[12px] font-bold text-accent-gold shrink-0">89% match</span>
+            </div>
+          </div>
+          <!-- Partial-data placeholder (shown only in Partial Data state) -->
+          <div class="hidden recommended-partial flex-col items-center justify-center py-8 text-center">
+            <span class="material-symbols-outlined text-charcoal-light text-[30px] mb-2">hourglass_top</span>
+            <p class="text-[13px] text-charcoal-muted max-w-xs">Still finding matches for you — recommendations improve once your CV finishes processing.</p>
+          </div>
+        </div>
+
+        <!-- Skill Gaps -->
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle">
+          <div class="flex items-center justify-between mb-1">
+            <h2 class="font-serif text-[18px] font-bold text-navy-brand">Priority skill gaps</h2>
+            <a class="text-navy-brand font-semibold text-[13px] hover:underline flex items-center gap-1" href="#">Open Roadmap <span class="material-symbols-outlined text-[15px]">arrow_forward</span></a>
+          </div>
+          <p class="text-[12.5px] text-charcoal-muted mb-4">Ranked by impact on your target role.</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1.5 rounded-full bg-accent-red-bg border border-accent-red/25 text-accent-red text-[12px] font-bold flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent-red"></span> System Design
+            </span>
+            <span class="px-3 py-1.5 rounded-full bg-accent-gold-bg border border-accent-gold/25 text-accent-gold text-[12px] font-bold flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent-gold"></span> GraphQL
+            </span>
+            <span class="px-3 py-1.5 rounded-full bg-accent-gold-bg border border-accent-gold/25 text-accent-gold text-[12px] font-bold flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent-gold"></span> Testing (Jest)
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT / SIDEBAR COLUMN -->
+      <div class="xl:col-span-4 flex flex-col gap-4">
+
+        <!-- Profile Completion -->
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-serif text-[16px] font-bold text-navy-brand">Profile strength</h2>
+            <span class="text-[13px] font-bold text-navy-brand">80%</span>
+          </div>
+          <div class="w-full bg-card-border/60 h-2 rounded-full overflow-hidden mb-3">
+            <div class="bg-navy-brand h-full rounded-full" style="width:80%"></div>
+          </div>
+          <a class="text-navy-brand font-semibold text-[13px] hover:underline flex items-center gap-1" href="#">Open Profile <span class="material-symbols-outlined text-[15px]">arrow_forward</span></a>
+        </div>
+
+        <!-- Career Roadmap Progress -->
+        <div class="bg-navy-brand text-white rounded-2xl p-6 shadow-subtle flex flex-col gap-3 relative overflow-hidden border border-navy-brand-dark" id="roadmap-card">
+          <div class="flex items-center gap-2 text-white/80">
+            <span class="material-symbols-outlined text-[18px]">route</span>
+            <span class="text-[11px] uppercase tracking-wider font-bold">Career Roadmap</span>
+          </div>
+          <div class="roadmap-content">
+            <h3 class="font-serif text-[17px] font-bold leading-snug mb-1">Phase 1: Foundations</h3>
+            <div class="w-full bg-white/15 h-2 rounded-full overflow-hidden mb-1.5">
+              <div class="bg-white h-full rounded-full" style="width:34%"></div>
+            </div>
+            <p class="text-[12px] text-white/70">34% overall · 1 task left this week</p>
+          </div>
+          <!-- Partial-data placeholder (shown only in Partial Data state) -->
+          <p class="hidden roadmap-partial text-[12.5px] text-white/75 leading-relaxed">No roadmap generated yet — set a target role to get a personalized plan.</p>
+          <a class="mt-1 inline-flex items-center justify-center py-2 px-4 rounded-xl bg-white text-navy-brand hover:bg-warm-bg transition-colors text-[13px] font-bold self-start shadow-sm" href="#">
+            Open Roadmap →
+          </a>
+        </div>
+
+        <!-- AI Mentor Entry Point -->
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-navy-brand text-[20px]">forum</span>
+            <h2 class="font-serif text-[16px] font-bold text-navy-brand">AI Mentor</h2>
+          </div>
+          <p class="text-[12.5px] text-charcoal-muted leading-relaxed mb-4">Not sure what to focus on? Ask your mentor — it knows your profile, jobs, and roadmap.</p>
+          <a class="w-full inline-flex items-center justify-center py-2 rounded-xl bg-navy-brand hover:bg-navy-brand-light text-white text-[13px] font-semibold transition-colors" href="#">Ask AI Mentor</a>
+        </div>
+
+        <!-- Saved Jobs -->
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle" id="saved-jobs-card">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-serif text-[16px] font-bold text-navy-brand">Saved jobs</h2>
+            <a class="text-navy-brand font-semibold text-[12px] hover:underline" href="#">View Saved Jobs</a>
+          </div>
+          <div class="space-y-2 saved-content">
+            <div class="flex items-center gap-2.5 text-[13px]">
+              <span class="material-symbols-outlined text-charcoal-light text-[16px]">bookmark</span>
+              <span class="truncate">Full Stack Engineer — FinEdge</span>
+            </div>
+            <div class="flex items-center gap-2.5 text-[13px]">
+              <span class="material-symbols-outlined text-charcoal-light text-[16px]">bookmark</span>
+              <span class="truncate">Frontend Infra Eng. — CloudScale</span>
+            </div>
+          </div>
+          <!-- Partial-data placeholder -->
+          <div class="hidden saved-partial text-[12.5px] text-charcoal-muted">You haven't saved any jobs yet.</div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="bg-white rounded-2xl p-6 border border-card-border shadow-subtle">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-serif text-[16px] font-bold text-navy-brand">Notifications</h2>
+            <a class="text-navy-brand font-semibold text-[12px] hover:underline" href="#">View Notifications</a>
+          </div>
+          <div class="space-y-2.5">
+            <div class="flex items-start gap-2 text-[12.5px] text-charcoal-muted leading-snug">
+              <span class="w-1.5 h-1.5 rounded-full bg-navy-brand shrink-0 mt-1.5"></span> New match: Lead Frontend Architect at Stripe
+            </div>
+            <div class="flex items-start gap-2 text-[12.5px] text-charcoal-muted leading-snug">
+              <span class="w-1.5 h-1.5 rounded-full bg-navy-brand shrink-0 mt-1.5"></span> Vercel application moved to In Review
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<!-- FOOTER -->
+<footer class="w-full bg-white border-t border-card-border py-8 mt-12">
+<div class="max-w-[1360px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-charcoal-muted">
+<div class="flex items-center gap-3">
+<span class="font-serif text-[18px] font-bold text-navy-brand">SkillMatch</span>
+<span class="text-[12px] text-charcoal-light">© 2025 SkillMatch Intelligence Inc. All rights reserved.</span>
+</div>
+<div class="flex items-center gap-6 text-[13px]">
+<a class="hover:text-navy-brand transition-colors font-medium" href="#">Platform Integrity</a>
+<a class="hover:text-navy-brand transition-colors font-medium" href="#">Privacy Architecture</a>
+<a class="hover:text-navy-brand transition-colors font-medium" href="#">Terms of Service</a>
+<a class="hover:text-navy-brand transition-colors font-medium" href="#">Talent API</a>
+</div>
+</div>
+</footer>
+
+<script>
+  const buttons = { loading:'btn-loading', loaded:'btn-loaded', empty:'btn-empty', partial:'btn-partial', error:'btn-error' };
+
+  function setView(name){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+    // Loaded and Partial Data share the same markup — toggle section-level placeholders instead
+    if(name === 'partial'){
+      document.getElementById('view-loaded').classList.add('active');
+      togglePartial(true);
+    } else if(name === 'loaded'){
+      document.getElementById('view-loaded').classList.add('active');
+      togglePartial(false);
+    } else {
+      document.getElementById('view-' + name).classList.add('active');
+    }
+
+    Object.entries(buttons).forEach(([key, id]) => {
+      const btn = document.getElementById(id);
+      if(key === name){
+        btn.className = 'px-3 py-1 text-navy-brand bg-tag-active-bg border border-navy-brand/30 rounded-lg font-semibold text-[12px]';
+      } else {
+        btn.className = 'px-3 py-1 text-charcoal-muted hover:text-navy-brand rounded-lg font-medium text-[12px]';
+      }
+    });
+
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function togglePartial(isPartial){
+    // Recommended Jobs: show placeholder, hide real list (simulates CV still processing)
+    document.querySelector('.recommended-content').classList.toggle('hidden', isPartial);
+    document.querySelector('.recommended-partial').classList.toggle('hidden', !isPartial);
+    document.querySelector('.recommended-partial').classList.toggle('flex', isPartial);
+
+    // Roadmap: show "not generated yet" placeholder instead of progress
+    document.querySelector('.roadmap-content').classList.toggle('hidden', isPartial);
+    document.querySelector('.roadmap-partial').classList.toggle('hidden', !isPartial);
+
+    // Saved Jobs: show empty note instead of list
+    document.querySelector('.saved-content').classList.toggle('hidden', isPartial);
+    document.querySelector('.saved-partial').classList.toggle('hidden', !isPartial);
+  }
+
+  setView('loading');
+  setTimeout(() => setView('loaded'), 1200);
+</script>
+
+</body>
+</html>

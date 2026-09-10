@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications — SkillMatch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary":"#1F365C","primary-container":"#0F2036","on-primary":"#FFFFFF",
+        "secondary":"#9C432A",
+        "canvas-cream":"#FAF8F4","surface-white":"#FFFFFF",
+        "border-hairline":"#E5E1DA",
+        "text-primary":"#1B1C1A","text-secondary":"#44474E","text-muted":"#707780",
+        "match-forest":"#4F7A5A","match-amber":"#C88A26","status-red":"#B3271E"
+      },
+      fontFamily: { display:["DM Sans","sans-serif"], body:["Inter","sans-serif"] }
+    }
+  }
+}
+</script>
+<style>
+  body{ background:#FAF8F4; }
+  .material-symbols-outlined{ font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; vertical-align:middle; font-size:20px; }
+  .skeleton{ background:linear-gradient(90deg,#EFEDE8 25%,#F5F3EF 37%,#EFEDE8 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+  @keyframes shimmer{ 0%{background-position:100% 0;} 100%{background-position:0 0;} }
+  .view{ display:none; }
+  .view.active{ display:block; }
+  .notif.unread{ background:#FAF8F4; }
+  .notif.unread .unread-dot{ display:block; }
+  .unread-dot{ display:none; }
+</style>
+</head>
+<body class="font-body text-text-primary">
+
+<!-- Demo-only state switcher — not part of production UI -->
+<div class="bg-primary-container text-white text-[12px] flex items-center justify-center gap-2 py-2 px-4 flex-wrap">
+  <span class="text-white/50 mr-1">Preview state:</span>
+  <button onclick="setView('loading')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Loading</button>
+  <button onclick="setView('loaded')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Loaded</button>
+  <button onclick="setView('empty')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Empty</button>
+  <button onclick="setView('error')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Error</button>
+</div>
+
+<header class="border-b border-border-hairline bg-canvas-cream">
+  <div class="max-w-[720px] mx-auto px-5 h-14 flex items-center gap-3">
+    <div class="text-[13px] text-text-muted">
+      <a href="#" class="hover:text-primary">SkillMatch</a>
+      <span class="mx-1">/</span>
+      <span class="text-text-primary font-semibold">Notifications</span>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-[720px] mx-auto px-5 py-8">
+
+  <div class="flex items-center justify-between mb-5">
+    <div>
+      <h1 class="font-display font-bold text-[22px]">Notifications</h1>
+      <p class="text-[12px] text-text-muted mt-1" id="unread-summary">3 unread</p>
+    </div>
+    <button onclick="markAllRead()" class="h-9 px-3.5 rounded-[8px] border border-border-hairline text-[12px] font-semibold flex items-center gap-1.5 hover:bg-white">
+      <span class="material-symbols-outlined text-[16px]">done_all</span> Mark all as read
+    </button>
+  </div>
+
+  <!-- ============ LOADING ============ -->
+  <div class="view" id="view-loading">
+    <div class="bg-white border border-border-hairline rounded-[16px] divide-y divide-border-hairline overflow-hidden">
+      <div class="p-4 flex gap-3">
+        <div class="w-9 h-9 rounded-[8px] skeleton flex-shrink-0"></div>
+        <div class="flex-1">
+          <div class="h-3.5 w-40 rounded-[6px] skeleton mb-2"></div>
+          <div class="h-3 w-56 rounded-[6px] skeleton"></div>
+        </div>
+      </div>
+      <div class="p-4 flex gap-3">
+        <div class="w-9 h-9 rounded-[8px] skeleton flex-shrink-0"></div>
+        <div class="flex-1">
+          <div class="h-3.5 w-48 rounded-[6px] skeleton mb-2"></div>
+          <div class="h-3 w-40 rounded-[6px] skeleton"></div>
+        </div>
+      </div>
+      <div class="p-4 flex gap-3">
+        <div class="w-9 h-9 rounded-[8px] skeleton flex-shrink-0"></div>
+        <div class="flex-1">
+          <div class="h-3.5 w-36 rounded-[6px] skeleton mb-2"></div>
+          <div class="h-3 w-52 rounded-[6px] skeleton"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ EMPTY ============ -->
+  <div class="view" id="view-empty">
+    <div class="bg-white border border-border-hairline rounded-[16px] py-20 px-6 text-center">
+      <div class="w-14 h-14 rounded-[12px] bg-canvas-cream border border-border-hairline flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-text-muted text-[26px]">notifications_none</span>
+      </div>
+      <h2 class="font-display font-bold text-[17px] mb-2">You're all caught up</h2>
+      <p class="text-[13px] text-text-muted max-w-xs mx-auto">New job matches, application updates, and roadmap reminders will show up here.</p>
+    </div>
+  </div>
+
+  <!-- ============ ERROR ============ -->
+  <div class="view" id="view-error">
+    <div class="bg-white border border-border-hairline rounded-[16px] py-20 px-6 text-center">
+      <div class="w-14 h-14 rounded-[12px] bg-status-red/10 border border-status-red/30 flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-status-red text-[26px]">error_outline</span>
+      </div>
+      <h2 class="font-display font-bold text-[17px] mb-2">Couldn't load notifications</h2>
+      <p class="text-[13px] text-text-muted max-w-xs mx-auto mb-6">Something went wrong on our end. Please try again.</p>
+      <button onclick="setView('loaded')" class="bg-primary text-white text-[13px] font-semibold px-5 h-10 rounded-[8px] inline-flex items-center gap-2">
+        <span class="material-symbols-outlined text-[16px]">refresh</span> Retry
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ LOADED ============ -->
+  <div class="view active" id="view-loaded">
+
+    <div class="text-[11px] font-semibold text-text-muted mb-2 px-1">TODAY</div>
+    <div class="bg-white border border-border-hairline rounded-[16px] divide-y divide-border-hairline overflow-hidden mb-6">
+
+      <!-- New relevant job -->
+      <div class="notif unread flex gap-3 p-4 cursor-pointer hover:bg-canvas-cream" onclick="openNotif(this, 'job')">
+        <div class="w-9 h-9 rounded-[8px] bg-primary/10 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-primary text-[18px]">work</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[13px] font-semibold">New match for you</span>
+            <span class="unread-dot w-1.5 h-1.5 rounded-full bg-secondary flex-shrink-0"></span>
+          </div>
+          <p class="text-[12px] text-text-secondary mt-0.5">Lead Frontend Architect at Stripe — 95% match, based on your target role.</p>
+          <div class="text-[11px] text-text-muted mt-1">Today · 9:12 AM</div>
+        </div>
+        <button class="text-[11px] font-semibold text-primary flex-shrink-0 self-start" onclick="event.stopPropagation(); toggleRead(this)">Mark as read</button>
+      </div>
+
+      <!-- Application status change -->
+      <div class="notif unread flex gap-3 p-4 cursor-pointer hover:bg-canvas-cream" onclick="openNotif(this, 'application')">
+        <div class="w-9 h-9 rounded-[8px] bg-match-forest/10 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-match-forest text-[18px]">timeline</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[13px] font-semibold">Application status updated</span>
+            <span class="unread-dot w-1.5 h-1.5 rounded-full bg-secondary flex-shrink-0"></span>
+          </div>
+          <p class="text-[12px] text-text-secondary mt-0.5">Your application for Senior Frontend Engineer at Vercel moved to In Review.</p>
+          <div class="text-[11px] text-text-muted mt-1">Today · 8:04 AM</div>
+        </div>
+        <button class="text-[11px] font-semibold text-primary flex-shrink-0 self-start" onclick="event.stopPropagation(); toggleRead(this)">Mark as read</button>
+      </div>
+
+      <!-- CV processing result -->
+      <div class="notif unread flex gap-3 p-4 cursor-pointer hover:bg-canvas-cream" onclick="openNotif(this, 'cv')">
+        <div class="w-9 h-9 rounded-[8px] bg-match-amber/10 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-match-amber text-[18px]">description</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[13px] font-semibold">CV analysis complete</span>
+            <span class="unread-dot w-1.5 h-1.5 rounded-full bg-secondary flex-shrink-0"></span>
+          </div>
+          <p class="text-[12px] text-text-secondary mt-0.5">We found 14 skills in resume_2026.pdf — 9 matched, 3 flagged as growth areas.</p>
+          <div class="text-[11px] text-text-muted mt-1">Today · 7:41 AM</div>
+        </div>
+        <button class="text-[11px] font-semibold text-primary flex-shrink-0 self-start" onclick="event.stopPropagation(); toggleRead(this)">Mark as read</button>
+      </div>
+    </div>
+
+    <div class="text-[11px] font-semibold text-text-muted mb-2 px-1">EARLIER</div>
+    <div class="bg-white border border-border-hairline rounded-[16px] divide-y divide-border-hairline overflow-hidden">
+
+      <!-- Roadmap reminder -->
+      <div class="notif flex gap-3 p-4 cursor-pointer hover:bg-canvas-cream" onclick="openNotif(this, 'roadmap')">
+        <div class="w-9 h-9 rounded-[8px] bg-primary/10 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-primary text-[18px]">map</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[13px] font-semibold">Roadmap reminder</span>
+            <span class="unread-dot w-1.5 h-1.5 rounded-full bg-secondary flex-shrink-0"></span>
+          </div>
+          <p class="text-[12px] text-text-secondary mt-0.5">One task left in Phase 1: Foundations — you're 75% through this phase.</p>
+          <div class="text-[11px] text-text-muted mt-1">Yesterday · 6:00 PM</div>
+        </div>
+        <button class="text-[11px] font-semibold text-primary flex-shrink-0 self-start" onclick="event.stopPropagation(); toggleRead(this)">Mark as read</button>
+      </div>
+
+      <!-- Important platform action -->
+      <div class="notif flex gap-3 p-4 cursor-pointer hover:bg-canvas-cream" onclick="openNotif(this, 'platform')">
+        <div class="w-9 h-9 rounded-[8px] bg-status-red/10 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-status-red text-[18px]">verified_user</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[13px] font-semibold">Confirm your email</span>
+            <span class="unread-dot w-1.5 h-1.5 rounded-full bg-secondary flex-shrink-0"></span>
+          </div>
+          <p class="text-[12px] text-text-secondary mt-0.5">Please verify your email address to keep receiving application updates.</p>
+          <div class="text-[11px] text-text-muted mt-1">Sep 5 · 11:20 AM</div>
+        </div>
+        <button class="text-[11px] font-semibold text-primary flex-shrink-0 self-start" onclick="event.stopPropagation(); toggleRead(this)">Mark as read</button>
+      </div>
+
+      <!-- Application status change (read example) -->
+      <div class="notif flex gap-3 p-4 cursor-pointer hover:bg-canvas-cream" onclick="openNotif(this, 'application')">
+        <div class="w-9 h-9 rounded-[8px] bg-match-forest/10 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-match-forest text-[18px]">timeline</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[13px] font-semibold text-text-secondary">Application received</span>
+          </div>
+          <p class="text-[12px] text-text-muted mt-0.5">Your application for Senior Frontend Engineer at Vercel was submitted.</p>
+          <div class="text-[11px] text-text-muted mt-1">Sep 4 · 2:15 PM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const deepLinks = {
+    job: 'Would navigate to: /app/jobs/:jobId',
+    application: 'Would navigate to: /app/applications/:applicationId',
+    cv: 'Would navigate to: /app/profile (CV section)',
+    roadmap: 'Would navigate to: /app/roadmap/:phaseId',
+    platform: 'Would navigate to: /app/settings/email'
+  };
+
+  function setView(name){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function toggleRead(btn){
+    const row = btn.closest('.notif');
+    row.classList.remove('unread');
+    btn.remove();
+    updateUnreadSummary();
+  }
+
+  function openNotif(row, type){
+    row.classList.remove('unread');
+    updateUnreadSummary();
+    alert(deepLinks[type]);
+  }
+
+  function markAllRead(){
+    document.querySelectorAll('.notif.unread').forEach(row => {
+      row.classList.remove('unread');
+      const btn = row.querySelector('button');
+      if(btn) btn.remove();
+    });
+    updateUnreadSummary();
+  }
+
+  function updateUnreadSummary(){
+    const count = document.querySelectorAll('.notif.unread').length;
+    document.getElementById('unread-summary').textContent = count === 0 ? 'You\'re all caught up' : count + ' unread';
+  }
+</script>
+
+</body>
+</html>

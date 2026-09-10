@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Mentor — SkillMatch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary":"#1F365C","primary-container":"#0F2036","on-primary":"#FFFFFF",
+        "secondary":"#9C432A",
+        "canvas-cream":"#FAF8F4","surface-white":"#FFFFFF",
+        "border-hairline":"#E5E1DA",
+        "text-primary":"#1B1C1A","text-secondary":"#44474E","text-muted":"#707780",
+        "match-forest":"#4F7A5A","match-amber":"#C88A26","status-red":"#B3271E"
+      },
+      fontFamily: { display:["DM Sans","sans-serif"], body:["Inter","sans-serif"] }
+    }
+  }
+}
+</script>
+<style>
+  html,body{ height:100%; }
+  body{ background:#FAF8F4; }
+  .material-symbols-outlined{ font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; vertical-align:middle; font-size:20px; }
+  .view{ display:none; }
+  .view.active{ display:flex; }
+  .dot{ width:6px; height:6px; border-radius:50%; background:#707780; display:inline-block; animation:bounce 1.2s infinite ease-in-out; }
+  .dot:nth-child(2){ animation-delay:0.15s; }
+  .dot:nth-child(3){ animation-delay:0.3s; }
+  @keyframes bounce{ 0%,60%,100%{ transform:translateY(0); opacity:0.4; } 30%{ transform:translateY(-3px); opacity:1; } }
+  .spinner{ border-radius:50%; border:2.5px solid var(--border-hairline,#E5E1DA); border-top-color:#1F365C; animation:spin 0.8s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  #chat-scroll::-webkit-scrollbar{ width:6px; }
+  #chat-scroll::-webkit-scrollbar-thumb{ background:#E5E1DA; border-radius:99px; }
+</style>
+</head>
+<body class="font-body text-text-primary h-full flex flex-col">
+
+<!-- Demo-only state switcher — not part of production UI -->
+<div class="bg-primary-container text-white text-[12px] flex items-center justify-center gap-2 py-2 px-4 flex-wrap">
+  <span class="text-white/50 mr-1">Preview state:</span>
+  <button onclick="setView('empty')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Empty conversation</button>
+  <button onclick="setView('missing-context')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Missing context</button>
+  <button onclick="setView('success')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Success</button>
+  <button onclick="setView('sending')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Sending</button>
+  <button onclick="setView('loading')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Loading response</button>
+  <button onclick="setView('error')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Error</button>
+</div>
+
+<header class="border-b border-border-hairline bg-canvas-cream flex-shrink-0">
+  <div class="max-w-[1080px] mx-auto px-5 h-14 flex items-center gap-3">
+    <div class="text-[13px] text-text-muted">
+      <a href="#" class="hover:text-primary">SkillMatch</a>
+      <span class="mx-1">/</span>
+      <span class="text-text-primary font-semibold">AI Mentor</span>
+    </div>
+  </div>
+</header>
+
+<div class="max-w-[1080px] mx-auto w-full flex-1 flex px-5 py-6 gap-5 min-h-0">
+
+  <!-- ============ CONTEXT GROUNDING PANEL ============ -->
+  <aside class="hidden lg:flex flex-col w-64 flex-shrink-0 bg-white border border-border-hairline rounded-[16px] p-5 h-fit sticky top-6">
+    <div class="text-[11px] font-semibold text-text-muted mb-1">GROUNDED IN YOUR DATA</div>
+    <p class="text-[12px] text-text-secondary leading-relaxed mb-4">Every answer below is based on what's actually in your account — not general advice.</p>
+    <div class="space-y-2.5 text-[12px]">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-match-forest text-[16px]">check_circle</span>
+        <span class="flex-1">Candidate profile</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-match-forest text-[16px]">check_circle</span>
+        <span class="flex-1">CV — resume_2026.pdf</span>
+      </div>
+      <div class="flex items-center gap-2" id="ctx-target-role">
+        <span class="material-symbols-outlined text-match-forest text-[16px]">check_circle</span>
+        <span class="flex-1">Target role — Sr. Frontend Eng.</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-match-forest text-[16px]">check_circle</span>
+        <span class="flex-1">Selected job — Vercel</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-text-muted text-[16px]">bookmark</span>
+        <span class="flex-1 text-text-secondary">12 saved jobs</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-text-muted text-[16px]">send</span>
+        <span class="flex-1 text-text-secondary">4 applied jobs</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-match-amber text-[16px]">query_stats</span>
+        <span class="flex-1 text-text-secondary">3 open skill gaps</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-match-forest text-[16px]">map</span>
+        <span class="flex-1 text-text-secondary">Roadmap — Phase 1 active</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ CHAT PANEL ============ -->
+  <section class="flex-1 bg-white border border-border-hairline rounded-[16px] flex flex-col min-h-0 overflow-hidden">
+
+    <div class="flex items-center gap-3 p-4 border-b border-border-hairline flex-shrink-0">
+      <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-[18px]">smart_toy</span>
+      </div>
+      <div>
+        <div class="text-[13px] font-semibold">AI Career Mentor</div>
+        <div class="text-[11px] text-text-muted">Answers using your profile, CV, jobs, and roadmap</div>
+      </div>
+    </div>
+
+    <!-- Missing context banner (shown only in that state) -->
+    <div class="hidden px-4 pt-4" id="missing-context-banner">
+      <div class="border border-match-amber/30 bg-match-amber/10 text-[12px] text-text-secondary rounded-[10px] px-3.5 py-3 flex items-start gap-2.5">
+        <span class="material-symbols-outlined text-match-amber text-[18px] flex-shrink-0 mt-0.5">info</span>
+        <div>
+          <span class="font-semibold text-text-primary">No target role set yet.</span> I can still help with general profile questions, but for role-specific advice, <a href="#" class="text-primary font-semibold">set a target role</a> or open a saved job first.
+        </div>
+      </div>
+    </div>
+
+    <!-- Message list -->
+    <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4" id="chat-scroll">
+
+      <!-- ===== EMPTY CONVERSATION VIEW ===== -->
+      <div class="view flex-col items-center justify-center text-center h-full px-6" id="view-empty">
+        <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-primary text-[24px]">smart_toy</span>
+        </div>
+        <h2 class="font-display font-bold text-[16px] mb-1.5">Ask your Mentor anything</h2>
+        <p class="text-[13px] text-text-muted max-w-xs">Grounded in your profile, CV, saved jobs, and roadmap — start with a question below or type your own.</p>
+      </div>
+
+      <!-- ===== CONVERSATION (used by success / sending / loading / error / missing-context) ===== -->
+      <div class="view flex-col space-y-4" id="view-conversation">
+
+        <!-- User message -->
+        <div class="flex justify-end">
+          <div class="bg-primary text-white text-[13px] rounded-[14px] rounded-tr-[4px] px-4 py-2.5 max-w-[80%]">
+            Why am I a weak match for the Vercel frontend role?
+          </div>
+        </div>
+
+        <!-- Assistant response, grounded + linked -->
+        <div class="flex justify-start">
+          <div class="max-w-[85%]">
+            <div class="border border-border-hairline rounded-[14px] rounded-tl-[4px] px-4 py-3 bg-canvas-cream">
+              <p class="text-[13px] text-text-secondary leading-relaxed">
+                Your match score for that role is 98%, so you're actually a strong candidate overall. The one gap pulling it down is <strong class="text-text-primary">System Design</strong> — it's listed as a core requirement and isn't confirmed on your profile yet. Everything else (React, TypeScript, Next.js) lines up well.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-2 mt-2">
+              <a href="#" class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary border border-border-hairline rounded-[6px] px-2.5 py-1 hover:bg-canvas-cream">
+                <span class="material-symbols-outlined text-[14px]">work</span> Senior Frontend Engineer · Vercel
+              </a>
+              <a href="#" class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary border border-border-hairline rounded-[6px] px-2.5 py-1 hover:bg-canvas-cream">
+                <span class="material-symbols-outlined text-[14px]">query_stats</span> Skill gap: System Design
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- User message 2 -->
+        <div class="flex justify-end">
+          <div class="bg-primary text-white text-[13px] rounded-[14px] rounded-tr-[4px] px-4 py-2.5 max-w-[80%]">
+            What should I focus on this week?
+          </div>
+        </div>
+
+        <!-- Assistant response 2 -->
+        <div class="flex justify-start">
+          <div class="max-w-[85%]">
+            <div class="border border-border-hairline rounded-[14px] rounded-tl-[4px] px-4 py-3 bg-canvas-cream">
+              <p class="text-[13px] text-text-secondary leading-relaxed">
+                You're 75% through Phase 1 of your roadmap — one task left. Finishing it closes out the System Design foundations before you move into GraphQL and testing next week.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-2 mt-2">
+              <a href="#" class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary border border-border-hairline rounded-[6px] px-2.5 py-1 hover:bg-canvas-cream">
+                <span class="material-symbols-outlined text-[14px]">task_alt</span> Task: Design a rate limiter
+              </a>
+              <a href="#" class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary border border-border-hairline rounded-[6px] px-2.5 py-1 hover:bg-canvas-cream">
+                <span class="material-symbols-outlined text-[14px]">map</span> Phase 1: Foundations
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sending indicator (shown only in 'sending' state) -->
+        <div class="hidden justify-end" id="sending-row">
+          <div class="bg-primary/60 text-white text-[13px] rounded-[14px] rounded-tr-[4px] px-4 py-2.5 max-w-[80%] flex items-center gap-2">
+            Which skill should I learn first?
+            <div class="w-3.5 h-3.5 spinner flex-shrink-0" style="border-color:rgba(255,255,255,0.4); border-top-color:#fff;"></div>
+          </div>
+        </div>
+
+        <!-- Loading / typing indicator (shown only in 'loading' state) -->
+        <div class="hidden justify-start" id="loading-row">
+          <div class="border border-border-hairline rounded-[14px] rounded-tl-[4px] px-4 py-3.5 bg-canvas-cream flex items-center gap-1.5">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          </div>
+        </div>
+
+        <!-- Error state message (shown only in 'error' state) -->
+        <div class="hidden justify-start" id="error-row">
+          <div class="max-w-[85%]">
+            <div class="border border-status-red/30 bg-status-red/5 rounded-[14px] rounded-tl-[4px] px-4 py-3">
+              <p class="text-[13px] text-status-red font-semibold flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">error_outline</span> Couldn't get a response
+              </p>
+              <p class="text-[12px] text-text-secondary mt-1">Something went wrong on our end. Your question wasn't lost.</p>
+            </div>
+            <button class="mt-2 inline-flex items-center gap-1.5 text-[12px] font-semibold text-primary border border-border-hairline rounded-[6px] px-3 py-1.5 hover:bg-canvas-cream" onclick="setView('loading')">
+              <span class="material-symbols-outlined text-[14px]">refresh</span> Retry
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Suggested prompts -->
+    <div class="px-4 pt-3 flex-shrink-0" id="suggested-prompts">
+      <div class="flex gap-2 overflow-x-auto pb-1">
+        <button class="flex-shrink-0 text-[12px] font-medium border border-border-hairline rounded-[8px] px-3 py-1.5 hover:bg-canvas-cream whitespace-nowrap" onclick="usePrompt(this)">What should I focus on this week?</button>
+        <button class="flex-shrink-0 text-[12px] font-medium border border-border-hairline rounded-[8px] px-3 py-1.5 hover:bg-canvas-cream whitespace-nowrap" onclick="usePrompt(this)">Why am I a weak match for this job?</button>
+        <button class="flex-shrink-0 text-[12px] font-medium border border-border-hairline rounded-[8px] px-3 py-1.5 hover:bg-canvas-cream whitespace-nowrap" onclick="usePrompt(this)">Which skill should I learn first?</button>
+        <button class="flex-shrink-0 text-[12px] font-medium border border-border-hairline rounded-[8px] px-3 py-1.5 hover:bg-canvas-cream whitespace-nowrap" onclick="usePrompt(this)">How can I improve my profile for this role?</button>
+        <button class="flex-shrink-0 text-[12px] font-medium border border-border-hairline rounded-[8px] px-3 py-1.5 hover:bg-canvas-cream whitespace-nowrap" onclick="usePrompt(this)">Which saved job should I prioritize?</button>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="p-4 border-t border-border-hairline flex-shrink-0">
+      <div class="flex items-end gap-2 border border-border-hairline rounded-[12px] px-3 py-2 focus-within:border-primary">
+        <textarea id="chat-input" rows="1" placeholder="Ask about your profile, a job, or your roadmap…" class="flex-1 outline-none text-[13px] resize-none py-1.5 max-h-24"></textarea>
+        <button class="w-9 h-9 rounded-[8px] bg-primary text-white flex items-center justify-center flex-shrink-0" onclick="sendMessage()">
+          <span class="material-symbols-outlined text-[18px]">send</span>
+        </button>
+      </div>
+      <div class="text-[11px] text-text-muted mt-1.5 px-1">Mentor responses are grounded in your account data — not generic advice.</div>
+    </div>
+
+  </section>
+</div>
+
+<script>
+  function setView(name){
+    document.querySelectorAll('#chat-scroll > .view').forEach(v => v.classList.remove('active'));
+
+    document.getElementById('missing-context-banner').classList.add('hidden');
+    document.getElementById('sending-row').classList.add('hidden');
+    document.getElementById('loading-row').classList.add('hidden');
+    document.getElementById('error-row').classList.add('hidden');
+
+    if(name === 'empty'){
+      document.getElementById('view-empty').classList.add('active');
+      return;
+    }
+
+    document.getElementById('view-conversation').classList.add('active');
+
+    if(name === 'missing-context'){
+      document.getElementById('missing-context-banner').classList.remove('hidden');
+    }
+    if(name === 'sending'){
+      document.getElementById('sending-row').classList.remove('hidden');
+    }
+    if(name === 'loading'){
+      document.getElementById('loading-row').classList.remove('hidden');
+    }
+    if(name === 'error'){
+      document.getElementById('error-row').classList.remove('hidden');
+    }
+
+    const scroll = document.getElementById('chat-scroll');
+    setTimeout(() => scroll.scrollTop = scroll.scrollHeight, 50);
+  }
+
+  function usePrompt(btn){
+    document.getElementById('chat-input').value = btn.textContent;
+    sendMessage();
+  }
+
+  function sendMessage(){
+    const input = document.getElementById('chat-input');
+    if(!input.value.trim()) return;
+    input.value = '';
+    setView('sending');
+    setTimeout(() => setView('loading'), 700);
+    setTimeout(() => setView('success'), 2200);
+  }
+
+  document.getElementById('chat-input').addEventListener('keydown', e => {
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  setView('success');
+</script>
+
+</body>
+</html>

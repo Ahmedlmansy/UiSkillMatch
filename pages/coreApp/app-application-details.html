@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Application Details — SkillMatch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary":"#1F365C","primary-container":"#0F2036","on-primary":"#FFFFFF",
+        "secondary":"#9C432A",
+        "canvas-cream":"#FAF8F4","surface-white":"#FFFFFF",
+        "border-hairline":"#E5E1DA",
+        "text-primary":"#1B1C1A","text-secondary":"#44474E","text-muted":"#707780",
+        "match-forest":"#4F7A5A","match-amber":"#C88A26","status-red":"#B3271E"
+      },
+      fontFamily: { display:["DM Sans","sans-serif"], body:["Inter","sans-serif"] }
+    }
+  }
+}
+</script>
+<style>
+  body{ background:#FAF8F4; }
+  .material-symbols-outlined{ font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; vertical-align:middle; font-size:20px; }
+  .skeleton{ background:linear-gradient(90deg,#EFEDE8 25%,#F5F3EF 37%,#EFEDE8 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+  @keyframes shimmer{ 0%{background-position:100% 0;} 100%{background-position:0 0;} }
+  .view{ display:none; }
+  .view.active{ display:block; }
+</style>
+</head>
+<body class="font-body text-text-primary">
+
+<!-- Demo-only state switcher — not part of production UI -->
+<div class="bg-primary-container text-white text-[12px] flex items-center justify-center gap-2 py-2 px-4 flex-wrap">
+  <span class="text-white/50 mr-1">Preview state:</span>
+  <button onclick="setView('loading')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Loading</button>
+  <button onclick="setView('notfound')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Not Found</button>
+  <button onclick="setView('loaded')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Loaded</button>
+  <button onclick="setView('error')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Error</button>
+</div>
+
+<!-- App top bar -->
+<header class="border-b border-border-hairline bg-canvas-cream sticky top-0 z-20">
+  <div class="max-w-[880px] mx-auto px-5 h-14 flex items-center gap-3">
+    <button class="w-8 h-8 rounded-[8px] border border-border-hairline flex items-center justify-center hover:bg-white" onclick="history.back()">
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+    </button>
+    <div class="text-[13px] text-text-muted">
+      <a href="#" class="hover:text-primary">Applications</a>
+      <span class="mx-1">/</span>
+      <span class="text-text-primary font-semibold">Application details</span>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-[880px] mx-auto px-5 py-8">
+
+  <!-- ============ LOADING STATE ============ -->
+  <div class="view" id="view-loading">
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+      <div class="flex items-start gap-4">
+        <div class="w-14 h-14 rounded-[10px] skeleton flex-shrink-0"></div>
+        <div class="flex-1">
+          <div class="h-5 w-56 rounded-[6px] skeleton mb-3"></div>
+          <div class="h-3 w-36 rounded-[6px] skeleton mb-2"></div>
+          <div class="h-3 w-28 rounded-[6px] skeleton"></div>
+        </div>
+        <div class="h-7 w-24 rounded-[6px] skeleton"></div>
+      </div>
+    </div>
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+      <div class="h-4 w-40 rounded-[6px] skeleton mb-5"></div>
+      <div class="space-y-4">
+        <div class="h-3 w-full rounded-[6px] skeleton"></div>
+        <div class="h-3 w-full rounded-[6px] skeleton"></div>
+        <div class="h-3 w-3/4 rounded-[6px] skeleton"></div>
+      </div>
+    </div>
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6">
+      <div class="h-4 w-32 rounded-[6px] skeleton mb-5"></div>
+      <div class="h-16 w-full rounded-[10px] skeleton"></div>
+    </div>
+  </div>
+
+  <!-- ============ NOT FOUND STATE ============ -->
+  <div class="view" id="view-notfound">
+    <div class="bg-white border border-border-hairline rounded-[16px] py-20 px-6 text-center">
+      <div class="w-14 h-14 rounded-[12px] bg-canvas-cream border border-border-hairline flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-text-muted text-[26px]">search_off</span>
+      </div>
+      <h2 class="font-display font-bold text-[19px] mb-2">Application not found</h2>
+      <p class="text-[13px] text-text-muted max-w-sm mx-auto mb-6">This application may have been withdrawn, or the link you followed is no longer valid.</p>
+      <button class="bg-primary text-white text-[13px] font-semibold px-5 h-10 rounded-[8px]">Back to Applications</button>
+    </div>
+  </div>
+
+  <!-- ============ ERROR STATE ============ -->
+  <div class="view" id="view-error">
+    <div class="bg-white border border-border-hairline rounded-[16px] py-20 px-6 text-center">
+      <div class="w-14 h-14 rounded-[12px] bg-[#FBEAE8] border border-[#F3C9C4] flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-status-red text-[26px]">error_outline</span>
+      </div>
+      <h2 class="font-display font-bold text-[19px] mb-2">Couldn't load this application</h2>
+      <p class="text-[13px] text-text-muted max-w-sm mx-auto mb-6">Something went wrong on our end. Your data is safe — please try again.</p>
+      <button onclick="setView('loaded')" class="bg-primary text-white text-[13px] font-semibold px-5 h-10 rounded-[8px] inline-flex items-center gap-2">
+        <span class="material-symbols-outlined text-[16px]">refresh</span> Retry
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ LOADED STATE ============ -->
+  <div class="view active" id="view-loaded">
+
+    <!-- Header card -->
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+      <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+        <div class="w-14 h-14 rounded-[10px] bg-primary/10 border border-border-hairline flex items-center justify-center flex-shrink-0">
+          <span class="font-display font-bold text-[18px] text-primary">V</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h1 class="font-display font-bold text-[20px] leading-tight mb-1">Senior Frontend Engineer</h1>
+          <div class="text-[13px] text-text-secondary">Vercel · Remote</div>
+          <div class="text-[12px] text-text-muted mt-1">Applied on Aug 24, 2026</div>
+        </div>
+        <div class="flex-shrink-0">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-[12px] font-semibold bg-[#EFF3EF] text-match-forest border border-match-forest/30">
+            <span class="w-1.5 h-1.5 rounded-full bg-match-forest"></span> In Review
+          </span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-wrap gap-2 mt-5 pt-5 border-t border-border-hairline">
+        <button class="h-9 px-4 rounded-[8px] bg-primary text-white text-[13px] font-semibold flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">edit_note</span> Add note
+        </button>
+        <button class="h-9 px-4 rounded-[8px] border border-border-hairline text-[13px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream">
+          <span class="material-symbols-outlined text-[16px]">open_in_new</span> Open job
+        </button>
+        <button class="h-9 px-4 rounded-[8px] border border-border-hairline text-[13px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream">
+          <span class="material-symbols-outlined text-[16px]">link</span> Open source
+        </button>
+        <!-- Withdraw is business-rule gated — e.g. hidden/disabled once status is Offer, Hired, or Rejected -->
+        <button class="h-9 px-4 rounded-[8px] border border-status-red/30 text-status-red text-[13px] font-semibold flex items-center gap-1.5 hover:bg-[#FBEAE8] ml-auto">
+          <span class="material-symbols-outlined text-[16px]">cancel</span> Withdraw
+        </button>
+      </div>
+    </div>
+
+    <!-- Meta grid -->
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-5">
+        <div>
+          <div class="text-[11px] font-semibold text-text-muted mb-1">COMPANY</div>
+          <div class="text-[13px] font-semibold">Vercel</div>
+        </div>
+        <div>
+          <div class="text-[11px] font-semibold text-text-muted mb-1">APPLIED</div>
+          <div class="text-[13px] font-semibold">Aug 24, 2026</div>
+        </div>
+        <div>
+          <div class="text-[11px] font-semibold text-text-muted mb-1">METHOD</div>
+          <div class="text-[13px] font-semibold">Direct Apply</div>
+        </div>
+        <div>
+          <div class="text-[11px] font-semibold text-text-muted mb-1">SOURCE</div>
+          <div class="text-[13px] font-semibold">SkillMatch Feed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status timeline -->
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+      <h2 class="font-display font-bold text-[15px] mb-5">Status timeline</h2>
+
+      <!-- NOTE: every entry below (status, timestamp, and any note text) is rendered
+           exactly as returned by the backend. The UI never infers or generates a
+           reason for a status change — only what the API provides is shown. -->
+      <div class="relative pl-1">
+        <div class="absolute left-[15px] top-2 bottom-2 w-px bg-border-hairline"></div>
+
+        <div class="relative flex gap-4 pb-6">
+          <div class="w-8 h-8 rounded-full bg-match-forest text-white flex items-center justify-center flex-shrink-0 z-10">
+            <span class="material-symbols-outlined text-[16px]">check</span>
+          </div>
+          <div class="pt-1">
+            <div class="text-[13px] font-semibold">Applied</div>
+            <div class="text-[12px] text-text-muted mt-0.5">Aug 24, 2026 · 10:12 AM</div>
+          </div>
+        </div>
+
+        <div class="relative flex gap-4 pb-6">
+          <div class="w-8 h-8 rounded-full bg-match-forest text-white flex items-center justify-center flex-shrink-0 z-10">
+            <span class="material-symbols-outlined text-[16px]">check</span>
+          </div>
+          <div class="pt-1">
+            <div class="text-[13px] font-semibold">In Review</div>
+            <div class="text-[12px] text-text-muted mt-0.5">Aug 27, 2026 · 3:40 PM</div>
+          </div>
+        </div>
+
+        <div class="relative flex gap-4 pb-6">
+          <div class="w-8 h-8 rounded-full bg-white border-2 border-border-hairline text-text-muted flex items-center justify-center flex-shrink-0 z-10">
+            <span class="material-symbols-outlined text-[16px]">groups</span>
+          </div>
+          <div class="pt-1">
+            <div class="text-[13px] font-semibold text-text-muted">Interview</div>
+            <div class="text-[12px] text-text-muted mt-0.5">Not yet scheduled</div>
+          </div>
+        </div>
+
+        <div class="relative flex gap-4">
+          <div class="w-8 h-8 rounded-full bg-white border-2 border-border-hairline text-text-muted flex items-center justify-center flex-shrink-0 z-10">
+            <span class="material-symbols-outlined text-[16px]">emoji_events</span>
+          </div>
+          <div class="pt-1">
+            <div class="text-[13px] font-semibold text-text-muted">Offer</div>
+            <div class="text-[12px] text-text-muted mt-0.5">Pending previous steps</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alternative outcome (rejected path) — shown instead of the remaining
+           steps only when the backend returns a "Rejected" status. Hidden here. -->
+      <!--
+      <div class="relative flex gap-4 mt-1">
+        <div class="w-8 h-8 rounded-full bg-status-red text-white flex items-center justify-center flex-shrink-0 z-10">
+          <span class="material-symbols-outlined text-[16px]">close</span>
+        </div>
+        <div class="pt-1">
+          <div class="text-[13px] font-semibold text-status-red">Rejected</div>
+          <div class="text-[12px] text-text-muted mt-0.5">Sep 02, 2026 · 9:05 AM</div>
+          <div class="text-[12px] text-text-secondary mt-1">[reason text, only if provided by backend]</div>
+        </div>
+      </div>
+      -->
+    </div>
+
+    <!-- User notes -->
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display font-bold text-[15px]">Your notes</h2>
+        <button class="text-[12px] font-semibold text-primary flex items-center gap-1">
+          <span class="material-symbols-outlined text-[15px]">add</span> Add note
+        </button>
+      </div>
+      <div class="space-y-3">
+        <div class="border border-border-hairline rounded-[10px] p-3.5">
+          <p class="text-[13px] text-text-secondary leading-relaxed">Recruiter mentioned the team is hiring for two openings — followed up asking about the tech stack.</p>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-[11px] text-text-muted">Aug 27, 2026</span>
+            <button class="text-[11px] font-semibold text-primary">Edit</button>
+          </div>
+        </div>
+        <div class="border border-border-hairline rounded-[10px] p-3.5">
+          <p class="text-[13px] text-text-secondary leading-relaxed">Tailored resume to highlight design-systems work before applying.</p>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-[11px] text-text-muted">Aug 24, 2026</span>
+            <button class="text-[11px] font-semibold text-primary">Edit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related skill gaps -->
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+      <h2 class="font-display font-bold text-[15px] mb-1">Related skill gaps</h2>
+      <p class="text-[12px] text-text-muted mb-4">Skills this role expects that aren't confirmed on your profile yet.</p>
+      <div class="flex flex-wrap gap-2">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] border border-border-hairline text-text-muted">
+          <span class="text-match-amber font-bold">+</span> System Design
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] border border-border-hairline text-text-muted">
+          <span class="text-match-amber font-bold">+</span> GraphQL
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] border border-border-hairline text-text-muted">
+          <span class="text-match-amber font-bold">+</span> Testing (Jest)
+        </span>
+      </div>
+    </div>
+
+    <!-- Related roadmap items -->
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display font-bold text-[15px]">Related roadmap items</h2>
+        <a href="#" class="text-[12px] font-semibold text-primary flex items-center gap-1">Open roadmap <span class="material-symbols-outlined text-[14px]">arrow_forward</span></a>
+      </div>
+      <div class="space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-[8px] bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary text-[16px]">school</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-[13px] font-semibold">System Design Fundamentals</div>
+            <div class="w-full h-1.5 rounded-full bg-canvas-cream mt-1.5 overflow-hidden">
+              <div class="h-full bg-match-amber rounded-full" style="width:40%"></div>
+            </div>
+          </div>
+          <span class="text-[11px] font-semibold text-text-muted flex-shrink-0">40%</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-[8px] bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary text-[16px]">school</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-[13px] font-semibold">GraphQL in Practice</div>
+            <div class="w-full h-1.5 rounded-full bg-canvas-cream mt-1.5 overflow-hidden">
+              <div class="h-full bg-match-amber rounded-full" style="width:10%"></div>
+            </div>
+          </div>
+          <span class="text-[11px] font-semibold text-text-muted flex-shrink-0">10%</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  function setView(name){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+</script>
+
+</body>
+</html>

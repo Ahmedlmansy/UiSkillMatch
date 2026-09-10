@@ -1,0 +1,925 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved Jobs &amp; Opportunity Matcher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #FBF9F5;
+      color: #1E2530;
+    }
+    .font-serif-heading {
+      font-family: 'Playfair Display', serif;
+    }
+    @keyframes shimmer {
+      0% { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #233450 25%, #2E4166 50%, #233450 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.3s linear infinite;
+      border-radius: 8px;
+    }
+    .skeleton-light {
+      background: linear-gradient(90deg, #F0EDE6 25%, #E4E0D6 50%, #F0EDE6 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.3s linear infinite;
+      border-radius: 8px;
+    }
+    .card-dim { opacity: .45; filter: grayscale(.4); }
+    .card-archived { transition: opacity .4s, transform .4s; opacity: 0; transform: scale(.97); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- Exact Reference Navbar -->
+  <header class="w-full bg-white border-b border-[#E6E3DB] sticky top-0 z-50"><div class="max-w-[1360px] mx-auto px-6 flex items-center justify-between gap-6 py-2.5"><div class="flex items-center gap-8 shrink-0"><a href="#" class="flex items-center gap-2.5 group"><div class="w-8 h-8 rounded-lg bg-[#14233D] flex items-center justify-center text-white font-bold text-lg tracking-tight">S</div><div class="flex flex-col"><span class="text-[18px] font-bold text-[#14233D] leading-tight tracking-tight">SkillMatch</span><span class="text-[10px] font-medium text-[#667085] tracking-tight">Career Guidance</span></div></a><nav class="hidden lg:flex items-center gap-5 text-[13px]"><a href="#" class="font-medium text-[#525B6C] hover:text-[#14233D] transition-colors">Home</a><a href="#" class="font-medium text-[#525B6C] hover:text-[#14233D] transition-colors">Blog</a><a href="#" class="font-semibold text-[#d95d39] border-b-2 border-[#d95d39] pb-1">Saved Jobs</a></nav></div><div class="flex items-center gap-4 flex-1 justify-end max-w-xl"><div class="relative flex-1 max-w-xs hidden md:block"><svg class="w-3.5 h-3.5 text-[#8A94A6] absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg><input type="text" placeholder="Search jobs or skills..." class="w-full bg-[#FAF8F5] border border-[#E2DDD3] text-[#1E2530] text-xs rounded-lg pl-8 pr-9 py-2 focus:outline-none focus:border-[#14233D] transition-colors"><span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#8A94A6] border border-[#DDD8CD] bg-white px-1 py-0.2 rounded">⌘K</span></div><div class="flex items-center gap-3 shrink-0"><button class="relative w-9 h-9 rounded-xl border border-[#E4E0D6] bg-[#FAF8F5] hover:bg-[#F2EFEA] flex items-center justify-center text-[#525B6C] hover:text-[#14233D] transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#d95d39]"></span></button><div class="flex items-center gap-3 pl-2 border-l border-[#E6E3DB] cursor-pointer group"><div class="w-9 h-9 rounded-xl bg-[#14233D] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">AM</div><div class="hidden sm:block text-left"><div class="text-xs font-bold text-[#14233D] leading-tight group-hover:text-[#1C2F52] transition-colors">Alex Mercer</div><div class="text-[11px] text-[#697284]">Senior Dev</div></div><svg class="w-3.5 h-3.5 text-[#697284] group-hover:text-[#14233D] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div></div></div></div></header>
+
+  <!-- Main Centered Content -->
+  <main class="flex-1 max-w-[1360px] w-full mx-auto px-6 py-8"><!-- Interactive UX State Switcher Bar & Live Toast Container -->
+<div class="mb-6 space-y-2">
+  <div class="bg-white border border-[#E6E3DB] rounded-xl p-3 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+    <div class="flex items-center gap-2 flex-wrap">
+      <span class="font-bold text-[#14233D] flex items-center gap-1.5 shrink-0">
+        <svg class="w-3.5 h-3.5 text-[#d95d39]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+        </svg>
+        Preview State Mode:
+      </span>
+      <div class="flex items-center gap-1.5 flex-wrap">
+        <button onclick="window.setScreenState('default')" id="btn-state-default" class="state-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-[#14233D] text-white transition-all shadow-xs">Loaded (Default)</button>
+        <button onclick="window.setScreenState('loading')" id="btn-state-loading" class="state-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FAF8F5] text-[#525B6C] border border-[#E2DDD3] hover:text-[#14233D] transition-all">Loading / Skeleton</button>
+        <button onclick="window.setScreenState('empty')" id="btn-state-empty" class="state-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FAF8F5] text-[#525B6C] border border-[#E2DDD3] hover:text-[#14233D] transition-all">Empty / Not Found</button>
+        <button onclick="window.setScreenState('expired')" id="btn-state-expired" class="state-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FAF8F5] text-[#525B6C] border border-[#E2DDD3] hover:text-[#14233D] transition-all">Expired / Stale</button>
+        <button onclick="window.setScreenState('error')" id="btn-state-error" class="state-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FAF8F5] text-[#525B6C] border border-[#E2DDD3] hover:text-[#14233D] transition-all">Error / Retry</button>
+      </div>
+    </div>
+    <div class="flex items-center gap-1.5 flex-wrap border-t md:border-t-0 md:border-l border-[#E6E3DB] pt-2 md:pt-0 md:pl-3">
+      <span class="text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">AI Engine:</span>
+      <button onclick="window.setAiState('success')" id="btn-ai-success" class="ai-state-btn px-2 py-0.5 rounded text-[11px] font-semibold bg-[#FAF8F5] text-[#14233D] border border-[#E2DDD3] hover:border-[#14233D]">Match: Success</button>
+      <button onclick="window.setAiState('analyzing')" id="btn-ai-analyzing" class="ai-state-btn px-2 py-0.5 rounded text-[11px] font-semibold bg-[#FAF8F5] text-[#525B6C] border border-[#E2DDD3] hover:border-[#14233D]">Analyzing</button>
+      <button onclick="window.setAiState('low')" id="btn-ai-low" class="ai-state-btn px-2 py-0.5 rounded text-[11px] font-semibold bg-[#FAF8F5] text-[#525B6C] border border-[#E2DDD3] hover:border-[#14233D]">Low Confidence</button>
+      <button onclick="window.setAiState('missing')" id="btn-ai-missing" class="ai-state-btn px-2 py-0.5 rounded text-[11px] font-semibold bg-[#FAF8F5] text-[#525B6C] border border-[#E2DDD3] hover:border-[#14233D]">Missing Profile</button>
+      <button onclick="window.setAiState('failure')" id="btn-ai-failure" class="ai-state-btn px-2 py-0.5 rounded text-[11px] font-semibold bg-[#FAF8F5] text-[#525B6C] border border-[#E2DDD3] hover:border-[#14233D]">AI Failure</button>
+    </div>
+  </div>
+
+  <!-- Live Toast / Action Feedback Container (Hidden by default, triggered via JS) -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none transition-all duration-300"></div>
+</div>
+    
+    <!-- Hero Header Banner (New Editorial Minimalist Style) -->
+    <div class="bg-white border border-[#E6E3DB] rounded-2xl p-7 mb-8 shadow-[0_2px_12px_-4px_rgba(20,35,61,0.04)] flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div class="max-w-2xl">
+        <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#6B7280] mb-2">
+          <span class="">Candidate Workspace</span>
+          <span class="text-[#D1D5DB]">•</span>
+          <span class="text-[#d95d39] font-bold">Bookmarked Opportunities</span>
+        </div>
+        <h1 class="font-serif-heading text-3xl md:text-4xl text-[#14233D] font-bold tracking-tight mb-2">Saved Opportunities</h1>
+        <p class="text-sm text-[#525B6C] leading-relaxed">
+          Manage, annotate, and accelerate positions tailored to your engineering background. AI continuously tracks requirement changes and deadline windows.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Ribbon (All Navy & Warm Ivory - Zero Green) -->
+      <div class="grid grid-cols-3 gap-3 bg-[#FAF8F4] border border-[#E8E4DA] p-3 rounded-xl min-w-[340px]">
+        <div class="px-3 py-2 text-center border-r border-[#E8E4DA]">
+          <span class="block text-xl font-bold text-[#14233D]">12</span>
+          <span class="text-[11px] font-semibold text-[#667085] uppercase tracking-wide">Saved Roles</span>
+        </div>
+        <div class="px-3 py-2 text-center border-r border-[#E8E4DA]">
+          <span class="block text-xl font-bold text-[#14233D]">5</span>
+          <span class="text-[11px] font-semibold text-[#667085] uppercase tracking-wide">High Fit</span>
+        </div>
+        <div class="px-3 py-2 text-center">
+          <span class="block text-xl font-bold text-[#14233D]">2</span>
+          <span class="text-[11px] font-semibold text-[#667085] uppercase tracking-wide">Expiring</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter & Toolbar Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-white border border-[#E6E3DB] p-4 rounded-xl shadow-xs">
+      <!-- Search -->
+      <div class="relative flex-1 min-w-[280px]">
+        <svg class="w-4 h-4 text-[#8A94A6] absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input type="text" placeholder="Search saved jobs by title, tech stack, or company..." class="w-full bg-[#FAF8F5] border border-[#E2DDD3] text-[#1E2530] text-sm rounded-lg pl-10 pr-12 py-2.5 focus:outline-none focus:border-[#14233D] transition-colors" value="Flutter &amp; Frontend">
+        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-[#8A94A6] border border-[#DDD8CD] bg-white px-1.5 py-0.5 rounded">⌘K</span>
+      </div>
+
+      <!-- Pill Filter Badges (Matches Mobile design chip style) -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+        <button class="bg-[#d95d39] hover:bg-[#c85a32] text-white text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"><span class="">All Saved</span><span class="bg-white/20 text-white text-[10px] px-1.5 py-0.2 rounded-full">12</span></button>
+        <button class="bg-[#FAF8F5] hover:bg-[#F2EFEA] text-[#14233D] border border-[#E6E2D8] text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors">
+          High Fit (≥75%)
+        </button>
+        <button class="bg-[#FAF8F5] hover:bg-[#F2EFEA] text-[#14233D] border border-[#E6E2D8] text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors">
+          Fresh Added
+        </button>
+        <button class="bg-[#FAF8F5] hover:bg-[#F2EFEA] text-[#14233D] border border-[#E6E2D8] text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors">
+          Applied
+        </button>
+      </div>
+
+      <!-- Action Utilities -->
+      <div class="flex items-center gap-2">
+        <button class="text-xs font-semibold text-[#14233D] border border-[#E6E2D8] bg-[#FAF8F5] hover:bg-[#F2EFEA] px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M6 10h12M9 16h6"></path>
+          </svg>
+          Sort: Best Match
+        </button>
+      </div>
+    </div><div class="flex flex-wrap items-center justify-between gap-3 mb-6 bg-[#FAF8F4] border border-[#E8E4DA] px-4 py-3 rounded-xl">
+  <div class="flex items-center gap-3">
+    <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#14233D]">
+      <input type="checkbox" id="select-all-checkbox" onchange="window.toggleSelectAll(this.checked)" class="rounded border-[#DCD7CB] text-[#14233D] focus:ring-0 w-4 h-4 cursor-pointer">
+      <span id="select-all-label">Select All (12 Roles)</span>
+    </label>
+    <span class="text-[#DCD7CB]">|</span>
+    <div class="flex items-center gap-2">
+      <button onclick="batchApply()" class="px-3 py-1.5 rounded-lg bg-[#14233D] text-white hover:bg-[#1E3256] text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-colors">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+        Batch Fast Track Apply
+      </button>
+      <button onclick="batchArchive()" class="px-3 py-1.5 rounded-lg border border-[#DCD7CB] bg-white hover:bg-[#FAF8F5] text-[#14233D] text-xs font-semibold shadow-xs transition-colors">
+        Archive Selected
+      </button>
+    </div>
+  </div>
+  <div class="flex items-center gap-2">
+    <button onclick="window.triggerToast('export-csv', 'CSV &amp; PDF Archive')" class="px-3 py-1.5 rounded-lg border border-[#DCD7CB] bg-white hover:bg-[#FAF8F5] text-[#14233D] text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-colors">
+      <svg class="w-3.5 h-3.5 text-[#525B6C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+      </svg>
+      Export Saved (CSV / PDF)
+    </button>
+  </div>
+</div>
+
+    <!-- Main Grid: 2-Column Balanced Master Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-7">
+      
+      <!-- Primary Job Feed (8 Columns) -->
+      <div class="lg:col-span-8 space-y-4">
+        
+        <!-- Job Card 1: Featured Flutter & Mobile role (Matches Reference Target) -->
+        <!-- Job Card 1: Featured Flutter & Mobile Architect with Explainable AI -->
+<!-- Job Card 1: Senior Flutter & Mobile Architect with Explainable AI -->
+<div class="bg-white border border-[#E6E3DB] hover:border-[#14233D]/40 transition-all duration-200 rounded-2xl p-6 shadow-[0_2px_8px_-2px_rgba(20,35,61,0.03)] group relative job-item" data-fit="89" data-company="TechNova Labs">
+  <div class="flex items-start justify-between gap-4 mb-4">
+    <div class="flex items-start gap-4"><input type="checkbox" class="job-select rounded border-[#DCD7CB] text-[#14233D] focus:ring-0 w-4 h-4 cursor-pointer mt-4 shrink-0" onchange="updateSelectAllState()">
+      <div class="w-13 h-13 rounded-xl bg-[#FAF8F5] border border-[#E5E1D7] flex items-center justify-center p-2.5 text-[#14233D] font-bold text-lg shrink-0">
+        TN
+      </div>
+      <div>
+        <div class="flex items-center gap-2 mb-1 flex-wrap">
+          <h3 class="font-serif-heading text-xl font-bold text-[#14233D] group-hover:text-[#1F365E] transition-colors">
+            Senior Flutter &amp; Mobile Architect
+          </h3>
+          <span class="bg-[#F8F5EC] text-[#6B5826] border border-[#E9E1CD] text-[11px] font-semibold px-2 py-0.5 rounded-md">
+            Fresh • 2d ago
+          </span>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-[#525B6C] flex-wrap">
+          <span class="font-semibold text-[#14233D]">TechNova Labs</span>
+          <span class="">•</span>
+          <span class="">Cairo, Egypt (Hybrid)</span>
+          <span class="">•</span>
+          <span class="font-medium text-[#14233D]">$3,800 - $4,800 / mo</span>
+          <span class="">•</span>
+          <span class="text-[11px] text-[#596375] font-medium bg-[#FAF8F5] border border-[#E6E2D8] px-2 py-0.5 rounded">Verified direct from TechNova ATS • Updated 4h ago</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Match Score Badge -->
+    <div class="text-right shrink-0">
+      <div class="inline-flex items-center gap-1.5 bg-[#14233D] text-white px-3 py-1 rounded-full text-xs font-semibold shadow-xs">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        8/9 Fit (89%)
+      </div>
+      <span class="block text-[10px] text-[#717A8C] mt-1">High Confidence Match</span>
+    </div>
+  </div>
+
+  <!-- Tags & Attributes -->
+  <div class="flex flex-wrap items-center gap-1.5 mb-4">
+    <span class="bg-[#F6F4EE] border border-[#E5E1D7] text-[#14233D] text-xs font-semibold px-2.5 py-1 rounded-md">Flutter</span>
+    <span class="bg-[#F6F4EE] border border-[#E5E1D7] text-[#14233D] text-xs font-semibold px-2.5 py-1 rounded-md">Dart</span>
+    <span class="bg-[#F6F4EE] border border-[#E5E1D7] text-[#14233D] text-xs font-semibold px-2.5 py-1 rounded-md">Bloc / Riverpod</span>
+    <span class="bg-[#F6F4EE] border border-[#E5E1D7] text-[#14233D] text-xs font-semibold px-2.5 py-1 rounded-md">REST APIs</span>
+    <span class="bg-white border border-[#E5E1D7] text-[#6A7383] text-xs px-2 py-1 rounded-md">+3 bonus skills</span>
+  </div>
+
+
+  <!-- Expandable Details Drawer -->
+  <div class="job-details-extra hidden mt-1 mb-4 border border-[#E8E4DA] rounded-xl bg-[#FAF9F6] p-4 text-xs space-y-3">
+    <div>
+      <span class="font-bold text-[#14233D] block mb-1">Description</span>
+      <p class="text-[#525B6C] leading-relaxed">Lead the mobile architecture for TechNova's consumer AI console app. You will own the Flutter client used by 180k+ daily users, driving offline-first sync, deterministic state (Bloc) and sub-90ms frame budgets.</p>
+    </div>
+    <div>
+      <span class="font-bold text-[#14233D] block mb-1">Key Responsibilities</span>
+      <ul class="text-[#525B6C] leading-relaxed list-disc pl-4 space-y-0.5">
+        <li>Architect modular Flutter features and design-token theming system</li>
+        <li>Enforce automated testing coverage (Patrol / Appium) across releases</li>
+        <li>Own CI/CD mobile pipelines and store release trains</li>
+      </ul>
+    </div>
+    <div class="flex flex-wrap gap-2 pt-2 border-t border-[#F0ECE4]">
+      <span class="bg-white border border-[#E5E1D7] px-2 py-1 rounded text-[11px] text-[#525B6C]">Source: TechNova ATS (verified 4h ago)</span>
+      <span class="bg-white border border-[#E5E1D7] px-2 py-1 rounded text-[11px] text-[#525B6C]">Method: Internal Fast Track</span>
+      <span class="bg-white border border-[#E5E1D7] px-2 py-1 rounded text-[11px] text-[#525B6C]">Experience: 5+ Years</span>
+    </div>
+  </div>
+  <!-- Explainable AI Match Insight Box -->
+  <div class="bg-[#FAF8F4] border border-[#E8E4DA] rounded-xl p-3.5 mb-4 text-xs space-y-2.5">
+    <div class="flex items-center justify-between flex-wrap gap-2 border-b border-[#EAE5DA] pb-2">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-[#d95d39]"></span>
+        <span class="font-bold text-[#14233D]">AI Match Rationale &amp; Evidence</span>
+      </div>
+      <span class="text-[11px] text-[#667085]">Score derived from 4 validated production projects</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div class="bg-white border border-[#E6E3DB] p-2.5 rounded-lg">
+        <span class="block text-[11px] font-bold text-[#14233D] mb-1">Core Strengths (Advantage)</span>
+        <p class="text-[#525B6C] text-[11px] leading-relaxed">
+          +35% candidate advantage in <strong class="text-[#14233D]">Flutter Bloc Architecture</strong> and complex offline-first caching compared to typical applicants.
+        </p>
+      </div>
+      <div class="bg-white border border-[#E6E3DB] p-2.5 rounded-lg">
+        <span class="block text-[11px] font-bold text-[#14233D] mb-1">Identified Gap &amp; Next Step</span>
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-[#525B6C] text-[11px] leading-relaxed">
+            Missing: <strong class="text-[#14233D]">Automated Appium / Patrol UI testing</strong>.
+          </p>
+          <button onclick="window.triggerToast('skill-bridge', 'TechNova Labs')" class="shrink-0 text-[11px] font-semibold text-[#d95d39] hover:underline bg-[#FAF8F5] border border-[#E9E1CD] px-2 py-1 rounded">
+            Bridge in 1.5h →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note Box -->
+  <div class="bg-[#FAF9F6] border border-[#EBE7DF] rounded-xl px-3.5 py-2.5 mb-4 text-xs text-[#4F5868] flex items-center justify-between">
+    <div class="flex items-center gap-2 truncate">
+      <svg class="w-4 h-4 text-[#8C95A5] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+      </svg>
+      <span class=""><strong>Candidate Note:</strong> Verified team values clean architecture &amp; unit test coverage.</span>
+    </div>
+    <button onclick="editNote(this)" class="text-[11px] font-semibold text-[#d95d39] hover:underline shrink-0">Edit</button>
+  </div>
+
+  <!-- Card Footer Actions -->
+  <div class="flex items-center justify-between pt-3 border-t border-[#F0ECE4] text-xs flex-wrap gap-2">
+    <span class="card-status text-[#727B8D]">Deadline: Oct 28 (14 days remaining)</span>
+    <div class="flex items-center gap-2.5">
+      <button onclick="toggleDetails(this)" class="px-4 py-2 rounded-xl border border-[#DCD7CB] text-[#14233D] bg-[#FAF8F5] font-semibold hover:bg-white hover:border-[#14233D]/40 transition-colors shadow-xs">View Details</button>
+      <button class="apply-btn px-4 py-2 rounded-xl bg-[#d95d39] hover:bg-[#c85a32] text-white font-semibold shadow-md transition-all flex items-center gap-1.5" onclick="applyToJob(this)">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+        <span class="">Apply Fast Track</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+        <!-- Job Card 2: Senior Frontend Developer -->
+        <!-- Job Card 2: Lead UI/UX Systems Engineer with Explainable AI -->
+<div class="bg-white border border-[#E6E3DB] hover:border-[#14233D]/40 transition-all duration-200 rounded-2xl p-6 shadow-[0_2px_8px_-2px_rgba(20,35,61,0.03)] group relative job-item" data-fit="78" data-company="PulseHealth Systems">
+  <div class="flex items-start justify-between gap-4 mb-4">
+    <div class="flex items-start gap-4"><input type="checkbox" class="job-select rounded border-[#DCD7CB] text-[#14233D] focus:ring-0 w-4 h-4 cursor-pointer mt-4 shrink-0" onchange="updateSelectAllState()">
+      <div class="w-13 h-13 rounded-xl bg-[#FAF8F5] border border-[#E5E1D7] flex items-center justify-center p-2.5 text-[#14233D] font-bold text-lg shrink-0">
+        PH
+      </div>
+      <div>
+        <div class="flex items-center gap-2 mb-1 flex-wrap">
+          <h3 class="font-serif-heading text-xl font-bold text-[#14233D] group-hover:text-[#1F365E] transition-colors">
+            Lead UI/UX Systems Engineer
+          </h3>
+          <span class="bg-[#F8F5EC] text-[#6B5826] border border-[#E9E1CD] text-[11px] font-semibold px-2 py-0.5 rounded-md">
+            Fresh • 1d ago
+          </span>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-[#525B6C] flex-wrap">
+          <span class="font-semibold text-[#14233D]">PulseHealth Systems</span>
+          <span class="">•</span>
+          <span class="">Remote (Worldwide)</span>
+          <span class="">•</span>
+          <span class="font-medium text-[#14233D]">$4,200 - $5,400 / mo</span>
+          <span class="">•</span>
+          <span class="text-[11px] text-[#596375] font-medium bg-[#FAF8F5] border border-[#E6E2D8] px-2 py-0.5 rounded">Direct Verified Hire • Synchronized 2h ago</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Match Score Badge -->
+    <div class="text-right shrink-0">
+      <div class="inline-flex items-center gap-1.5 bg-[#14233D] text-white px-3 py-1 rounded-full text-xs font-semibold shadow-xs">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        7/9 Fit (78%)
+      </div>
+      <span class="block text-[10px] text-[#717A8C] mt-1">Direct Verified Hire</span>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-1.5 mb-4">
+    <span class="bg-[#F6F4EE] border border-[#E5E1D7] text-[#14233D] text-xs font-semibold px-2.5 py-1 rounded-md">React 19</span>
+    <span class="bg-[#F6F4EE] border border-[#E5E1D7] text-[#14233D] text-xs font-semibold px-2.5 py-1 rounded-md">TypeScript</span>
+    <span class="bg-[#F6F4EE] border border-[#E5E1D7] text-[#14233D] text-xs font-semibold px-2.5 py-1 rounded-md">Design Systems</span>
+    <span class="bg-[#F6F4EE] border border-[#E5E1D7] text-[#14233D] text-xs font-semibold px-2.5 py-1 rounded-md">WCAG 2.1 AA</span>
+  </div>
+
+
+  <!-- Expandable Details Drawer -->
+  <div class="job-details-extra hidden mt-1 mb-4 border border-[#E8E4DA] rounded-xl bg-[#FAF9F6] p-4 text-xs space-y-3">
+    <div>
+      <span class="font-bold text-[#14233D] block mb-1">Description</span>
+      <p class="text-[#525B6C] leading-relaxed">Own PulseHealth's design system "Meridian" — a React 19 + TypeScript component library consumed by 6 product squads. You'll govern WCAG 2.1 AA compliance and token pipelines end-to-end.</p>
+    </div>
+    <div>
+      <span class="font-bold text-[#14233D] block mb-1">Key Responsibilities</span>
+      <ul class="text-[#525B6C] leading-relaxed list-disc pl-4 space-y-0.5">
+        <li>Evolve design tokens and theming across web + mobile surfaces</li>
+        <li>Run accessibility audits and remediation sprints</li>
+        <li>Mentor squads on component composition best practices</li>
+      </ul>
+    </div>
+    <div class="flex flex-wrap gap-2 pt-2 border-t border-[#F0ECE4]">
+      <span class="bg-white border border-[#E5E1D7] px-2 py-1 rounded text-[11px] text-[#525B6C]">Source: PulseHealth Portal (synced 2h ago)</span>
+      <span class="bg-white border border-[#E5E1D7] px-2 py-1 rounded text-[11px] text-[#525B6C]">Method: Direct Verified Hire</span>
+      <span class="bg-white border border-[#E5E1D7] px-2 py-1 rounded text-[11px] text-[#525B6C]">Status: Technical Screening</span>
+    </div>
+  </div>
+  <!-- Explainable AI Match Insight Box -->
+  <div class="bg-[#FAF8F4] border border-[#E8E4DA] rounded-xl p-3.5 mb-4 text-xs space-y-2.5">
+    <div class="flex items-center justify-between flex-wrap gap-2 border-b border-[#EAE5DA] pb-2">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-[#14233D]"></span>
+        <span class="font-bold text-[#14233D]">AI Match Rationale: UI Accessibility &amp; Systems</span>
+      </div>
+      <span class="text-[11px] text-[#667085]">Strong alignment with design token standards</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div class="bg-white border border-[#E6E3DB] p-2.5 rounded-lg">
+        <span class="block text-[11px] font-bold text-[#14233D] mb-1">Core Strengths</span>
+        <p class="text-[#525B6C] text-[11px] leading-relaxed">
+          Demonstrated mastery in <strong class="text-[#14233D]">Design Token pipelines</strong> and high-performance React design systems.
+        </p>
+      </div>
+      <div class="bg-white border border-[#E6E3DB] p-2.5 rounded-lg">
+        <span class="block text-[11px] font-bold text-[#14233D] mb-1">Actionable Next Step</span>
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-[#525B6C] text-[11px] leading-relaxed">
+            Highlight: <strong class="text-[#14233D]">WCAG compliance case studies</strong> in CV.
+          </p>
+          <button onclick="window.triggerToast('align-cv', 'PulseHealth Systems')" class="shrink-0 text-[11px] font-semibold text-[#d95d39] hover:underline bg-[#FAF8F5] border border-[#E9E1CD] px-2 py-1 rounded">
+            Instant Align Resume →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note prompt -->
+  <div class="note-box border border-dashed border-[#DED9CE] rounded-xl px-3.5 py-2.5 mb-4 text-xs text-[#6C7585] flex items-center justify-between hover:bg-[#FAF8F5] transition-colors">
+    <span class="note-text italic">+ Add a private note or salary target for this position...</span>
+    <button onclick="editNote(this)" class="font-semibold text-[#d95d39] text-[11px]">Add Note</button>
+  </div>
+
+  <div class="flex items-center justify-between pt-3 border-t border-[#F0ECE4] text-xs flex-wrap gap-2">
+    <span class="card-status text-[#727B8D]">Applied in Review • Sep 8 (Technical Screening Stage)</span>
+    <div class="flex items-center gap-2.5">
+      <button onclick="toggleDetails(this)" class="px-4 py-2 rounded-xl border border-[#DCD7CB] bg-[#FAF8F5] text-[#14233D] font-semibold hover:bg-white hover:border-[#14233D]/40 transition-colors shadow-xs">View Details</button>
+      <button onclick="toggleDetails(this)" class="px-4 py-2 rounded-xl bg-[#14233D] hover:bg-[#1E3256] text-white font-semibold shadow-xs transition-colors flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-[#d95d39]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span class="">View Application Status</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+        <!-- Job Card 3: Cloud Frontend Engineer -->
+        <div class="bg-white border border-[#E6E3DB] hover:border-[#14233D]/40 transition-all duration-200 rounded-2xl p-6 shadow-[0_2px_8px_-2px_rgba(20,35,61,0.03)] group relative job-item" data-fit="67" data-company="CloudScale Tech">
+          <div class="flex items-start justify-between gap-4 mb-4">
+            <div class="flex items-start gap-4"><input type="checkbox" class="job-select rounded border-[#DCD7CB] text-[#14233D] focus:ring-0 w-4 h-4 cursor-pointer mt-4 shrink-0" onchange="updateSelectAllState()">
+              <div class="w-13 h-13 rounded-xl bg-[#FAF8F5] border border-[#E5E1D7] flex items-center justify-center p-2.5 text-[#14233D] font-bold text-lg shrink-0">
+                CS
+              </div>
+              <div>
+                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                  <h3 class="font-serif-heading text-xl font-bold text-[#14233D] group-hover:text-[#1F365E] transition-colors">
+                    Frontend Infrastructure Engineer
+                  </h3>
+                  <span class="bg-[#F8F5EC] text-[#6B5826] border border-[#E9E1CD] text-[11px] font-semibold px-2 py-0.5 rounded-md">
+                    Expiring soon • 36h
+                  </span>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-[#525B6C] flex-wrap">
+                  <span class="font-semibold text-[#14233D]">CloudScale Tech</span>
+                  <span class="">•</span>
+                  <span class="">Cairo (On-site)</span>
+                  <span class="">•</span>
+                  <span class="font-medium text-[#14233D]">$3,200 - $4,000 / mo</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-right shrink-0">
+              <div class="inline-flex items-center gap-1.5 bg-[#14233D] text-white px-3 py-1 rounded-full text-xs font-semibold shadow-xs">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                6/9 Fit (67%)
+              </div>
+              <span class="block text-[10px] text-[#717A8C] mt-1">Direct Team Lead</span>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5 mb-4">
+            <span class="bg-[#F6F4EE] border border-[#E5E1D7] text-[#14233D] text-xs font-semibold px-2.5 py-1 rounded-md">JavaScript</span>
+            <span class="bg-[#F6F4EE] border border-[#E5E1D7] text-[#14233D] text-xs font-semibold px-2.5 py-1 rounded-md">Webpack to Vite</span>
+            <span class="bg-[#F6F4EE] border border-[#E5E1D7] text-[#14233D] text-xs font-semibold px-2.5 py-1 rounded-md">CI/CD Pipelines</span>
+          </div>
+
+
+          <!-- Expandable Details Drawer -->
+          <div class="job-details-extra hidden mt-1 mb-4 border border-[#E8E4DA] rounded-xl bg-[#FAF9F6] p-4 text-xs space-y-3">
+            <div>
+              <span class="font-bold text-[#14233D] block mb-1">Description</span>
+              <p class="text-[#525B6C] leading-relaxed">Drive CloudScale's frontend infrastructure: migrate legacy Webpack builds to Vite, own shared CI/CD pipelines and keep 30+ micro-frontends shipping reliably.</p>
+            </div>
+            <div>
+              <span class="font-bold text-[#14233D] block mb-1">Key Responsibilities</span>
+              <ul class="text-[#525B6C] leading-relaxed list-disc pl-4 space-y-0.5">
+                <li>Lead Webpack → Vite migration across the monorepo</li>
+                <li>Build and monitor shared build/test/deploy pipelines</li>
+                <li>Optimize bundle budgets and DX tooling</li>
+              </ul>
+            </div>
+            <div class="flex flex-wrap gap-2 pt-2 border-t border-[#F0ECE4]">
+              <span class="bg-white border border-[#E5E1D7] px-2 py-1 rounded text-[11px] text-[#525B6C]">Source: CloudScale Careers (verified 1d ago)</span>
+              <span class="bg-white border border-[#E5E1D7] px-2 py-1 rounded text-[11px] text-[#525B6C]">Method: Direct Team Lead</span>
+              <span class="bg-white border border-[#E5E1D7] px-2 py-1 rounded text-[11px] text-[#B84825]">Deadline: tomorrow 11:59 PM</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-[#F0ECE4] text-xs">
+            <span class="card-status text-[#8C4646] font-medium">⚠️ Applications close tomorrow at 11:59 PM</span>
+            <div class="flex items-center gap-2.5"><button onclick="toggleDetails(this)" class="px-4 py-2 rounded-xl border border-[#DCD7CB] bg-[#FAF8F5] text-[#14233D] font-semibold hover:bg-white hover:border-[#14233D]/40 transition-colors shadow-xs">View Details</button><button class="apply-btn px-4 py-2 rounded-xl bg-[#14233D] hover:bg-[#1E3256] text-white font-semibold shadow-md transition-colors flex items-center gap-1.5" onclick="applyToJob(this)"><svg class="w-3.5 h-3.5 text-[#f4a261]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg><span class="">Apply Fast Track</span></button></div>
+          </div>
+        </div>
+
+      <!-- Dynamic State View: Loading Skeleton -->
+<div id="state-view-loading" class="hidden space-y-4">
+  <div class="bg-white border border-[#E6E3DB] rounded-2xl p-6 shadow-xs animate-pulse space-y-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-13 h-13 rounded-xl bg-[#EBE7DE]"></div>
+        <div class="space-y-2">
+          <div class="h-5 w-56 bg-[#EBE7DE] rounded"></div>
+          <div class="h-3.5 w-72 bg-[#F0ECE4] rounded"></div>
+        </div>
+      </div>
+      <div class="h-7 w-28 bg-[#EBE7DE] rounded-full"></div>
+    </div>
+    <div class="flex gap-2">
+      <div class="h-6 w-20 bg-[#F0ECE4] rounded-md"></div>
+      <div class="h-6 w-20 bg-[#F0ECE4] rounded-md"></div>
+      <div class="h-6 w-28 bg-[#F0ECE4] rounded-md"></div>
+    </div>
+    <div class="h-16 bg-[#FAF8F5] border border-[#EBE7DF] rounded-xl"></div>
+    <div class="flex justify-between items-center pt-2">
+      <div class="h-4 w-40 bg-[#F0ECE4] rounded"></div>
+      <div class="h-8 w-32 bg-[#EBE7DE] rounded-xl"></div>
+    </div>
+  </div>
+  <div class="bg-white border border-[#E6E3DB] rounded-2xl p-6 shadow-xs animate-pulse space-y-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-13 h-13 rounded-xl bg-[#EBE7DE]"></div>
+        <div class="space-y-2">
+          <div class="h-5 w-48 bg-[#EBE7DE] rounded"></div>
+          <div class="h-3.5 w-64 bg-[#F0ECE4] rounded"></div>
+        </div>
+      </div>
+      <div class="h-7 w-24 bg-[#EBE7DE] rounded-full"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Dynamic State View: Empty / Not Found -->
+<div id="state-view-empty" class="hidden bg-white border border-[#E6E3DB] rounded-2xl p-12 text-center shadow-xs">
+  <div class="w-14 h-14 rounded-2xl bg-[#FAF8F5] border border-[#E6E2D8] flex items-center justify-center mx-auto mb-4 text-[#14233D]">
+    <svg class="w-7 h-7 text-[#525B6C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+    </svg>
+  </div>
+  <h3 class="font-serif-heading text-xl font-bold text-[#14233D] mb-2">No Saved Roles Found</h3>
+  <p class="text-sm text-[#525B6C] max-w-md mx-auto mb-6 leading-relaxed">
+    No bookmarked engineering positions currently match your active filters. Try clearing your search query or explore fresh high-confidence matches.
+  </p>
+  <div class="flex items-center justify-center gap-3">
+    <button onclick="window.setScreenState('default')" class="px-4 py-2 rounded-xl bg-[#14233D] text-white text-xs font-semibold hover:bg-[#1E3256] transition-colors shadow-xs">Reset Filters</button>
+    <a href="#" class="px-4 py-2 rounded-xl border border-[#DCD7CB] bg-[#FAF8F5] text-[#14233D] text-xs font-semibold hover:bg-white transition-colors">Browse Recommended Jobs</a>
+  </div>
+</div>
+
+<!-- Dynamic State View: Expired / Stale -->
+<div id="state-view-expired" class="hidden bg-white border border-[#E6E3DB] rounded-2xl p-8 shadow-xs">
+  <div class="flex items-center gap-3 mb-4">
+    <span class="w-9 h-9 rounded-xl bg-[#FAF8F5] border border-[#E9E1CD] text-[#6B5826] flex items-center justify-center font-bold text-sm">⚠️</span>
+    <div>
+      <h4 class="font-serif-heading text-lg font-bold text-[#14233D]">Archived &amp; Expired Listings</h4>
+      <p class="text-xs text-[#525B6C]">These 3 positions have recently closed their application deadlines or expired from company portals.</p>
+    </div>
+  </div>
+  <div class="border border-[#F0ECE4] rounded-xl p-4 bg-[#FAF9F6] flex items-center justify-between mb-3 text-xs">
+    <div>
+      <span class="font-bold text-[#14233D] block">Lead Mobile Engineer • FintechX</span>
+      <span class="text-[#727B8D]">Expired 4 days ago • 9/9 Fit (92%)</span>
+    </div>
+    <button onclick="window.triggerToast('archive-restore', 'Lead Mobile Engineer')" class="px-3 py-1.5 rounded-lg border border-[#DCD7CB] bg-white text-[#14233D] text-xs font-semibold hover:bg-[#FAF8F5]">Notify If Reopened</button>
+  </div>
+  <div class="text-right pt-2">
+    <button onclick="window.setScreenState('default')" class="text-xs font-semibold text-[#d95d39] hover:underline">← Return to Active Saved Roles</button>
+  </div>
+</div>
+
+<!-- Dynamic State View: Error / Retry -->
+<div id="state-view-error" class="hidden bg-white border border-[#E6E3DB] rounded-2xl p-10 text-center shadow-xs">
+  <div class="w-12 h-12 rounded-xl bg-[#ffdad6] text-[#ba1a1a] flex items-center justify-center mx-auto mb-3 font-bold text-lg">!</div>
+  <h4 class="font-serif-heading text-lg font-bold text-[#14233D] mb-1">Failed to Synchronize Saved Opportunities</h4>
+  <p class="text-xs text-[#525B6C] max-w-sm mx-auto mb-5 leading-relaxed">Our matching index service timed out while syncing fresh ATS statuses. Your existing saved data is safe.</p>
+  <button onclick="window.setScreenState('default'); window.triggerToast('sync-success', 'Saved Jobs');" class="px-4 py-2 rounded-xl bg-[#14233D] hover:bg-[#1E3256] text-white text-xs font-semibold shadow-xs transition-colors">Retry Synchronization</button>
+</div></div>
+
+      <!-- Right Sidebar: Insight & Skill Advisor (4 Columns) -->
+      <div class="lg:col-span-4 space-y-5">
+        
+        <!-- Match Quality Panel (Warm Ivory with Navy accent, No Green) -->
+        <div class="bg-white border border-[#E6E3DB] rounded-2xl p-6 shadow-xs">
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="font-serif-heading text-lg font-bold text-[#14233D]">Portfolio Health</h4>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#FAF8F5] border border-[#E0DBD0] text-[#14233D]">
+              Strong Affinity
+            </span>
+          </div>
+          
+          <div class="mb-4">
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="text-[#596375]">Overall Match Fit</span>
+              <span class="font-bold text-[#14233D]">79% Average</span>
+            </div>
+            <!-- Progress Bar (Navy themed) -->
+            <div class="w-full bg-[#EBE7DE] h-2.5 rounded-full overflow-hidden">
+              <div class="bg-[#14233D] h-full rounded-full" style="width: 79%"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-center pt-3 border-t border-[#F0EBE0] text-xs">
+            <div class="p-2 rounded-lg bg-[#FAF8F5] border border-[#EAE5DA]">
+              <span class="block font-bold text-[#14233D] text-sm">5</span>
+              <span class="text-[10px] text-[#697284]">High (≥75%)</span>
+            </div>
+            <div class="p-2 rounded-lg bg-[#FAF8F5] border border-[#EAE5DA]">
+              <span class="block font-bold text-[#14233D] text-sm">4</span>
+              <span class="text-[10px] text-[#697284]">Solid (60-74%)</span>
+            </div>
+            <div class="p-2 rounded-lg bg-[#FAF8F5] border border-[#EAE5DA]">
+              <span class="block font-bold text-[#14233D] text-sm">3</span>
+              <span class="text-[10px] text-[#697284]">Gaps (&lt;60%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Skill Gap Advisor (Navy Card) -->
+        <div id="ai-advisor-card" class="bg-[#14233D] text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
+          <div class="flex items-center gap-2 text-[11px] uppercase tracking-wider text-[#f4a261] font-bold mb-3"><svg class="w-4 h-4 text-[#d95d39]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg><span class="text-white">AI Match Gap Optimizer</span></div>
+          <h4 class="font-serif-heading text-lg font-bold mb-2">Bridge 2 Missing Skills for TechNova</h4>
+          <p class="text-xs text-[#D1DCF0] leading-relaxed mb-4">
+            Completing the guided CI/CD &amp; Automated Testing modules will increase your interview callback rate by an estimated 28%.
+          </p>
+          <button class="w-full bg-white hover:bg-[#FAF8F5] text-[#14233D] hover:text-[#d95d39] text-xs font-bold py-3 px-4 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-1"><span class="">Launch Personalized Learning Path</span><span class="text-[#d95d39]">→</span></button>
+        </div>
+
+        <!-- Filter Criteria Checklist (Warm Card) -->
+        <div class="bg-white border border-[#E6E3DB] rounded-2xl p-6 shadow-xs">
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="font-serif-heading text-base font-bold text-[#14233D]">Target Preferences</h4>
+            <a href="#" class="text-xs font-semibold text-[#d95d39] hover:underline">Edit Preferences</a>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div class="flex items-center justify-between py-1.5 border-b border-[#F2EEE4]">
+              <span class="text-[#60697B]">Target Roles</span>
+              <span class="font-semibold text-[#14233D]">Flutter, Senior Frontend</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5 border-b border-[#F2EEE4]">
+              <span class="text-[#60697B]">Location Preference</span>
+              <span class="font-semibold text-[#14233D]">Cairo, Egypt / Remote</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5 border-b border-[#F2EEE4]">
+              <span class="text-[#60697B]">Work Arrangement</span>
+              <span class="font-semibold text-[#14233D]">Hybrid, Remote</span>
+            </div>
+            <div class="flex items-center justify-between py-1.5">
+              <span class="text-[#60697B]">Job Type</span>
+              <span class="font-semibold text-[#14233D]">Full-time, Internship</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Clean Footer Matching Reference System -->
+  <footer class="w-full bg-white border-t border-[#E6E3DB] mt-16 py-6 text-xs text-[#6B7280]">
+    <div class="max-w-[1360px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2 font-medium text-[#14233D]">
+        <span class="font-bold">SkillMatch</span>
+        <span class="">© 2025 SkillMatch Intelligence Inc. All rights reserved.</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="#" class="hover:text-[#14233D] transition-colors">Platform Integrity</a>
+        <a href="#" class="hover:text-[#14233D] transition-colors">Privacy Architecture</a>
+        <a href="#" class="hover:text-[#14233D] transition-colors">Terms of Service</a>
+        <a href="#" class="hover:text-[#14233D] transition-colors">Talent API</a>
+      </div>
+    </div>
+  </footer><script>
+  /* ================= TOAST (lightweight feedback only) ================= */
+  window.triggerToast = function(actionType, context) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = 'pointer-events-auto bg-[#14233D] text-white border border-[#394761] shadow-lg rounded-xl p-4 min-w-[320px] max-w-md flex items-start gap-3 transform transition-all duration-300 translate-y-2 opacity-0 text-xs';
+    let icon = '<svg class="w-4 h-4 text-[#d95d39] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+    let title = 'Done';
+    let body = '';
+    if (actionType === 'export-csv') { title = 'Exporting Dataset'; body = 'Generating structured CSV & PDF digest with match rationale breakdown.'; }
+    else if (actionType === 'skill-bridge') { title = 'Guided Learning Track Activated'; body = 'Added targeted 1.5h module for ' + context + ' to your career roadmap.'; }
+    else if (actionType === 'align-cv') { title = 'Resume Tailoring Prepared'; body = 'Generated WCAG and accessibility impact metrics for ' + context + '.'; }
+    else if (actionType === 'archive-restore') { title = 'Reopen Alert Set'; body = 'We will notify you if ' + context + ' reopens for applications.'; }
+    else { title = 'Action Completed'; body = 'Updated ' + context + '.'; }
+    toast.innerHTML = icon + '<div class="flex-1"><div class="font-bold text-white text-xs mb-0.5">' + title + '</div><div class="text-[#D1DCF0] text-[11px] leading-relaxed">' + body + '</div></div><button onclick="this.parentElement.remove()" class="text-[#8A94A6] hover:text-white text-xs font-semibold pl-1">&times;</button>';
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
+    setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-2'); setTimeout(() => toast.remove(), 350); }, 3200);
+  };
+
+  /* ================= SCREEN STATES (real view swaps) ================= */
+  window.setScreenState = function(state) {
+    const jobItems = document.querySelectorAll('.job-item');
+    const views = { loading: 'state-view-loading', empty: 'state-view-empty', expired: 'state-view-expired', error: 'state-view-error' };
+    Object.values(views).forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+
+    document.querySelectorAll('.state-btn').forEach(btn => {
+      btn.className = 'state-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-[#FAF8F5] text-[#525B6C] border border-[#E2DDD3] hover:text-[#14233D] transition-all';
+    });
+    const activeBtn = document.getElementById('btn-state-' + state);
+    if (activeBtn) activeBtn.className = 'state-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-[#14233D] text-white transition-all shadow-xs';
+
+    if (state === 'default') {
+      jobItems.forEach(el => el.classList.remove('hidden'));
+    } else {
+      jobItems.forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById(views[state]);
+      if (target) target.classList.remove('hidden');
+    }
+  };
+
+  /* ================= AI ENGINE STATES (sidebar card + cards react) ================= */
+  const ADVISOR_DEFAULT =
+    '<div class="flex items-center gap-2 text-[11px] uppercase tracking-wider text-[#f4a261] font-bold mb-3"><svg class="w-4 h-4 text-[#d95d39]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg><span class="text-white">AI Match Gap Optimizer</span></div>' +
+    '<h4 class="font-serif-heading text-lg font-bold mb-2">Bridge 2 Missing Skills for TechNova</h4>' +
+    '<p class="text-xs text-[#D1DCF0] leading-relaxed mb-4">Completing the guided CI/CD &amp; Automated Testing modules will increase your interview callback rate by an estimated 28%.</p>' +
+    '<button onclick="window.triggerToast(\'skill-bridge\', \'TechNova Labs\')" class="w-full bg-white hover:bg-[#FAF8F5] text-[#14233D] hover:text-[#d95d39] text-xs font-bold py-3 px-4 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-1"><span class="">Launch Personalized Learning Path</span><span class="text-[#d95d39]">→</span></button>';
+
+  const ADVISOR_CONTENT = {
+    success: { cls: 'bg-[#14233D] text-white', html: ADVISOR_DEFAULT },
+    analyzing: {
+      cls: 'bg-[#14233D] text-white',
+      html:
+        '<div class="flex items-center gap-2 text-[11px] uppercase tracking-wider text-[#f4a261] font-bold mb-3"><div class="w-4 h-4 border-2 border-[#394761] border-t-[#d95d39] rounded-full" style="animation:spin 0.8s linear infinite;"></div><span class="text-white">AI Match Gap Optimizer</span></div>' +
+        '<h4 class="font-serif-heading text-lg font-bold mb-3">Re-scoring 12 bookmarks…</h4>' +
+        '<div class="space-y-2.5 mb-2"><div class="skeleton h-3 w-full"></div><div class="skeleton h-3 w-5/6"></div><div class="skeleton h-3 w-4/6"></div><div class="skeleton h-16 w-full !rounded-xl"></div></div>' +
+        '<p class="text-[11px] text-[#8A94A6]">Cross-validating repo evidence against fresh ATS requirements…</p>'
+    },
+    low: {
+      cls: 'bg-[#2A2118] text-white border border-[#6B5826]/40',
+      html:
+        '<div class="flex items-center gap-2 text-[11px] uppercase tracking-wider text-[#C88A26] font-bold mb-3">⚠<span>Low Confidence Matches (3)</span></div>' +
+        '<h4 class="font-serif-heading text-lg font-bold mb-2">3 roles dropped below 50% stack overlap</h4>' +
+        '<p class="text-xs text-[#D8CBB5] leading-relaxed mb-4">Requirements changed after the employer updated the postings. High-fit cards stay highlighted; weak matches are dimmed in the feed.</p>' +
+        '<div class="space-y-1.5 mb-4 text-[11px]"><div class="flex justify-between bg-white/5 rounded-lg px-2.5 py-1.5"><span>CloudScale Tech • Infra Eng</span><span class="font-bold text-[#C88A26]">67%</span></div><div class="flex justify-between bg-white/5 rounded-lg px-2.5 py-1.5"><span>FintechX • Lead Mobile</span><span class="font-bold text-[#C88A26]">48%</span></div><div class="flex justify-between bg-white/5 rounded-lg px-2.5 py-1.5"><span>DataBridge • BI Frontend</span><span class="font-bold text-[#C88A26]">41%</span></div></div>' +
+        '<button onclick="window.setAiState(\'analyzing\')" class="w-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-colors">↻ Re-run Full Analysis</button>'
+    },
+    missing: {
+      cls: 'bg-[#14233D] text-white',
+      html:
+        '<div class="flex items-center gap-2 text-[11px] uppercase tracking-wider text-[#8A94A6] font-bold mb-3">👤<span>Missing Profile Context</span></div>' +
+        '<h4 class="font-serif-heading text-lg font-bold mb-2">Verification data incomplete</h4>' +
+        '<p class="text-xs text-[#D1DCF0] leading-relaxed mb-4">Could not verify CI/CD and testing credentials from public repos. Match scores temporarily calculated from CV keywords only.</p>' +
+        '<button id="sync-github-btn" onclick="syncGithub()" class="w-full bg-white hover:bg-[#FAF8F5] text-[#14233D] text-xs font-bold py-3 px-4 rounded-xl transition-colors shadow-sm">⬆ Sync GitHub Profile</button>'
+    },
+    failure: {
+      cls: 'bg-[#2A1818] text-white border border-[#B3271E]/40',
+      html:
+        '<div class="flex items-center gap-2 text-[11px] uppercase tracking-wider text-[#E08080] font-bold mb-3">⚠️<span>AI Engine Offline</span></div>' +
+        '<h4 class="font-serif-heading text-lg font-bold mb-2">Match model unavailable</h4>' +
+        '<p class="text-xs text-[#E8CFCB] leading-relaxed mb-1.5">Skill-verification endpoint timed out. Fallback keyword matcher is active — scores may be less accurate.</p>' +
+        '<p class="text-[11px] font-bold text-[#E08080] mb-5">Error: AI_MATCH_ENDPOINT_TIMEOUT</p>' +
+        '<button onclick="window.setAiState(\'analyzing\')" class="w-full bg-white text-[#14233D] hover:bg-[#FAF8F5] text-xs font-bold py-3 px-4 rounded-xl transition-colors">↻ Retry Connection</button>'
+    }
+  };
+
+  let advisorTimer = null;
+  window.setAiState = function(mode) {
+    document.querySelectorAll('.ai-state-btn').forEach(btn => {
+      btn.className = 'ai-state-btn px-2 py-0.5 rounded text-[11px] font-semibold bg-[#FAF8F5] text-[#525B6C] border border-[#E2DDD3] hover:border-[#14233D]';
+    });
+    const activeAi = document.getElementById('btn-ai-' + mode);
+    if (activeAi) activeAi.className = 'ai-state-btn px-2 py-0.5 rounded text-[11px] font-semibold bg-[#14233D] text-white border border-[#14233D]';
+
+    if (advisorTimer) clearTimeout(advisorTimer);
+
+    const card = document.getElementById('ai-advisor-card');
+    const data = ADVISOR_CONTENT[mode];
+    card.className = 'rounded-2xl p-6 shadow-md relative overflow-hidden transition-colors duration-300 ' + data.cls;
+    card.innerHTML = data.html;
+
+    // Feed reacts to AI state
+    document.querySelectorAll('.job-item').forEach(el => {
+      el.classList.remove('card-dim');
+      el.style.boxShadow = '';
+    });
+    if (mode === 'analyzing') {
+      advisorTimer = setTimeout(() => window.setAiState('success'), 2500);
+    } else if (mode === 'low') {
+      document.querySelectorAll('.job-item').forEach(el => {
+        if (parseInt(el.dataset.fit, 10) < 75) el.classList.add('card-dim');
+      });
+    }
+  };
+
+  // GitHub sync interaction inside "missing" state
+  window.syncGithub = function() {
+    const btn = document.getElementById('sync-github-btn');
+    if (!btn) return;
+    btn.innerHTML = '<span class="inline-block w-3.5 h-3.5 border-2 border-[#14233D]/30 border-t-[#14233D] rounded-full align-middle mr-1.5" style="animation:spin 0.8s linear infinite;"></span> Analyzing repositories…';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.innerHTML = '✓ Verified — 6 production repos linked';
+      btn.classList.add('!bg-[#4F7A5A]', '!text-white');
+      setTimeout(() => window.setAiState('success'), 1200);
+    }, 1800);
+  };
+
+  /* ================= CARD ACTIONS (real UI changes) ================= */
+  // Expand / collapse details drawer inside the card
+  window.toggleDetails = function(btn) {
+    const card = btn.closest('.job-item');
+    const drawer = card.querySelector('.job-details-extra');
+    drawer.classList.toggle('hidden');
+    const isOpen = !drawer.classList.contains('hidden');
+    if (btn.textContent.trim().startsWith('View Details')) {
+      btn.textContent = isOpen ? 'Hide Details' : 'View Details';
+    }
+  };
+
+  // Apply: button + status line change in place
+  window.applyToJob = function(btn) {
+    const card = btn.closest('.job-item');
+    const company = card.dataset.company || 'the employer';
+    btn.disabled = true;
+    btn.className = 'px-4 py-2 rounded-xl bg-[#4F7A5A] text-white font-semibold text-xs flex items-center gap-1.5 cursor-default';
+    btn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg> Applied';
+    const status = card.querySelector('.card-status');
+    if (status) {
+      status.className = 'card-status text-[#4F7A5A] font-semibold';
+      status.textContent = 'Applied just now • ' + company + ' will review within 48h';
+    }
+  };
+
+  // Inline private note editing
+  window.editNote = function(btn) {
+    const box = btn.closest('.note-box') || btn.closest('.bg-\[\#FAF9F6\]');
+    const container = btn.closest('div');
+    const existing = container.querySelector('.note-text') || container.querySelector('span');
+    const currentText = existing ? existing.textContent.trim() : '';
+    const plain = currentText.replace(/^\+ Add a private note or salary target for this position\.\.\.$/, '');
+    container.outerHTML =
+      '<div class="border border-[#E8E4DA] rounded-xl px-3.5 py-2.5 mb-4 text-xs bg-white space-y-2">' +
+      '<textarea rows="2" class="note-editor w-full border border-[#E5E1D7] rounded-lg p-2 text-xs outline-none focus:border-[#14233D] resize-none" placeholder="Write a private note or salary target...">' + plain + '</textarea>' +
+      '<div class="flex items-center justify-end gap-2">' +
+      '<button onclick="saveNote(this, false)" class="px-3 py-1 rounded-lg border border-[#DCD7CB] text-[11px] font-semibold text-[#525B6C] hover:bg-[#FAF8F5]">Cancel</button>' +
+      '<button onclick="saveNote(this, true)" class="px-3 py-1 rounded-lg bg-[#14233D] text-white text-[11px] font-bold hover:bg-[#1E3256]">Save Note</button>' +
+      '</div></div>';
+  };
+  window.saveNote = function(btn, save) {
+    const wrap = btn.closest('.space-y-2');
+    const ta = wrap.querySelector('.note-editor');
+    const card = btn.closest('.job-item');
+    const company = card ? card.dataset.company : 'this role';
+    if (save && ta.value.trim()) {
+      wrap.outerHTML =
+        '<div class="note-box bg-[#FAF9F6] border border-[#EBE7DF] rounded-xl px-3.5 py-2.5 mb-4 text-xs text-[#4F5868] flex items-center justify-between">' +
+        '<div class="flex items-center gap-2 truncate"><span class="text-[#8C95A5]">✎</span>' +
+        '<span class="note-text truncate"><strong>Candidate Note:</strong> ' + ta.value.trim() + '</span></div>' +
+        '<button onclick="editNote(this)" class="text-[11px] font-semibold text-[#d95d39] hover:underline shrink-0">Edit</button></div>';
+    } else {
+      // restore previous style boxes
+      const companyName = company;
+      if (btn.closest('.job-item') && btn.closest('.job-item').dataset.fit === '78') {
+        wrap.outerHTML = '<div class="note-box border border-dashed border-[#DED9CE] rounded-xl px-3.5 py-2.5 mb-4 text-xs text-[#6C7585] flex items-center justify-between hover:bg-[#FAF8F5] transition-colors"><span class="note-text italic">+ Add a private note or salary target for this position...</span><button onclick="editNote(this)" class="font-semibold text-[#d95d39] text-[11px]">Add Note</button></div>';
+      } else {
+        wrap.outerHTML = '<div class="note-box bg-[#FAF9F6] border border-[#EBE7DF] rounded-xl px-3.5 py-2.5 mb-4 text-xs text-[#4F5868] flex items-center justify-between"><div class="flex items-center gap-2 truncate"><span class="text-[#8C95A5]">✎</span><span class="note-text truncate"><strong>Candidate Note:</strong> Verified team values clean architecture &amp; unit test coverage.</span></div><button onclick="editNote(this)" class="text-[11px] font-semibold text-[#d95d39] hover:underline shrink-0">Edit</button></div>';
+      }
+    }
+  };
+
+  /* ================= SELECTION & BATCH ACTIONS ================= */
+  window.updateSelectAllState = function() {
+    const boxes = document.querySelectorAll('.job-select');
+    const checked = document.querySelectorAll('.job-select:checked');
+    const selectAll = document.getElementById('select-all-checkbox');
+    if (selectAll) selectAll.checked = checked.length === boxes.length && boxes.length > 0;
+    const label = document.getElementById('select-all-label');
+    if (label) label.textContent = checked.length > 0 ? checked.length + ' Selected' : 'Select All (12 Roles)';
+  };
+
+  window.toggleSelectAll = function(isChecked) {
+    document.querySelectorAll('.job-select').forEach(cb => { cb.checked = isChecked; });
+    updateSelectAllState();
+  };
+
+  function getSelectedCards() {
+    return Array.from(document.querySelectorAll('.job-select:checked')).map(cb => cb.closest('.job-item'));
+  }
+
+  window.batchApply = function() {
+    const cards = getSelectedCards();
+    if (cards.length === 0) {
+      window.triggerToast('batch-apply-empty', 'Select at least one role first.');
+      return;
+    }
+    cards.forEach(card => {
+      const btn = card.querySelector('.apply-btn');
+      if (btn && !btn.disabled) applyToJob(btn);
+    });
+    updateSelectAllState();
+  };
+
+  window.batchArchive = function() {
+    const cards = getSelectedCards();
+    if (cards.length === 0) {
+      window.triggerToast('batch-archive-empty', 'Select at least one role first.');
+      return;
+    }
+    cards.forEach((card, i) => {
+      setTimeout(() => {
+        card.classList.add('card-archived');
+        setTimeout(() => {
+          card.classList.add('hidden');
+          card.classList.remove('job-item'); // exclude from state views
+          const remaining = document.querySelectorAll('.job-item:not(.hidden)').length;
+          if (remaining === 0) window.setScreenState('empty');
+        }, 400);
+      }, i * 150);
+    });
+    const selectAll = document.getElementById('select-all-checkbox');
+    if (selectAll) selectAll.checked = false;
+    updateSelectAllState();
+  };
+</script>
+
+
+
+
+
+
+</body></html>

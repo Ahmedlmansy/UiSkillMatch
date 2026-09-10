@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="h-full">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SkillMatch - Jobs & Opportunities</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#1F365C",
+            "primary-container": "#0F2036",
+            "secondary": "#9c432a",
+            "secondary-container": "#ff9071",
+            "canvas-cream": "#FAF8F4",
+            "surface-white": "#FFFFFF",
+            "surface-container-high": "#eae8e4",
+            "border-hairline": "#E5E1DA",
+            "text-primary": "#1B1C1A",
+            "text-secondary": "#44474E",
+            "text-muted": "#707780",
+            "match-forest": "#4F7A5A",
+            "match-amber": "#C88A26",
+            "status-red": "#B3271E"
+          },
+          fontFamily: { 
+            "sans": ["Inter", "sans-serif"],
+            "cairo": ["Cairo", "sans-serif"] 
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; vertical-align:middle; font-size:20px; }
+    .modal-view { display: none; }
+    .modal-view.active { display: flex; }
+    .field-error { display: none; }
+    .field-error.show { display: block; }
+    .invalid-input { border-color: #B3271E !important; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="bg-canvas-cream font-sans text-text-primary antialiased min-h-screen flex flex-col">
+
+  <!-- Demo-only Actions & Preview State Switcher -->
+  <div class="bg-primary-container text-white text-xs flex items-center justify-center gap-2 py-2 px-4 flex-wrap sticky top-0 z-50 border-b border-white/10">
+    <span class="text-white/50 mr-1 font-mono">Preview state:</span>
+    <button onclick="setView('none')" class="px-3 py-1 rounded-md border border-white/20 hover:bg-white/10 font-sans">Main Page</button>
+    <button onclick="setView('loading')" class="px-3 py-1 rounded-md border border-white/20 hover:bg-white/10 font-sans">Loading</button>
+    <button onclick="setView('form')" class="px-3 py-1 rounded-md border border-white/20 hover:bg-white/10 font-sans">Apply Form</button>
+    <button onclick="setView('submitting')" class="px-3 py-1 rounded-md border border-white/20 hover:bg-white/10 font-sans">Submitting</button>
+    <button onclick="setView('validation')" class="px-3 py-1 rounded-md border border-white/20 hover:bg-white/10 font-sans">Validation Error</button>
+    <button onclick="setView('success')" class="px-3 py-1 rounded-md border border-white/20 hover:bg-white/10 font-sans">Success</button>
+    <button onclick="setView('duplicate')" class="px-3 py-1 rounded-md border border-white/20 hover:bg-white/10 font-sans">Duplicate</button>
+    <button onclick="setView('servererror')" class="px-3 py-1 rounded-md border border-white/20 hover:bg-white/10 font-sans">Server Error</button>
+  </div>
+
+  <!-- HEADER / NAVBAR -->
+  <header class="fixed top-9 left-0 right-0 w-full z-40 bg-[#FAF8F4]/95 backdrop-blur-md border-b border-border-hairline shadow-sm">
+    <div class="h-20 max-w-[1280px] mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-8">
+        <a class="flex items-center gap-2" href="home.html">
+          <img alt="SkillMatch Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1U2OhJ1t3vsfnoI0-ciE0mWieceX2EV7AqUVwOha8hzfVxYmGdkDTPsq0Qb8buw0OgKzE9RF1vOeNuwn--E7cC9sRCh2zOIXv6BFNfe8BdFDUwCCTHt-zfiVF-llksFsix7Oo3VmVQEzMes203FWNt6a-tPm6pi0xuBJsHRklynfixDPXxxrKrfuu09ms5a3G0ms8ouv7txo2_b52I18BqpmvlJt5pTq5e7A-Mr-94hWS-Hpsws-LOp19Y"/>
+          <span class="text-[20px] font-bold text-primary">SkillMatch</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-2">
+          <a href="profile.html" class="px-4 py-2 rounded-xl text-sm font-semibold text-text-secondary hover:text-primary transition-colors">Profile</a>
+          <a href="cv.html" class="px-4 py-2 rounded-xl text-sm font-semibold text-text-secondary hover:text-primary transition-colors">CV Manager</a>
+          <a href="jobs.html" class="px-4 py-2 rounded-xl text-sm font-semibold text-primary bg-surface-container-high transition-colors">Jobs & Opportunities</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex flex-col text-right">
+          <span class="text-xs font-bold text-text-primary">Ahmed Mahmoud</span>
+          <span class="text-[11px] text-text-muted">Frontend Engineer</span>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">AM</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="w-full pt-36 pb-16 flex-1 max-w-[1280px] mx-auto px-4 md:px-8 space-y-6">
+    
+    <!-- Search & Filters Bar -->
+    <div class="bg-surface-white p-4 rounded-2xl border border-border-hairline shadow-sm space-y-3">
+      <div class="flex flex-col md:flex-row gap-3">
+        <div class="flex-1 relative flex items-center bg-canvas-cream rounded-xl px-3 border border-border-hairline">
+          <span class="material-symbols-outlined text-text-muted mr-2">search</span>
+          <input type="text" placeholder="Search by job title, skill, or company..." class="w-full bg-transparent border-none text-sm p-2.5 focus:ring-0"/>
+        </div>
+        <button onclick="toggleFiltersDrawer()" class="px-4 py-2.5 bg-surface-container-high border border-border-hairline rounded-xl text-sm font-bold flex items-center gap-2 text-text-primary">
+          <span class="material-symbols-outlined text-[18px]">filter_list</span> Filters
+          <span class="bg-primary text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">2</span>
+        </button>
+        <button class="px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-[#052045]">Search</button>
+      </div>
+
+      <!-- Collapsible Filters Drawer -->
+      <div id="filters-drawer" class="hidden pt-3 border-t border-border-hairline grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-text-secondary mb-1">Location</label>
+          <select class="w-full bg-canvas-cream border-border-hairline rounded-lg text-xs p-2"><option>All Locations</option><option selected>Cairo, Egypt</option><option>Remote</option></select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-text-secondary mb-1">Work Type</label>
+          <select class="w-full bg-canvas-cream border-border-hairline rounded-lg text-xs p-2"><option>All Types</option><option selected>Remote</option><option>Hybrid</option><option>On-site</option></select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-text-secondary mb-1">Experience Level</label>
+          <select class="w-full bg-canvas-cream border-border-hairline rounded-lg text-xs p-2"><option>Junior</option><option selected>Mid-Senior</option><option>Lead</option></select>
+        </div>
+        <div class="flex items-end gap-2">
+          <button class="w-full py-2 bg-primary text-white text-xs rounded-lg font-bold">Apply Filters</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jobs Cards Grid -->
+    <div class="space-y-4">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold text-primary">Recommended Opportunities</h2>
+        <span class="text-xs text-text-muted">Showing 3 of 140 jobs</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+        <!-- Job 1 -->
+        <div class="bg-surface-white p-5 rounded-2xl border border-border-hairline shadow-sm hover:border-primary/40 transition-all flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary font-bold flex items-center justify-center">V</div>
+                <div>
+                  <h4 class="font-bold text-xs text-text-primary">Vercel Partner</h4>
+                  <span class="text-[11px] text-text-muted">Remote • 2h ago</span>
+                </div>
+              </div>
+              <span class="bg-match-forest/10 text-match-forest text-xs font-bold px-2 py-0.5 rounded-full">98% Match</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-base text-primary">Senior Frontend Engineer (React / Next.js)</h3>
+              <p class="text-xs font-bold text-text-primary mt-1">$145,000 - $175,000 / year</p>
+            </div>
+            <div class="flex flex-wrap gap-1">
+              <span class="bg-canvas-cream text-text-secondary text-[11px] px-2 py-0.5 rounded border border-border-hairline">React</span>
+              <span class="bg-canvas-cream text-text-secondary text-[11px] px-2 py-0.5 rounded border border-border-hairline">TypeScript</span>
+            </div>
+          </div>
+          <div class="pt-3 border-t border-border-hairline flex justify-between items-center">
+            <button class="text-text-muted hover:text-primary"><span class="material-symbols-outlined text-[20px]">bookmark</span></button>
+            <button onclick="setView('form')" class="px-4 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-[#052045]">Easy Apply</button>
+          </div>
+        </div>
+
+        <!-- Job 2 -->
+        <div class="bg-surface-white p-5 rounded-2xl border border-border-hairline shadow-sm hover:border-primary/40 transition-all flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-secondary-container/30 text-secondary font-bold flex items-center justify-center">S</div>
+                <div>
+                  <h4 class="font-bold text-xs text-text-primary">Stripe Infrastructure</h4>
+                  <span class="text-[11px] text-text-muted">Hybrid • 5h ago</span>
+                </div>
+              </div>
+              <span class="bg-match-forest/10 text-match-forest text-xs font-bold px-2 py-0.5 rounded-full">95% Match</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-base text-primary">Lead Frontend Architect</h3>
+              <p class="text-xs font-bold text-text-primary mt-1">$180,000 - $220,000 / year</p>
+            </div>
+            <div class="flex flex-wrap gap-1">
+              <span class="bg-canvas-cream text-text-secondary text-[11px] px-2 py-0.5 rounded border border-border-hairline">Design Systems</span>
+            </div>
+          </div>
+          <div class="pt-3 border-t border-border-hairline flex justify-between items-center">
+            <button class="text-text-muted hover:text-primary"><span class="material-symbols-outlined text-[20px]">bookmark</span></button>
+            <button onclick="setView('form')" class="px-4 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-[#052045]">Easy Apply</button>
+          </div>
+        </div>
+
+        <!-- Job 3 -->
+        <div class="bg-surface-white p-5 rounded-2xl border border-border-hairline shadow-sm hover:border-primary/40 transition-all flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-match-forest/10 text-match-forest font-bold flex items-center justify-center">S</div>
+                <div>
+                  <h4 class="font-bold text-xs text-text-primary">Supabase Cloud</h4>
+                  <span class="text-[11px] text-text-muted">Remote • 1d ago</span>
+                </div>
+              </div>
+              <span class="bg-match-forest/10 text-match-forest text-xs font-bold px-2 py-0.5 rounded-full">94% Match</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-base text-primary">Full Stack Engineer</h3>
+              <p class="text-xs font-bold text-text-primary mt-1">$140,000 - $170,000 / year</p>
+            </div>
+            <div class="flex flex-wrap gap-1">
+              <span class="bg-canvas-cream text-text-secondary text-[11px] px-2 py-0.5 rounded border border-border-hairline">Node.js</span>
+            </div>
+          </div>
+          <div class="pt-3 border-t border-border-hairline flex justify-between items-center">
+            <button class="text-text-muted hover:text-primary"><span class="material-symbols-outlined text-[20px]">bookmark</span></button>
+            <button onclick="setView('form')" class="px-4 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-[#052045]">Easy Apply</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ MODAL: Decision-check / Loading ============ -->
+  <div class="modal-view fixed inset-0 z-50 items-center justify-center p-4 bg-black/40 backdrop-blur-sm" id="modal-loading">
+    <div class="bg-surface-white rounded-2xl w-full max-w-[440px] p-8 text-center border border-border-hairline shadow-lg">
+      <div class="w-10 h-10 mx-auto mb-4">
+        <div class="w-10 h-10 border-[3px] border-border-hairline border-t-primary rounded-full" style="animation:spin 0.8s linear infinite;"></div>
+      </div>
+      <div class="font-bold text-base text-primary mb-1">Checking Application Status</div>
+      <p class="text-xs text-text-muted">We are verifying if you have previously applied for this position and available submission routes.</p>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: Application Form ============ -->
+  <div class="modal-view fixed inset-0 z-50 items-center justify-center p-4 bg-black/40 backdrop-blur-sm" id="modal-form">
+    <div class="bg-surface-white rounded-2xl w-full max-w-[560px] max-h-[90vh] overflow-y-auto border border-border-hairline shadow-xl flex flex-col">
+      <div class="flex items-start justify-between p-6 border-b border-border-hairline sticky top-0 bg-surface-white rounded-t-2xl z-10">
+        <div>
+          <div class="text-[11px] font-bold text-secondary mb-1">Job Application</div>
+          <h2 class="font-bold text-lg text-primary">Senior Frontend Engineer <span class="text-text-muted font-normal text-sm">at Vercel</span></h2>
+        </div>
+        <button onclick="setView('none')" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-canvas-cream text-text-muted" title="Close">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-5 flex-1">
+        <!-- Method + source tracking -->
+        <div class="flex flex-wrap gap-2 text-[11px] font-bold">
+          <span class="border border-border-hairline rounded-lg px-3 py-1 flex items-center gap-1.5 text-text-secondary bg-canvas-cream">
+            <span class="material-symbols-outlined text-[16px] text-primary">bolt</span> Method: Internal
+          </span>
+          <span class="border border-border-hairline rounded-lg px-3 py-1 flex items-center gap-1.5 text-text-secondary bg-canvas-cream">
+            <span class="material-symbols-outlined text-[16px] text-primary">near_me</span> Source: SkillMatch Feed
+          </span>
+        </div>
+
+        <div id="banner-slot"></div>
+
+        <form id="apply-form" class="space-y-5" onsubmit="return false;">
+          <!-- Candidate info -->
+          <div>
+            <div class="text-[11px] font-bold text-text-muted mb-2">Applicant Details</div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="border border-border-hairline rounded-xl px-3 py-2 bg-canvas-cream">
+                <div class="text-[10px] text-text-muted">Full Name</div>
+                <div class="text-xs font-bold text-text-primary">Ahmed Mahmoud</div>
+              </div>
+              <div class="border border-border-hairline rounded-xl px-3 py-2 bg-canvas-cream">
+                <div class="text-[10px] text-text-muted">Email Address</div>
+                <div class="text-xs font-bold text-text-primary">ahmed@example.com</div>
+              </div>
+            </div>
+            <div class="text-[11px] text-text-muted mt-1.5">Fetched from your profile — <a href="profile.html" class="text-primary font-bold hover:underline">Edit Profile</a></div>
+          </div>
+
+          <!-- CV selection -->
+          <div class="field-group" data-field="cv">
+            <label class="block text-xs font-bold text-text-secondary mb-2">Select Resume (CV) <span class="text-status-red">*</span></label>
+            <div class="space-y-2">
+              <label class="flex items-center gap-3 border border-border-hairline rounded-xl p-3 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
+                <input type="radio" name="cv" value="resume-2026.pdf" class="accent-primary">
+                <span class="material-symbols-outlined text-text-muted">description</span>
+                <span class="text-xs font-bold text-text-primary flex-1">resume_2026.pdf</span>
+                <span class="text-[11px] text-text-muted">Updated Aug 12</span>
+              </label>
+              <label class="flex items-center gap-3 border border-border-hairline rounded-xl p-3 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
+                <input type="radio" name="cv" value="resume-old.pdf" class="accent-primary">
+                <span class="material-symbols-outlined text-text-muted">description</span>
+                <span class="text-xs font-bold text-text-primary flex-1">resume_frontend_old.pdf</span>
+                <span class="text-[11px] text-text-muted">Updated Mar 03</span>
+              </label>
+              <button type="button" class="flex items-center gap-2 text-xs font-bold text-primary pt-1">
+                <span class="material-symbols-outlined text-[18px]">upload</span> Upload another CV
+              </button>
+            </div>
+            <p class="field-error text-xs text-status-red font-bold mt-1.5">Please select a resume to continue.</p>
+          </div>
+
+          <!-- Cover note (optional) -->
+          <div>
+            <label class="block text-xs font-bold text-text-secondary mb-2">Additional Note <span class="text-text-muted font-normal">(Optional)</span></label>
+            <textarea rows="3" placeholder="Add a short note for the hiring team — why are you a great fit?" class="w-full border border-border-hairline rounded-xl p-3 text-xs outline-none focus:border-primary resize-none bg-canvas-cream/50"></textarea>
+          </div>
+
+          <!-- Additional required fields -->
+          <div class="field-group" data-field="authorized">
+            <label class="block text-xs font-bold text-text-secondary mb-2">Are you legally authorized to work in this location? <span class="text-status-red">*</span></label>
+            <select class="w-full border border-border-hairline rounded-xl h-10 px-3 text-xs outline-none focus:border-primary bg-surface-white">
+              <option value="">Select an answer</option>
+              <option>Yes</option>
+              <option>No</option>
+              <option>Require Sponsorship</option>
+            </select>
+            <p class="field-error text-xs text-status-red font-bold mt-1.5">This field is required by the employer.</p>
+          </div>
+
+          <div class="field-group" data-field="start-date">
+            <label class="block text-xs font-bold text-text-secondary mb-2">Earliest Start Date <span class="text-status-red">*</span></label>
+            <input type="date" class="w-full border border-border-hairline rounded-xl h-10 px-3 text-xs outline-none focus:border-primary bg-surface-white">
+            <p class="field-error text-xs text-status-red font-bold mt-1.5">Please select your earliest start date.</p>
+          </div>
+        </form>
+      </div>
+
+      <div class="flex items-center gap-3 p-6 border-t border-border-hairline sticky bottom-0 bg-surface-white rounded-b-2xl">
+        <button type="button" onclick="setView('none')" class="h-10 px-5 rounded-xl border border-border-hairline text-xs font-bold text-text-secondary hover:bg-canvas-cream">Cancel</button>
+        <button type="button" onclick="attemptSubmit()" class="flex-1 h-10 rounded-xl bg-primary text-white text-xs font-bold hover:bg-[#052045]">Submit Application</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: Submitting ============ -->
+  <div class="modal-view fixed inset-0 z-50 items-center justify-center p-4 bg-black/40 backdrop-blur-sm" id="modal-submitting">
+    <div class="bg-surface-white rounded-2xl w-full max-w-[440px] p-8 text-center border border-border-hairline shadow-lg">
+      <div class="w-10 h-10 mx-auto mb-4">
+        <div class="w-10 h-10 border-[3px] border-border-hairline border-t-primary rounded-full" style="animation:spin 0.8s linear infinite;"></div>
+      </div>
+      <div class="font-bold text-base text-primary mb-1">Submitting Your Application</div>
+      <p class="text-xs text-text-muted">Please do not close this window — this will only take a moment.</p>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: Success ============ -->
+  <div class="modal-view fixed inset-0 z-50 items-center justify-center p-4 bg-black/40 backdrop-blur-sm" id="modal-success">
+    <div class="bg-surface-white rounded-2xl w-full max-w-[440px] p-8 text-center border border-border-hairline shadow-lg">
+      <div class="w-14 h-14 rounded-full bg-match-forest/10 border border-match-forest/30 flex items-center justify-center mx-auto mb-4">
+        <span class="material-symbols-outlined text-match-forest text-[28px]">check_circle</span>
+      </div>
+      <h2 class="font-bold text-lg text-primary mb-2">Application Submitted!</h2>
+      <p class="text-xs text-text-muted mb-5">Your application for <strong class="text-text-primary">Senior Frontend Engineer</strong> at Vercel has been successfully sent. You will receive updates as status changes.</p>
+      <div class="border border-border-hairline rounded-xl p-3 text-left text-xs text-text-secondary mb-6 space-y-1.5 bg-canvas-cream/50">
+        <div class="flex justify-between"><span class="text-text-muted">Method:</span><span class="font-bold">Internal</span></div>
+        <div class="flex justify-between"><span class="text-text-muted">Source:</span><span class="font-bold">SkillMatch Feed</span></div>
+        <div class="flex justify-between"><span class="text-text-muted">Time:</span><span class="font-bold">Just now</span></div>
+      </div>
+      <div class="flex gap-3">
+        <button class="flex-1 h-10 rounded-xl border border-border-hairline text-xs font-bold hover:bg-canvas-cream" onclick="setView('none')">Close</button>
+        <button class="flex-1 h-10 rounded-xl bg-primary text-white text-xs font-bold hover:bg-[#052045]">View My Applications</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: Duplicate (already applied) ============ -->
+  <div class="modal-view fixed inset-0 z-50 items-center justify-center p-4 bg-black/40 backdrop-blur-sm" id="modal-duplicate">
+    <div class="bg-surface-white rounded-2xl w-full max-w-[440px] p-8 text-center border border-border-hairline shadow-lg">
+      <div class="w-14 h-14 rounded-full bg-match-amber/10 border border-match-amber/30 flex items-center justify-center mx-auto mb-4">
+        <span class="material-symbols-outlined text-match-amber text-[28px]">content_copy</span>
+      </div>
+      <h2 class="font-bold text-lg text-primary mb-2">Already Applied</h2>
+      <p class="text-xs text-text-muted mb-5">You submitted an application for <strong class="text-text-primary">Senior Frontend Engineer</strong> at Vercel on August 24, 2026. Multiple applications are not permitted.</p>
+      <div class="border border-border-hairline rounded-xl p-3 flex items-center justify-between text-xs mb-6 bg-canvas-cream/50">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold bg-[#EFF3EF] text-match-forest">
+          <span class="w-1.5 h-1.5 rounded-full bg-match-forest"></span> Under Review
+        </span>
+        <span class="text-text-muted">Last updated: Aug 27, 2026</span>
+      </div>
+      <div class="flex gap-3">
+        <button class="flex-1 h-10 rounded-xl border border-border-hairline text-xs font-bold hover:bg-canvas-cream" onclick="setView('none')">Close</button>
+        <button class="flex-1 h-10 rounded-xl bg-primary text-white text-xs font-bold hover:bg-[#052045]">View Application</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: Server error ============ -->
+  <div class="modal-view fixed inset-0 z-50 items-center justify-center p-4 bg-black/40 backdrop-blur-sm" id="modal-servererror">
+    <div class="bg-surface-white rounded-2xl w-full max-w-[440px] p-8 text-center border border-border-hairline shadow-lg">
+      <div class="w-14 h-14 rounded-full bg-status-red/10 border border-status-red/30 flex items-center justify-center mx-auto mb-4">
+        <span class="material-symbols-outlined text-status-red text-[28px]">error_outline</span>
+      </div>
+      <h2 class="font-bold text-lg text-primary mb-2">Submission Failed</h2>
+      <p class="text-xs text-text-muted mb-6">A server connection error occurred. Your entered information was not lost — you can try submitting again.</p>
+      <div class="flex gap-3">
+        <button class="flex-1 h-10 rounded-xl border border-border-hairline text-xs font-bold hover:bg-canvas-cream" onclick="setView('none')">Cancel</button>
+        <button class="flex-1 h-10 rounded-xl bg-primary text-white text-xs font-bold flex items-center justify-center gap-2 hover:bg-[#052045]" onclick="setView('form')">
+          <span class="material-symbols-outlined text-[18px]">refresh</span> Retry Submission
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleFiltersDrawer() {
+      document.getElementById('filters-drawer').classList.toggle('hidden');
+    }
+
+    function setView(name) {
+      document.querySelectorAll('.modal-view').forEach(v => v.classList.remove('active'));
+      
+      if (name !== 'none') {
+        const targetModal = document.getElementById('modal-' + name);
+        if (targetModal) targetModal.classList.add('active');
+      }
+
+      if (name === 'validation') {
+        document.getElementById('modal-form').classList.add('active');
+        triggerValidationUI();
+      } else if (name === 'form') {
+        resetValidationUI();
+      }
+    }
+
+    function triggerValidationUI() {
+      document.querySelectorAll('.field-error').forEach(e => e.classList.add('show'));
+      document.querySelectorAll('[data-field="authorized"] select, [data-field="start-date"] input').forEach(e => e.classList.add('invalid-input'));
+      document.getElementById('banner-slot').innerHTML =
+        '<div class="border border-status-red/30 bg-[#FBEAE8] text-status-red text-xs font-bold rounded-xl px-4 py-3 mb-4 flex items-center gap-2">' +
+        '<span class="material-symbols-outlined text-[18px]">error_outline</span> Please correct the highlighted errors before submitting.</div>';
+    }
+
+    function resetValidationUI() {
+      document.querySelectorAll('.field-error').forEach(e => e.classList.remove('show'));
+      document.querySelectorAll('.invalid-input').forEach(e => e.classList.remove('invalid-input'));
+      document.getElementById('banner-slot').innerHTML = '';
+    }
+
+    function attemptSubmit() {
+      let valid = true;
+      const cvSelected = document.querySelector('input[name="cv"]:checked');
+      const authSelect = document.querySelector('[data-field="authorized"] select');
+      const startDate = document.querySelector('[data-field="start-date"] input');
+
+      resetValidationUI();
+
+      if (!cvSelected) {
+        document.querySelector('[data-field="cv"] .field-error').classList.add('show');
+        valid = false;
+      }
+      if (!authSelect || !authSelect.value) {
+        document.querySelector('[data-field="authorized"] .field-error').classList.add('show');
+        if (authSelect) authSelect.classList.add('invalid-input');
+        valid = false;
+      }
+      if (!startDate || !startDate.value) {
+        document.querySelector('[data-field="start-date"] .field-error').classList.add('show');
+        if (startDate) startDate.classList.add('invalid-input');
+        valid = false;
+      }
+
+      if (!valid) {
+        document.getElementById('banner-slot').innerHTML =
+          '<div class="border border-status-red/30 bg-[#FBEAE8] text-status-red text-xs font-bold rounded-xl px-4 py-3 mb-4 flex items-center gap-2">' +
+          '<span class="material-symbols-outlined text-[18px]">error_outline</span> Please correct the highlighted errors before submitting.</div>';
+        return;
+      }
+
+      setView('submitting');
+      setTimeout(() => setView('success'), 1500);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillMatch - Smart Onboarding</title>
+  <!-- Google Fonts: Cairo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    body {
+      background-color: #f8f8f5;
+      color: #0f172a;
+      direction: ltr;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Tester Bar */
+    .tester-bar {
+      background-color: #0b192c;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 20px;
+      font-size: 11px;
+    }
+
+    .tester-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .red-dot {
+      width: 6px;
+      height: 6px;
+      background-color: #ef4444;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .tester-buttons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-state {
+      background-color: #1e293b;
+      color: #cbd5e1;
+      border: none;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+
+    .btn-state:hover {
+      background-color: #334155;
+    }
+
+    .btn-state.active {
+      background-color: #ea580c;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .btn-state.pill {
+      border-radius: 12px;
+      background-color: #334155;
+      font-size: 10px;
+    }
+
+    .btn-state.pill.alert { background-color: #d97706; color: #fff; }
+    .btn-state.pill.alert-red { background-color: #dc2626; color: #fff; }
+    .btn-state.pill.success { background-color: #16a34a; color: #fff; }
+
+    .divider { color: #475569; margin: 0 4px; }
+
+    /* Header Section */
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 32px;
+      background-color: #f8f8f5;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .btn-exit {
+      color: #ef4444;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-text-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+    }
+
+    .logo-title {
+      font-weight: 900;
+      font-size: 18px;
+      color: #0b192c;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-sub {
+      font-size: 7px;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-icon {
+      background-color: #0b192c;
+      color: #fff;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .badge-tag {
+      background-color: #e2e8f0;
+      color: #475569;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-btn, .lang-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #475569;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    /* Container & Main Card */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px;
+      flex: 1;
+    }
+
+    .card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 620px;
+      border-radius: 16px;
+      padding: 28px 32px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+      border: 1px solid #f1f5f9;
+      position: relative;
+    }
+
+    /* Status Notifications */
+    .saving-indicator {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #2563eb;
+      background-color: #eff6ff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+    .saving-indicator.active { display: flex; }
+
+    .success-toast {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #15803d;
+      background-color: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      width: 100%;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .success-toast.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Form View Styles */
+    .card-progress { margin-bottom: 28px; }
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .step-badge {
+      background-color: #f1f5f9;
+      color: #475569;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+    .step-count { font-size: 12px; color: #64748b; }
+    .step-count .percent { color: #0b192c; margin-left: 4px; }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background-color: #f1f5f9;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #0b192c;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .steps-nav {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 8px;
+    }
+    .step-item {
+      text-decoration: none;
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 600;
+      padding-bottom: 6px;
+      position: relative;
+    }
+    .step-item.active { color: #0b192c; font-weight: 700; }
+    .step-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -9px; right: 0; left: 0;
+      height: 2px;
+      background-color: #0b192c;
+      border-radius: 2px;
+    }
+
+    .card-body { text-align: center; }
+    .title { font-size: 18px; font-weight: 800; color: #0b192c; margin-bottom: 6px; }
+    .subtitle { font-size: 12px; color: #64748b; margin-bottom: 24px; }
+    
+    .form-group { text-align: left; margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; color: #0b192c; margin-bottom: 6px; }
+    .input-wrapper { position: relative; display: flex; align-items: center; }
+    .search-icon { position: absolute; left: 12px; color: #94a3b8; font-size: 14px; }
+    .input-wrapper input {
+      width: 100%;
+      padding: 10px 14px 10px 36px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #0f172a;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-wrapper input:focus { border-color: #0b192c; }
+    .input-wrapper input.error { border-color: #dc2626; background-color: #fef2f2; }
+    
+    .error-msg {
+      display: none;
+      color: #dc2626;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+    .error-msg.active { display: block; }
+
+    .suggestions-section { text-align: left; margin-bottom: 32px; }
+    .suggestions-label { display: block; font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 600; }
+    .chips-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      background-color: #f1f5f9;
+      color: #475569;
+      border: 1px solid transparent;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .chip:hover { background-color: #e2e8f0; }
+    .chip.active { background-color: #0b192c; color: #ffffff; }
+
+    .form-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 10px; }
+    
+    .btn-primary {
+      background-color: #0b192c;
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.2s;
+    }
+    .btn-primary:hover { background-color: #1e293b; }
+    
+    .btn-secondary {
+      background-color: #f8fafc;
+      color: #94a3b8;
+      border: 1px solid #e2e8f0;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: not-allowed;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ========================================================= */
+    /* COMPONENT: COMPLETED ONBOARDING VIEW                      */
+    /* ========================================================= */
+    .completed-component {
+      display: none;
+      text-align: center;
+      padding: 12px 0;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .completed-component.active {
+      display: block;
+    }
+
+    .completed-icon-wrapper {
+      width: 72px;
+      height: 72px;
+      background-color: #f0fdf4;
+      border: 2px solid #bbf7d0;
+      color: #16a34a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 20px auto;
+      box-shadow: 0 10px 20px rgba(22, 163, 74, 0.1);
+    }
+
+    .completed-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0b192c;
+      margin-bottom: 8px;
+    }
+
+    .completed-subtitle {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .completed-summary-box {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+
+    .summary-header {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0b192c;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .summary-item {
+      background: #ffffff;
+      border: 1px solid #f1f5f9;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+
+    .summary-item .item-label {
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .summary-item .item-value {
+      font-size: 12px;
+      color: #0f172a;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .completed-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn-dashboard {
+      background-color: #0b192c;
+      color: #ffffff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-dashboard:hover {
+      background-color: #1e293b;
+      transform: translateY(-1px);
+    }
+
+    .btn-edit {
+      background-color: #ffffff;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-edit:hover { background-color: #f8fafc; }
+
+    /* Security Banner */
+    .security-banner {
+      background-color: #f8fafc;
+      border: 1px solid #f1f5f9;
+      border-radius: 12px;
+      padding: 14px 18px;
+      max-width: 620px;
+      width: 100%;
+      margin-top: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .security-icon {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .security-text h4 { font-size: 12px; font-weight: 700; color: #0b192c; margin-bottom: 2px; }
+    .security-text p { font-size: 11px; color: #64748b; line-height: 1.5; }
+
+    /* Footer */
+    .main-footer {
+      background-color: #f8f8f5;
+      border-top: 1px solid #e2e8f0;
+      padding: 16px 32px;
+      margin-top: auto;
+    }
+
+    .footer-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .footer-links { display: flex; gap: 16px; }
+    .footer-links a { color: #64748b; text-decoration: none; }
+    .footer-links a:hover { text-decoration: underline; }
+    .footer-brand { color: #0b192c; font-weight: 800; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Tester Bar -->
+  <div class="tester-bar">
+    <div class="tester-left">
+      <span class="red-dot"></span>
+      <span>Live Preview Environment: Test Steps & System States</span>
+    </div>
+    <div class="tester-buttons">
+      <button class="btn-state step-btn active" data-step="1">1. Title</button>
+      <button class="btn-state step-btn" data-step="2">2. Job Type</button>
+      <button class="btn-state step-btn" data-step="3">3. Work Style</button>
+      <button class="btn-state step-btn" data-step="4">4. Location</button>
+      <button class="btn-state step-btn" data-step="5">5. Experience</button>
+      <button class="btn-state step-btn" data-step="6">6. Goals</button>
+      <span class="divider">|</span>
+      <button class="btn-state pill" id="btnSaving">Saving...</button>
+      <button class="btn-state pill alert" id="btnValError">Validation Error</button>
+      <button class="btn-state pill alert-red" id="btnServerError">Server Error</button>
+      <button class="btn-state pill success" id="btnCompleted">Completed</button>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <header class="main-header">
+    <div class="header-left">
+      <div class="brand-logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-sparkles"></i>
+        </div>
+        <div class="logo-text-group">
+          <span class="logo-title">SkillMatch</span>
+          <span class="logo-sub">AI CAREER MATRIX</span>
+        </div>
+      </div>
+      <span class="badge-tag"><span class="red-dot"></span> Smart Career Path Platform</span>
+    </div>
+
+    <div class="header-center"></div>
+
+    <div class="header-right">
+      <button class="icon-btn"><i class="fa-regular fa-circle-question"></i></button>
+      <button class="lang-btn"><i class="fa-solid fa-globe"></i> English</button>
+      <a href="#" class="btn-exit">
+        Save & Exit
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="container">
+    <div class="card">
+
+      <!-- Dynamic Saving Indicator -->
+      <div class="saving-indicator" id="savingBadge">
+        <i class="fa-solid fa-spinner fa-spin"></i> Saving changes to server...
+      </div>
+
+      <!-- Success Saved Toast Message -->
+      <div class="success-toast" id="successToast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastText">Saved successfully!</span>
+      </div>
+
+      <!-- STEPPER FORM VIEW (Default) -->
+      <div id="onboardingFormView">
+        <div class="card-progress">
+          <div class="progress-info">
+            <span class="step-badge"><span class="red-dot"></span> Smart Account Setup</span>
+            <span class="step-count">Step <span id="currentStepText">1</span> of 6 <strong class="percent" id="percentText">17%</strong></span>
+          </div>
+          
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBar" style="width: 17%;"></div>
+          </div>
+
+          <nav class="steps-nav">
+            <a href="#" class="step-item active" data-step="1">1. Title</a>
+            <a href="#" class="step-item" data-step="2">2. Type</a>
+            <a href="#" class="step-item" data-step="3">3. Style</a>
+            <a href="#" class="step-item" data-step="4">4. Location</a>
+            <a href="#" class="step-item" data-step="5">5. Experience</a>
+            <a href="#" class="step-item" data-step="6">6. Goals</a>
+          </nav>
+        </div>
+
+        <div class="card-body">
+          <h2 class="title">What job title are you looking for?</h2>
+          <p class="subtitle">We'll customize AI algorithms to suggest jobs most relevant to your career path.</p>
+
+          <form id="jobTitleForm">
+            <div class="form-group">
+              <label for="jobTitle">Target Job Title</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="jobTitle" value="" placeholder="Search for a job title...">
+              </div>
+              <div class="error-msg" id="errorMsg">Please enter or select a value before continuing.</div>
+            </div>
+
+            <div class="suggestions-section">
+              <span class="suggestions-label">Popular job titles in today's market:</span>
+              <div class="chips-grid"></div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" id="btnPrevious" disabled>
+                <i class="fa-solid fa-arrow-left"></i>
+                Previous
+              </button>
+              <button type="submit" class="btn-primary" id="btnContinue">
+                Continue
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- COMPLETED ONBOARDING COMPONENT VIEW -->
+      <div class="completed-component" id="completedView">
+        <div class="completed-icon-wrapper">
+          <i class="fa-solid fa-check"></i>
+        </div>
+
+        <h2 class="completed-title">You're All Set! 🎉</h2>
+        <p class="completed-subtitle">Your AI career profile has been successfully configured. We are now calibrating jobs for you.</p>
+
+        <div class="completed-summary-box">
+          <div class="summary-header">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Your Selected Preferences</span>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div class="item-label">Target Title</div>
+              <div class="item-value" id="summaryTitle">Product Manager</div>
+            </div>
+            <div class="summary-item">
+              <div class="item-label">Job Type</div>
+              <div class="item-value" id="summaryType">Full-time</div>
+            </div>
+            <div class="summary-item">
+              <div class="item-label">Work Style</div>
+              <div class="item-value" id="summaryStyle">Hybrid</div>
+            </div>
+            <div class="summary-item">
+              <div class="item-label">Location</div>
+              <div class="item-value" id="summaryLocation">Cairo, Egypt</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="completed-actions">
+          <button type="button" class="btn-edit" id="btnRestart">
+            <i class="fa-solid fa-pen-to-square"></i>
+            Edit Choices
+          </button>
+          <button type="button" class="btn-dashboard">
+            Go to Dashboard
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Security Info Banner -->
+    <div class="security-banner">
+      <div class="security-icon">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <div class="security-text">
+        <h4>Your career data is encrypted and secure</h4>
+        <p>Your preferences are only used to train the AI algorithm and your profile will never be shared with employers without your explicit permission.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-copyright">
+        <strong class="footer-brand">SkillMatch</strong>
+        <span>All rights reserved © SkillMatch Smart Hiring Platform</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">Help Center</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Contact Us</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const onboardingFormView = document.getElementById('onboardingFormView');
+      const completedView = document.getElementById('completedView');
+      
+      const chipsGrid = document.querySelector('.chips-grid');
+      const jobInput = document.getElementById('jobTitle');
+      const form = document.getElementById('jobTitleForm');
+      const progressBar = document.getElementById('progressBar');
+      const currentStepText = document.getElementById('currentStepText');
+      const percentText = document.getElementById('percentText');
+      const stepBtns = document.querySelectorAll('.step-btn');
+      const navSteps = document.querySelectorAll('.step-item');
+      const cardTitle = document.querySelector('.title');
+      const cardSubtitle = document.querySelector('.subtitle');
+      const inputLabel = document.querySelector('.form-group label');
+      const btnPrevious = document.getElementById('btnPrevious');
+      const errorMsg = document.getElementById('errorMsg');
+      const savingBadge = document.getElementById('savingBadge');
+      const successToast = document.getElementById('successToast');
+      const toastText = document.getElementById('toastText');
+
+      let currentStep = 1;
+      const totalSteps = 6;
+
+      const userSelections = {
+        1: "Product Manager",
+        2: "Full-time",
+        3: "Hybrid",
+        4: "Cairo, Egypt",
+        5: "Mid Level",
+        6: "Higher Salary"
+      };
+
+      const stepsData = {
+        1: {
+          title: "What job title are you looking for?",
+          subtitle: "We'll customize AI algorithms to suggest jobs most relevant to your career path.",
+          label: "Target Job Title",
+          placeholder: "Search for a job title...",
+          suggestions: ["Product Manager", "Frontend Developer", "UX/UI Designer", "Data Engineer", "Digital Marketing Specialist"]
+        },
+        2: {
+          title: "What type of job are you looking for?",
+          subtitle: "Select the employment types that fit your current availability.",
+          label: "Job Type",
+          placeholder: "Select job type...",
+          suggestions: ["Full-time", "Part-time", "Contract", "Freelance", "Internship"]
+        },
+        3: {
+          title: "What is your preferred work style?",
+          subtitle: "Choose how and where you prefer to deliver your daily work.",
+          label: "Work Style",
+          placeholder: "Select work style...",
+          suggestions: ["On-site", "Remote", "Hybrid"]
+        },
+        4: {
+          title: "Where would you like to work?",
+          subtitle: "Specify your preferred target location or city.",
+          label: "Location / City",
+          placeholder: "Enter city or country...",
+          suggestions: ["Cairo, Egypt", "Riyadh, KSA", "Dubai, UAE", "Remote Worldwide"]
+        },
+        5: {
+          title: "What is your experience level?",
+          subtitle: "Help us match you with roles that match your expertise.",
+          label: "Experience Level",
+          placeholder: "Select experience level...",
+          suggestions: ["Entry Level / Junior", "Mid Level", "Senior", "Lead / Manager"]
+        },
+        6: {
+          title: "What are your primary career goals?",
+          subtitle: "Tell us what matters most to you in your next move.",
+          label: "Primary Goal",
+          placeholder: "Select or type your goal...",
+          suggestions: ["Higher Salary", "Career Growth", "Better Work-Life Balance", "Learning New Tech"]
+        }
+      };
+
+      function clearErrors() {
+        jobInput.classList.remove('error');
+        errorMsg.classList.remove('active');
+      }
+
+      function showError(msg) {
+        jobInput.classList.add('error');
+        if (msg) errorMsg.textContent = msg;
+        errorMsg.classList.add('active');
+      }
+
+      function showSuccessSaved(message) {
+        toastText.textContent = message || "Saved successfully!";
+        successToast.classList.add('active');
+        setTimeout(() => {
+          successToast.classList.remove('active');
+        }, 2000);
+      }
+
+      function showCompletedState() {
+        onboardingFormView.style.display = 'none';
+        completedView.classList.add('active');
+        
+        document.getElementById('summaryTitle').textContent = userSelections[1] || "Product Manager";
+        document.getElementById('summaryType').textContent = userSelections[2] || "Full-time";
+        document.getElementById('summaryStyle').textContent = userSelections[3] || "Hybrid";
+        document.getElementById('summaryLocation').textContent = userSelections[4] || "Cairo, Egypt";
+
+        stepBtns.forEach(b => b.classList.remove('active'));
+        document.getElementById('btnCompleted').classList.add('active');
+      }
+
+      function showFormState() {
+        completedView.classList.remove('active');
+        onboardingFormView.style.display = 'block';
+        document.getElementById('btnCompleted').classList.remove('active');
+      }
+
+      function bindChipEvents() {
+        const chips = document.querySelectorAll('.chip');
+        chips.forEach(chip => {
+          chip.addEventListener('click', () => {
+            chips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            jobInput.value = chip.textContent.trim();
+            userSelections[currentStep] = jobInput.value;
+            clearErrors();
+          });
+        });
+      }
+
+      jobInput.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        userSelections[currentStep] = val;
+        clearErrors();
+        
+        document.querySelectorAll('.chip').forEach(chip => {
+          if (chip.textContent.trim().toLowerCase() === val.toLowerCase()) {
+            chip.classList.add('active');
+          } else {
+            chip.classList.remove('active');
+          }
+        });
+      });
+
+      function updateStep(stepNum) {
+        showFormState();
+        currentStep = parseInt(stepNum);
+        const percent = Math.round((currentStep / totalSteps) * 100);
+        const data = stepsData[currentStep];
+
+        progressBar.style.width = `${percent}%`;
+        currentStepText.textContent = currentStep;
+        percentText.textContent = `${percent}%`;
+
+        cardTitle.textContent = data.title;
+        cardSubtitle.textContent = data.subtitle;
+        inputLabel.textContent = data.label;
+        jobInput.placeholder = data.placeholder;
+        jobInput.value = userSelections[currentStep] || '';
+        clearErrors();
+
+        chipsGrid.innerHTML = data.suggestions.map(item => `<button type="button" class="chip ${userSelections[currentStep] === item ? 'active' : ''}">${item}</button>`).join('');
+        bindChipEvents();
+
+        if (currentStep > 1) {
+          btnPrevious.removeAttribute('disabled');
+          btnPrevious.style.cursor = 'pointer';
+          btnPrevious.style.color = '#0b192c';
+        } else {
+          btnPrevious.setAttribute('disabled', 'true');
+          btnPrevious.style.cursor = 'not-allowed';
+          btnPrevious.style.color = '#94a3b8';
+        }
+
+        stepBtns.forEach(btn => btn.classList.toggle('active', parseInt(btn.dataset.step) === currentStep));
+        navSteps.forEach(nav => nav.classList.toggle('active', parseInt(nav.dataset.step) === currentStep));
+      }
+
+      stepBtns.forEach(btn => {
+        btn.addEventListener('click', () => updateStep(btn.dataset.step));
+      });
+
+      navSteps.forEach(nav => {
+        nav.addEventListener('click', (e) => {
+          e.preventDefault();
+          updateStep(nav.dataset.step);
+        });
+      });
+
+      btnPrevious.addEventListener('click', () => {
+        if (currentStep > 1) updateStep(currentStep - 1);
+      });
+
+      // --- Tester Bar Buttons ---
+      document.getElementById('btnSaving').addEventListener('click', () => {
+        savingBadge.classList.add('active');
+        setTimeout(() => {
+          savingBadge.classList.remove('active');
+          showSuccessSaved("State Saved Successfully!");
+        }, 1200);
+      });
+
+      document.getElementById('btnValError').addEventListener('click', () => {
+        showFormState();
+        jobInput.value = '';
+        showError('Validation Error: This field is required!');
+      });
+
+      document.getElementById('btnServerError').addEventListener('click', () => {
+        showFormState();
+        showError('Server Error (500): Could not send data to backend.');
+      });
+
+      document.getElementById('btnCompleted').addEventListener('click', () => {
+        showSuccessSaved("Onboarding Completed!");
+        showCompletedState();
+      });
+
+      document.getElementById('btnRestart').addEventListener('click', () => {
+        updateStep(1);
+      });
+
+      // Form Submit Event
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const value = jobInput.value.trim();
+        
+        if (!value) {
+          showError('Please enter or select an option before continuing.');
+          return;
+        }
+
+        userSelections[currentStep] = value;
+
+        savingBadge.classList.add('active');
+        setTimeout(() => {
+          savingBadge.classList.remove('active');
+          showSuccessSaved(`Saved: "${value}"`);
+          
+          if (currentStep < totalSteps) {
+            updateStep(currentStep + 1);
+          } else {
+            showCompletedState();
+          }
+        }, 400);
+      });
+
+      // Init First Step
+      updateStep(1);
+    });
+  </script>
+</body>
+</html>

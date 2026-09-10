@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Details &amp; AI Match Insight</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #FBF9F5;
+      color: #1E2530;
+    }
+    .font-serif-heading {
+      font-family: 'Playfair Display', serif;
+    }
+    @keyframes shimmer {
+      0% { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #F0EDE6 25%, #E4E0D6 50%, #F0EDE6 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.3s linear infinite;
+      border-radius: 8px;
+    }
+    .skeleton-circle { border-radius: 9999px; }
+    .btn-disabled-expired { opacity: .45; pointer-events: none; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- Exact Reference Navbar -->
+  <header class="w-full bg-white border-b border-[#E6E3DB] sticky top-0 z-50">
+    <div class="max-w-[1360px] mx-auto px-6 h-18 flex items-center justify-between gap-6 py-2.5">
+      <!-- Left: Logo & Nav items -->
+      <div class="flex items-center gap-8">
+        <a href="#" class="flex items-center gap-2.5 group shrink-0">
+          <div class="w-8 h-8 rounded-lg bg-[#192A4A] flex items-center justify-center text-white font-bold text-lg tracking-tight shadow-xs relative">
+            <span class="relative z-10">S</span>
+            <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#D95D39] rounded-full border-2 border-white"></span>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-1">
+              <span class="text-[18px] font-bold text-[#192A4A] tracking-tight leading-none">SkillMatch</span>
+            </div>
+            <span class="text-[11px] font-medium text-[#758092] tracking-tight mt-0.5 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#D95D39] inline-block"></span>Career Guidance
+            </span>
+          </div>
+        </a>
+
+        <!-- Navigation Links -->
+        <nav class="hidden md:flex items-center gap-5 text-[13px]">
+          <a href="#" class="font-medium text-[#4B5565] hover:text-[#14233D] transition-colors">Home</a>
+          <a href="#" class="font-medium text-[#4B5565] hover:text-[#14233D] transition-colors">Blog</a>
+          <a href="#" class="font-semibold text-[#192A4A] border-b-2 border-[#D95D39] pb-1">Job Details</a>
+        </nav>
+      </div>
+
+      <!-- Center-Right: Search Input & Quick Shortcut -->
+      <div class="hidden lg:flex items-center flex-1 max-w-[260px]">
+        <div class="relative w-full">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#8C95A5]">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          <input type="text" placeholder="Search jobs or skills..." class="w-full pl-9 pr-12 py-1.5 bg-[#FAF8F5] border border-[#E5E1D7] rounded-xl text-xs text-[#14233D] placeholder-[#8C95A5] focus:outline-none focus:border-[#14233D] transition-colors">
+          <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
+            <kbd class="px-1.5 py-0.5 text-[10px] font-semibold text-[#758092] bg-white border border-[#E5E1D7] rounded shadow-xs">⌘K</kbd>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Notifications & User Profile Widget -->
+      <div class="flex items-center gap-4 shrink-0">
+        <!-- Notification Bell -->
+        <button aria-label="Notifications" class="relative p-2 rounded-xl text-[#525B6C] hover:text-[#14233D] hover:bg-[#FAF8F5] border border-[#E5E1D7] transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+          </svg>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#D95D39] rounded-full border border-white"></span>
+        </button>
+
+        <!-- User Profile Widget -->
+        <div class="flex items-center gap-3 pl-2 cursor-pointer group">
+          <div class="w-9 h-9 rounded-full bg-[#14233D] text-white flex items-center justify-center font-bold text-xs shadow-xs border border-[#E4E0D6] overflow-hidden shrink-0">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&amp;auto=format&amp;fit=crop&amp;q=80" alt="Alex Mercer" class="w-full h-full object-cover">
+          </div>
+          <div class="hidden sm:flex flex-col text-left">
+            <span class="text-[13px] font-bold text-[#14233D] leading-tight group-hover:text-[#1C2F52]">Alex Mercer</span>
+            <span class="text-[11px] font-medium text-[#758092] leading-none mt-0.5">Senior Dev</span>
+          </div>
+          <svg class="w-3.5 h-3.5 text-[#758092] group-hover:text-[#14233D] transition-colors hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Centered Content -->
+  <main class="flex-1 max-w-[1360px] w-full mx-auto px-6 py-8">
+    
+    <!-- Interactive UX State Switcher -->
+    <div id="ux-state-switcher" class="mb-6 bg-white border border-[#E4DFD4] rounded-2xl p-4 shadow-sm">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-[#F0ECE4]">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#D95D39] animate-pulse"></span>
+          <span class="text-xs font-bold text-[#192A4A] uppercase tracking-wider">Interactive UX State Switcher</span>
+          <span class="text-[11px] text-[#758092] font-normal">(Simulate real dynamic states &amp; AI confidence)</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="text-[11px] font-semibold text-[#8C95A5]">Active State:</span>
+          <span id="active-state-label" class="font-bold text-[#192A4A] bg-[#FAF8F5] px-2.5 py-0.5 rounded border border-[#E2DDD2]">Loaded</span>
+        </div>
+      </div>
+
+      <div class="mt-3 space-y-2.5 text-xs">
+        <!-- Actions Row -->
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="text-[11px] font-bold text-[#758092] uppercase tracking-wider w-24 shrink-0">Actions:</span>
+          <button onclick="handleSaveBookmark()" class="ux-action-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#192A4A] font-medium hover:bg-[#F2EEE4] transition-colors">Save/Unsave</button>
+          <button onclick="handleApply('State Switcher')" class="ux-action-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#192A4A] font-medium hover:bg-[#F2EEE4] transition-colors">Apply</button>
+          <button onclick="setPageUXState('analyzing')" class="ux-action-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#192A4A] font-medium hover:bg-[#F2EEE4] transition-colors">Analyze Match</button>
+          <button onclick="handleOpenSource()" class="ux-action-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#192A4A] font-medium hover:bg-[#F2EEE4] transition-colors">Open Source</button>
+          <button onclick="handleAddToRoadmap()" class="ux-action-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#192A4A] font-medium hover:bg-[#F2EEE4] transition-colors">Add to Roadmap/Mentor context</button>
+          <button onclick="handleAskMentor()" class="ux-action-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#192A4A] font-medium hover:bg-[#F2EEE4] transition-colors">Ask Mentor</button>
+        </div>
+
+        <!-- General States Row -->
+        <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#F0ECE4]">
+          <span class="text-[11px] font-bold text-[#758092] uppercase tracking-wider w-24 shrink-0">States:</span>
+          <button onclick="setPageUXState('loading')" class="ux-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#4B5565] font-medium hover:bg-[#F2EEE4] transition-colors">Loading</button>
+          <button onclick="setPageUXState('loaded')" class="ux-btn active px-2.5 py-1 rounded-lg border border-[#192A4A] bg-[#192A4A] text-white font-medium hover:bg-[#132038] transition-colors">Loaded</button>
+          <button onclick="setPageUXState('not_found')" class="ux-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#4B5565] font-medium hover:bg-[#F2EEE4] transition-colors">Not Found</button>
+          <button onclick="setPageUXState('expired_stale')" class="ux-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#4B5565] font-medium hover:bg-[#F2EEE4] transition-colors">Expired/Stale</button>
+          <button onclick="setPageUXState('error')" class="ux-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#4B5565] font-medium hover:bg-[#F2EEE4] transition-colors">Error</button>
+          <button onclick="setPageUXState('retry')" class="ux-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#4B5565] font-medium hover:bg-[#F2EEE4] transition-colors">Retry</button>
+        </div>
+
+        <!-- Match States Row -->
+        <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#F0ECE4]">
+          <span class="text-[11px] font-bold text-[#758092] uppercase tracking-wider w-24 shrink-0">(Match):</span>
+          <button onclick="setPageUXState('not_analyzed')" class="ux-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#4B5565] font-medium hover:bg-[#F2EEE4] transition-colors">Not analyzed</button>
+          <button onclick="setPageUXState('analyzing')" class="ux-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#4B5565] font-medium hover:bg-[#F2EEE4] transition-colors">Analyzing</button>
+          <button onclick="setPageUXState('success')" class="ux-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#4B5565] font-medium hover:bg-[#F2EEE4] transition-colors">Success</button>
+          <button onclick="setPageUXState('low_confidence')" class="ux-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#4B5565] font-medium hover:bg-[#F2EEE4] transition-colors">Low confidence</button>
+          <button onclick="setPageUXState('missing_context')" class="ux-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#4B5565] font-medium hover:bg-[#F2EEE4] transition-colors">Missing profile context</button>
+          <button onclick="setPageUXState('ai_failure')" class="ux-btn px-2.5 py-1 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#4B5565] font-medium hover:bg-[#F2EEE4] transition-colors">AI failure</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page State Views (Not Found / Error / Expired banner) -->
+    <div id="page-state-view" class="hidden mb-6"></div>
+
+    <!-- Page Skeleton (Loading state) -->
+    <div id="page-skeleton" class="hidden">
+      <!-- Header skeleton -->
+      <div class="bg-white border border-[#E6E3DB] rounded-2xl p-8 mb-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div class="flex items-start gap-5 flex-1">
+            <div class="w-16 h-16 skeleton"></div>
+            <div class="flex-1 space-y-3">
+              <div class="skeleton h-3 w-40"></div>
+              <div class="skeleton h-8 w-72"></div>
+              <div class="skeleton h-3 w-56"></div>
+            </div>
+          </div>
+          <div class="space-y-2.5 md:w-[280px]">
+            <div class="skeleton h-3 w-32"></div>
+            <div class="skeleton h-6 w-48"></div>
+            <div class="skeleton h-8 w-full"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Grid skeleton: details (8) + AI card (4) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-7">
+        <div class="lg:col-span-8 space-y-6">
+          <div class="bg-white border border-[#E6E3DB] rounded-2xl p-7 space-y-3">
+            <div class="skeleton h-6 w-64"></div>
+            <div class="skeleton h-3 w-full"></div>
+            <div class="skeleton h-3 w-5/6"></div>
+            <div class="skeleton h-3 w-4/6"></div>
+            <div class="grid grid-cols-3 gap-3 pt-3">
+              <div class="skeleton h-20"></div><div class="skeleton h-20"></div><div class="skeleton h-20"></div>
+            </div>
+          </div>
+          <div class="bg-white border border-[#E6E3DB] rounded-2xl p-7 space-y-3">
+            <div class="skeleton h-6 w-56"></div>
+            <div class="skeleton h-16 w-full"></div>
+            <div class="skeleton h-16 w-full"></div>
+            <div class="skeleton h-16 w-full"></div>
+          </div>
+        </div>
+        <div class="lg:col-span-4 space-y-5">
+          <div class="bg-white border border-[#E2DDD2] rounded-2xl p-6 space-y-3">
+            <div class="skeleton h-4 w-36"></div>
+            <div class="skeleton h-7 w-40"></div>
+            <div class="skeleton h-2.5 w-full"></div>
+            <div class="skeleton h-3 w-full"></div>
+            <div class="skeleton h-3 w-5/6"></div>
+            <div class="skeleton h-10 w-full"></div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="skeleton h-9"></div><div class="skeleton h-9"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center justify-between mb-6 text-xs text-[#6B7280]">
+      <div class="flex items-center gap-2">
+        <a href="#" class="hover:text-[#14233D] flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Opportunities
+        </a>
+        <span>/</span>
+        <span>TechNova Labs</span>
+        <span>/</span>
+        <span class="text-[#14233D] font-semibold">Senior Frontend &amp; Mobile Architect</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="handleShare()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E1D7] bg-white text-[#14233D] font-semibold hover:bg-[#FAF8F5] transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+          </svg>
+          Share
+        </button>
+        <button id="btn-save-bookmark" onclick="handleSaveBookmark()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E1D7] bg-white text-[#14233D] font-semibold hover:bg-[#FAF8F5] transition-colors">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+            <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+          </svg>
+          <span id="saved-btn-text">Save</span>
+        </button>
+        <button onclick="handleApply('Top Navigation')" class="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-[#192A4A] hover:bg-[#132038] text-white font-bold text-xs shadow-xs transition-colors group">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#D95D39] group-hover:scale-125 transition-transform"></span>
+          Apply for Role <span class="transition-transform group-hover:translate-x-0.5">→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Job Header Card -->
+    <div class="bg-white border border-[#E6E3DB] rounded-2xl p-8 mb-8 shadow-[0_2px_12px_-4px_rgba(20,35,61,0.04)]" id="job-header-card">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="flex items-start gap-5">
+          <div class="w-16 h-16 rounded-2xl bg-[#192A4A] text-white flex items-center justify-center font-serif-heading text-2xl font-bold shrink-0 shadow-sm border-2 border-[#EAE6DC] relative overflow-hidden">
+            <span class="relative z-10">TN</span>
+            <div class="absolute bottom-0 inset-x-0 h-1 bg-[#D95D39]"></div>
+          </div>
+          <div>
+            <div class="flex items-center gap-2.5 mb-2 flex-wrap">
+              <span class="text-sm font-semibold text-[#667085]">TechNova Labs</span>
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold bg-[#F5F2EB] text-[#192A4A] border border-[#E5DFD1] px-2 py-0.5 rounded-md">
+                <svg class="w-3 h-3 text-[#D95D39]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                Verified Direct Employer
+              </span>
+              <span class="bg-[#FBF1EC] text-[#B84825] border border-[#F2DACF] text-[11px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#D95D39]"></span>
+                Fresh · Published 3 days ago
+              </span>
+            </div>
+            <h1 class="font-serif-heading text-3xl md:text-4xl text-[#14233D] font-bold tracking-tight mb-3">
+              Senior Frontend Developer
+            </h1>
+            <div class="flex flex-wrap items-center gap-4 text-xs text-[#525B6C]">
+              <span class="flex items-center gap-1.5 font-medium">
+                <svg class="w-3.5 h-3.5 text-[#758092]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                Cairo, Egypt (Maadi &amp; Remote)
+              </span>
+              <span class="text-[#C5C6CE]">•</span>
+              <span class="flex items-center gap-1.5 font-medium">
+                <svg class="w-3.5 h-3.5 text-[#758092]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                Full-time · Senior / Lead
+              </span>
+              <span class="text-[#C5C6CE]">•</span>
+              <span class="font-medium">5+ Years Exp</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compensation Highlight -->
+        <div class="bg-[#FAF8F4] border border-[#E8E4DA] p-4 rounded-xl min-w-[280px] shrink-0 text-right md:text-left">
+          <span class="text-[11px] uppercase tracking-wider font-semibold text-[#737C8E] block mb-0.5">Estimated Compensation</span>
+          <div class="text-2xl font-bold text-[#14233D] tracking-tight mb-1">$3,200 – $4,500 <span class="text-xs font-normal text-[#667085]">/ month net</span></div>
+          <div class="text-[11px] text-[#555E70] flex items-center gap-2 mb-3">
+            <span>0.15% Equity Option</span>
+            <span>•</span>
+            <span>Annual Tech Stipend</span>
+          </div>
+          <div class="pt-2.5 border-t border-[#E8E4DA] flex items-center gap-2">
+            <button onclick="handleApply('Compensation Card')" class="flex-1 bg-[#192A4A] hover:bg-[#132038] text-white text-xs font-bold py-2.5 px-3 rounded-lg shadow-xs transition-colors flex items-center justify-center gap-1.5 group">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#D95D39]"></span>Apply Now →
+            </button>
+            <button onclick="showToast('📊 Full market compensation analysis loaded for Cairo Tech Center')" class="bg-white hover:bg-[#FAF8F5] text-[#192A4A] border border-[#D8D3C6] text-xs font-semibold py-2.5 px-3 rounded-lg transition-colors flex items-center gap-1">
+              <svg class="w-3.5 h-3.5 text-[#D95D39]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>Analysis
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2-Column Content Layout: 8 cols Details + 4 cols AI Match & Insights -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-7" id="job-main-grid">
+      
+      <!-- Left Column: Detailed Job Information (8 Cols) -->
+      <div class="lg:col-span-8 space-y-6">
+        
+        <!-- Architectural Scope & Description -->
+        <div class="bg-white border border-[#E6E3DB] rounded-2xl p-7 shadow-xs">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#F0ECE4]">
+            <h2 class="font-serif-heading text-2xl font-bold text-[#14233D]">Architectural Scope &amp; Mission</h2>
+            <span class="text-xs text-[#7B8496]">Role Dossier #TN-882</span>
+          </div>
+          <p class="text-sm text-[#465062] leading-relaxed mb-4">
+            TechNova is scaling its unified AI operations console. As a Senior Frontend Developer, you will act as the principal engineering bridge between our design systems, distributed microservices backends, and low-latency visualization surfaces. You will architect predictable, high-throughput interfaces consumed by more than 180,000 analytical professionals daily.
+          </p>
+          <p class="text-sm text-[#465062] leading-relaxed mb-6">
+            We prioritize code ergonomics, deterministic state architectures, zero-cumulative layout shifts, and pixel-precise execution. You will hold autonomous ownership over modern client rendering pipelines, driving forward our multi-tenant dashboard infrastructure with React 19 and custom WebGL telemetry widgets.
+          </p>
+
+          <!-- Highlight KPI Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="bg-[#FAF8F5] border border-[#E8E4DA] p-4 rounded-xl">
+              <span class="text-xs text-[#6D7789] block mb-1 font-medium">Render Budget</span>
+              <span class="font-bold text-[#14233D] text-lg">&lt; 90ms</span>
+              <span class="text-[11px] text-[#8690A0] block mt-0.5">Target interaction latency</span>
+            </div>
+            <div class="bg-[#FAF8F5] border border-[#E8E4DA] p-4 rounded-xl">
+              <span class="text-xs text-[#6D7789] block mb-1 font-medium">Stack Standard</span>
+              <span class="font-bold text-[#14233D] text-lg">React 19 + Vite</span>
+              <span class="text-[11px] text-[#8690A0] block mt-0.5">Modern atomic design token system</span>
+            </div>
+            <div class="bg-[#FAF8F5] border border-[#E8E4DA] p-4 rounded-xl">
+              <span class="text-xs text-[#6D7789] block mb-1 font-medium">Product Squads</span>
+              <span class="font-bold text-[#14233D] text-lg">4 Squads</span>
+              <span class="text-[11px] text-[#8690A0] block mt-0.5">Direct sync with UX Designers</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Core Responsibilities -->
+        <div class="bg-white border border-[#E6E3DB] rounded-2xl p-7 shadow-xs">
+          <h2 class="font-serif-heading text-2xl font-bold text-[#14233D] mb-5">Core Responsibilities &amp; Deliverables</h2>
+          <div class="space-y-4 text-sm text-[#424C5E]">
+            <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#FAF8F5] border border-[#ECE8DE]">
+              <div class="w-6 h-6 rounded-lg bg-[#192A4A] text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 border-t border-[#D95D39]">1</div>
+              <div><strong class="text-[#192A4A] block mb-0.5 font-semibold">Frontend Architecture &amp; Lifecycle:</strong>Lead the modular breakdown and code scaffolding of mission-critical dashboards, ensuring deterministic caching via TanStack Query and memory-efficient streaming.</div>
+            </div>
+            <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#FAF8F5] border border-[#ECE8DE]">
+              <div class="w-6 h-6 rounded-lg bg-[#192A4A] text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 border-t border-[#D95D39]">2</div>
+              <div><strong class="text-[#192A4A] block mb-0.5 font-semibold">Design System Governance:</strong>Partner closely with Senior Product Designers to evolve the internal Starlight UI library, enforcing WCAG 2.1 AA accessibility standards across all components.</div>
+            </div>
+            <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#FAF8F5] border border-[#ECE8DE]">
+              <div class="w-6 h-6 rounded-lg bg-[#192A4A] text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 border-t border-[#D95D39]">3</div>
+              <div><strong class="text-[#192A4A] block mb-0.5 font-semibold">Client Telemetry &amp; Performance:</strong>Audit browser frame rates, optimize memory usage across canvas renders, and drive Web Vitals metrics toward the top decile.</div>
+            </div>
+            <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-[#FAF8F5] border border-[#ECE8DE]">
+              <div class="w-6 h-6 rounded-lg bg-[#192A4A] text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 border-t border-[#D95D39]">4</div>
+              <div><strong class="text-[#192A4A] block mb-0.5 font-semibold">Peer Mentorship &amp; Standards:</strong>Conduct thorough architectural code reviews, facilitate weekly frontend guilds, and uphold high TypeScript strictness across the monorepo.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Technical Skill Verification Matrix -->
+        <div class="bg-white border border-[#E6E3DB] rounded-2xl p-7 shadow-xs">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-serif-heading text-2xl font-bold text-[#14233D]">Technical Requirements Matrix</h2>
+            <span class="text-xs font-semibold text-[#14233D] bg-[#FAF8F5] border border-[#E2DDD2] px-2.5 py-1 rounded-lg">
+              6 of 6 Verified by your profile
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#758092] block mb-2.5">Mandatory Core Stack</span>
+              <div class="flex flex-wrap gap-2">
+                <span class="inline-flex items-center gap-1.5 bg-[#192A4A] text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs"><svg class="w-3.5 h-3.5 text-[#D95D39]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>React 19+</span>
+                <span class="inline-flex items-center gap-1.5 bg-[#192A4A] text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs"><svg class="w-3.5 h-3.5 text-[#D95D39]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>TypeScript (Strict Mode)</span>
+                <span class="inline-flex items-center gap-1.5 bg-[#192A4A] text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs"><svg class="w-3.5 h-3.5 text-[#D95D39]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>Modern JavaScript (ESNext)</span>
+                <span class="inline-flex items-center gap-1.5 bg-[#192A4A] text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs"><svg class="w-3.5 h-3.5 text-[#D95D39]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>RESTful &amp; WebSocket APIs</span>
+                <span class="inline-flex items-center gap-1.5 bg-[#192A4A] text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs"><svg class="w-3.5 h-3.5 text-[#D95D39]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>State Architecture (Zustand)</span>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-[#F0EBE0]">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#758092] block mb-2.5">Complementary &amp; Preferred Skills</span>
+              <div class="flex flex-wrap gap-2">
+                <span class="inline-flex items-center gap-1.5 bg-[#FAF8F5] border border-[#E6E2D8] text-[#14233D] text-xs font-semibold px-3 py-1.5 rounded-lg">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  Tailwind CSS
+                </span>
+                <span class="inline-flex items-center gap-1.5 bg-[#FAF8F5] border border-[#E6E2D8] text-[#5B6577] text-xs font-medium px-3 py-1.5 rounded-lg">
+                  Next.js / SSR
+                </span>
+                <span class="inline-flex items-center gap-1.5 bg-[#FAF8F5] border border-[#E6E2D8] text-[#5B6577] text-xs font-medium px-3 py-1.5 rounded-lg">
+                  Jest &amp; Testing Library
+                </span>
+                <span class="inline-flex items-center gap-1.5 bg-[#FAF8F5] border border-[#E6E2D8] text-[#5B6577] text-xs font-medium px-3 py-1.5 rounded-lg">
+                  WebGL &amp; Three.js
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: AI Match Insight & Application Action Center (4 Cols) -->
+      <div class="lg:col-span-4 space-y-5">
+        
+        <!-- Prominent AI Match Insight Card -->
+        <div id="ai-match-card" class="bg-white border border-[#E2DDD2] rounded-2xl p-6 shadow-[0_4px_20px_-4px_rgba(25,42,74,0.06)] relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-1.5 bg-[#D95D39]"></div>
+          <div id="ai-card-content">
+            <div class="flex items-center justify-between mb-3 pt-1">
+              <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[#192A4A] uppercase tracking-wider">
+                <span class="w-2 h-2 rounded-full bg-[#D95D39]"></span>AI Match Analysis
+              </span>
+              <span id="ai-confidence-badge" class="text-xs font-semibold text-[#B84825] bg-[#FBF1EC] px-2.5 py-0.5 rounded-md border border-[#F2DACF]">High Confidence (94%)</span>
+            </div>
+            
+            <div class="flex items-center gap-1.5 text-[11px] text-[#758092] mb-3 pb-2.5 border-b border-[#F2EEE4]">
+              <svg class="w-3.5 h-3.5 text-[#D95D39] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+              <span>Sourced directly from TechNova Career Portal · Scraped &amp; Verified 2h ago</span>
+            </div>
+
+            <div class="flex items-baseline justify-between mb-2">
+              <h3 id="ai-match-title" class="font-serif-heading text-2xl font-bold text-[#192A4A]">Strong Match</h3>
+              <span id="ai-match-ratio" class="text-sm font-bold text-[#D95D39]">7 of 9 Matched</span>
+            </div>
+
+            <div class="w-full bg-[#ECE8DF] h-2.5 rounded-full overflow-hidden mb-3 p-0.5 flex">
+              <div id="ai-bar-primary" class="bg-[#192A4A] h-full rounded-l-full duration-300" style="width: 78%"></div>
+              <div id="ai-bar-secondary" class="bg-[#D95D39] h-full rounded-r-full duration-300" style="width: 16%"></div>
+            </div>
+
+            <div class="bg-[#FAF8F5] border border-[#E5E1D7] rounded-xl p-3 mb-4 text-xs">
+              <div class="text-[11px] font-bold text-[#192A4A] mb-1 flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-[#D95D39]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Why this score (Explainability):
+              </div>
+              <p id="ai-explainability-text" class="text-[#525B6C] leading-relaxed">Calculated from Alex's verified profile: 6 production repositories, full React 19 mastery, strict TypeScript adherence, and multi-tenant UI architecture experience.</p>
+            </div>
+
+            <div class="mb-4">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-[#677284] block mb-2">Matched Requirements</span>
+              <div id="ai-matched-tags" class="flex flex-wrap gap-1.5">
+                <span class="bg-[#FAF8F5] text-[#192A4A] border border-[#E4DFD4] text-xs font-semibold px-2.5 py-1 rounded-md flex items-center gap-1"><span class="text-[#D95D39] font-bold">✓</span> React &amp; Core JS</span>
+                <span class="bg-[#FAF8F5] text-[#192A4A] border border-[#E4DFD4] text-xs font-semibold px-2.5 py-1 rounded-md flex items-center gap-1"><span class="text-[#D95D39] font-bold">✓</span> REST APIs</span>
+                <span class="bg-[#FAF8F5] text-[#192A4A] border border-[#E4DFD4] text-xs font-semibold px-2.5 py-1 rounded-md flex items-center gap-1"><span class="text-[#D95D39] font-bold">✓</span> Modern Architecture</span>
+                <span class="bg-[#FAF8F5] text-[#192A4A] border border-[#E4DFD4] text-xs font-semibold px-2.5 py-1 rounded-md flex items-center gap-1"><span class="text-[#D95D39] font-bold">✓</span> Design Systems</span>
+              </div>
+            </div>
+
+            <div class="bg-[#FAF8F5] border border-[#E8E4DA] rounded-xl p-3.5 mb-4 text-xs">
+              <div class="flex items-center gap-1.5 text-[#B84825] font-bold mb-1">
+                <svg class="w-4 h-4 text-[#D95D39]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                Actionable Growth Recommendation
+              </div>
+              <p id="ai-growth-text" class="text-[#555E70] mb-2 leading-relaxed">Bridging 2 missing skills (Jest Testing &amp; CI/CD) boosts callback likelihood from <strong>72% to 91%</strong> for TechNova's hiring bar.</p>
+              <div class="flex items-center justify-between bg-white p-2.5 rounded-lg border border-[#E5E1D7]">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-[#D95D39]"></span>
+                  <span class="text-[11px] font-semibold text-[#192A4A]">Start 2-Hour Guided Path</span>
+                </div>
+                <button onclick="showToast('🚀 Pathway opened: Jest &amp; Monorepo CI/CD for TechNova')" class="text-[11px] font-bold text-white bg-[#192A4A] hover:bg-[#132038] px-2.5 py-1 rounded transition-colors">Start Path →</button>
+              </div>
+            </div>
+
+            <div class="p-3 bg-[#FAF8F5] rounded-xl border border-[#E8E4DA] mb-4 text-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] text-[#555E70] font-medium">Need higher precision?</span>
+                <button onclick="showToast('🔗 Connecting GitHub &amp; portfolio analyzer...')" class="text-[11px] font-bold text-[#D95D39] hover:underline flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"></path>
+                  </svg>
+                  Sync GitHub Profile
+                </button>
+              </div>
+            </div>
+
+            <button onclick="handleApply('SkillMatch Profile')" class="w-full bg-[#192A4A] hover:bg-[#132038] text-white font-bold py-3.5 px-4 rounded-xl shadow-sm transition-all duration-200 text-sm mb-3 flex items-center justify-center gap-2 group">
+              <span class="w-2 h-2 rounded-full bg-[#D95D39] group-hover:scale-125 transition-transform"></span>
+              Apply with SkillMatch Profile
+            </button>
+
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <button onclick="handleAddToRoadmap()" class="py-2.5 px-3 rounded-xl border border-[#D8D3C6] bg-[#FAF8F5] hover:bg-[#F2EEE4] text-[#192A4A] font-semibold transition-colors text-center">Add to Roadmap</button>
+              <button onclick="handleAskMentor()" class="py-2.5 px-3 rounded-xl border border-[#D8D3C6] bg-[#FAF8F5] hover:bg-[#F2EEE4] text-[#192A4A] font-semibold transition-colors text-center">Ask AI Mentor</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hiring Velocity Card -->
+        <div class="bg-white border border-[#E6E3DB] rounded-2xl p-6 shadow-xs">
+          <h4 class="font-serif-heading text-lg font-bold text-[#14233D] mb-4">Hiring Process Insights</h4>
+          <div class="space-y-3 text-xs">
+            <div class="flex items-center justify-between pb-2 border-b border-[#F2EEE4]">
+              <span class="text-[#626C7F]">Engineering Org Size</span>
+              <span class="font-bold text-[#14233D]">45 frontend &amp; full-stack</span>
+            </div>
+            <div class="flex items-center justify-between pb-2 border-b border-[#F2EEE4]">
+              <span class="text-[#626C7F]">Interview Velocity</span>
+              <span class="font-bold text-[#14233D]">Initial screen in ~3 days</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-[#626C7F]">Interview Rounds</span>
+              <span class="font-bold text-[#14233D]">3 Focused Rounds</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Culture & Flexibility Highlights -->
+        <div class="bg-white border border-[#E6E3DB] rounded-2xl p-6 shadow-xs">
+          <h4 class="font-serif-heading text-lg font-bold text-[#14233D] mb-3">Culture &amp; Flexibility</h4>
+          <ul class="text-xs text-[#525B6D] space-y-2.5">
+            <li class="flex items-start gap-2">
+              <span class="text-[#14233D] font-bold">•</span>
+              <span><strong>Hybrid Cadence:</strong> 2 days collaborative in Cairo Tech Center (Maadi), 3 days high-focus remote.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-[#14233D] font-bold">•</span>
+              <span><strong>Async-First Philosophy:</strong> Written RFCs and clear documentation take precedence over impromptu meetings.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-[#14233D] font-bold">•</span>
+              <span><strong>Annual Team Summits:</strong> All-expenses-paid regional offsites focused on hackathons and cross-team cohesion.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Clean Footer Matching Reference System -->
+  <footer class="w-full bg-white border-t border-[#E6E3DB] mt-16 py-6 text-xs text-[#6B7280]">
+    <div class="max-w-[1360px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2 font-medium text-[#14233D]">
+        <span class="font-bold">SkillMatch</span>
+        <span>© 2025 SkillMatch Intelligence Inc. All rights reserved.</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="#" class="hover:text-[#14233D] transition-colors">Platform Integrity</a>
+        <a href="#" class="hover:text-[#14233D] transition-colors">Privacy Architecture</a>
+        <a href="#" class="hover:text-[#14233D] transition-colors">Terms of Service</a>
+        <a href="#" class="hover:text-[#14233D] transition-colors">Talent API</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ MODAL: Application ============ -->
+  <div id="apply-modal" class="hidden fixed inset-0 z-[60] items-center justify-center p-4 bg-[#14233D]/45 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl w-full max-w-[560px] max-h-[90vh] overflow-y-auto border border-[#E6E3DB] shadow-xl flex flex-col">
+
+      <!-- FORM VIEW -->
+      <div id="apply-view-form">
+        <div class="flex items-start justify-between p-6 border-b border-[#F0ECE4] sticky top-0 bg-white rounded-t-2xl z-10">
+          <div>
+            <div class="text-[11px] font-bold text-[#B84825] mb-1">Job Application</div>
+            <h2 class="font-serif-heading font-bold text-xl text-[#14233D]">Senior Frontend Developer <span class="text-[#758092] font-normal text-sm">at TechNova Labs</span></h2>
+          </div>
+          <button onclick="closeApplyModal()" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[#FAF8F5] text-[#758092]" title="Close">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <div class="p-6 space-y-5">
+          <div class="flex flex-wrap gap-2 text-[11px] font-bold">
+            <span class="border border-[#E5E1D7] rounded-lg px-3 py-1 flex items-center gap-1.5 text-[#525B6C] bg-[#FAF8F5]">⚡ Method: Internal</span>
+            <span class="border border-[#E5E1D7] rounded-lg px-3 py-1 flex items-center gap-1.5 text-[#525B6C] bg-[#FAF8F5]">➤ Source: SkillMatch Feed</span>
+          </div>
+
+          <div id="apply-banner-slot"></div>
+
+          <div>
+            <div class="text-[11px] font-bold text-[#758092] mb-2">Applicant Details</div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="border border-[#E5E1D7] rounded-xl px-3 py-2 bg-[#FAF8F5]">
+                <div class="text-[10px] text-[#758092]">Full Name</div>
+                <div class="text-xs font-bold text-[#14233D]">Alex Mercer</div>
+              </div>
+              <div class="border border-[#E5E1D7] rounded-xl px-3 py-2 bg-[#FAF8F5]">
+                <div class="text-[10px] text-[#758092]">Email Address</div>
+                <div class="text-xs font-bold text-[#14233D]">alex@example.com</div>
+              </div>
+            </div>
+          </div>
+
+          <div data-field="cv">
+            <label class="block text-xs font-bold text-[#525B6C] mb-2">Select Resume (CV) <span class="text-[#B3271E]">*</span></label>
+            <div class="space-y-2">
+              <label class="flex items-center gap-3 border border-[#E5E1D7] rounded-xl p-3 cursor-pointer has-[:checked]:border-[#192A4A] has-[:checked]:bg-[#192A4A]/5 transition-all">
+                <input type="radio" name="cv" value="resume-2026.pdf" class="accent-[#192A4A]">
+                <span class="text-xs font-bold text-[#14233D] flex-1">resume_2026.pdf</span>
+                <span class="text-[11px] text-[#758092]">Updated Aug 12</span>
+              </label>
+              <label class="flex items-center gap-3 border border-[#E5E1D7] rounded-xl p-3 cursor-pointer has-[:checked]:border-[#192A4A] has-[:checked]:bg-[#192A4A]/5 transition-all">
+                <input type="radio" name="cv" value="resume-old.pdf" class="accent-[#192A4A]">
+                <span class="text-xs font-bold text-[#14233D] flex-1">resume_frontend_old.pdf</span>
+                <span class="text-[11px] text-[#758092]">Updated Mar 03</span>
+              </label>
+            </div>
+            <p class="apply-field-error hidden text-xs text-[#B3271E] font-bold mt-1.5">Please select a resume to continue.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#525B6C] mb-2">Additional Note <span class="text-[#758092] font-normal">(Optional)</span></label>
+            <textarea id="apply-note" rows="3" placeholder="Add a short note for the hiring team — why are you a great fit?" class="w-full border border-[#E5E1D7] rounded-xl p-3 text-xs outline-none focus:border-[#192A4A] resize-none bg-[#FAF8F5]/50"></textarea>
+          </div>
+
+          <div data-field="authorized">
+            <label class="block text-xs font-bold text-[#525B6C] mb-2">Are you legally authorized to work in this location? <span class="text-[#B3271E]">*</span></label>
+            <select id="apply-authorized" class="w-full border border-[#E5E1D7] rounded-xl h-10 px-3 text-xs outline-none focus:border-[#192A4A] bg-white">
+              <option value="">Select an answer</option>
+              <option>Yes</option>
+              <option>No</option>
+              <option>Require Sponsorship</option>
+            </select>
+            <p class="apply-field-error hidden text-xs text-[#B3271E] font-bold mt-1.5">This field is required by the employer.</p>
+          </div>
+
+          <div data-field="start-date">
+            <label class="block text-xs font-bold text-[#525B6C] mb-2">Earliest Start Date <span class="text-[#B3271E]">*</span></label>
+            <input id="apply-start-date" type="date" class="w-full border border-[#E5E1D7] rounded-xl h-10 px-3 text-xs outline-none focus:border-[#192A4A] bg-white">
+            <p class="apply-field-error hidden text-xs text-[#B3271E] font-bold mt-1.5">Please select your earliest start date.</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 p-6 border-t border-[#F0ECE4] sticky bottom-0 bg-white rounded-b-2xl">
+          <button type="button" onclick="closeApplyModal()" class="h-10 px-5 rounded-xl border border-[#E5E1D7] text-xs font-bold text-[#525B6C] hover:bg-[#FAF8F5]">Cancel</button>
+          <button type="button" onclick="attemptApplySubmit()" class="flex-1 h-10 rounded-xl bg-[#192A4A] text-white text-xs font-bold hover:bg-[#132038]">Submit Application</button>
+        </div>
+      </div>
+
+      <!-- SUBMITTING VIEW -->
+      <div id="apply-view-submitting" class="hidden p-10 text-center">
+        <div class="w-10 h-10 mx-auto mb-4">
+          <div class="w-10 h-10 border-[3px] border-[#E5E1D7] border-t-[#192A4A] rounded-full" style="animation:spin 0.8s linear infinite;"></div>
+        </div>
+        <div class="font-serif-heading font-bold text-lg text-[#14233D] mb-1">Submitting Your Application</div>
+        <p class="text-xs text-[#758092]">Please do not close this window — this will only take a moment.</p>
+      </div>
+
+      <!-- SUCCESS VIEW -->
+      <div id="apply-view-success" class="hidden p-8 text-center">
+        <div class="w-14 h-14 rounded-full bg-[#4F7A5A]/10 border border-[#4F7A5A]/30 flex items-center justify-center mx-auto mb-4">
+          <svg class="w-7 h-7 text-[#4F7A5A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <h2 class="font-serif-heading font-bold text-xl text-[#14233D] mb-2">Application Submitted!</h2>
+        <p class="text-xs text-[#758092] mb-5">Your application for <strong class="text-[#14233D]">Senior Frontend Developer</strong> at TechNova Labs has been successfully sent. You will receive updates as status changes.</p>
+        <div class="border border-[#E5E1D7] rounded-xl p-3 text-left text-xs text-[#525B6C] mb-6 space-y-1.5 bg-[#FAF8F5]/50">
+          <div class="flex justify-between"><span class="text-[#758092]">Method:</span><span class="font-bold">Internal</span></div>
+          <div class="flex justify-between"><span class="text-[#758092]">Source:</span><span class="font-bold">SkillMatch Feed</span></div>
+          <div class="flex justify-between"><span class="text-[#758092]">Time:</span><span class="font-bold">Just now</span></div>
+        </div>
+        <div class="flex gap-3">
+          <button class="flex-1 h-10 rounded-xl border border-[#E5E1D7] text-xs font-bold hover:bg-[#FAF8F5]" onclick="closeApplyModal()">Close</button>
+          <button class="flex-1 h-10 rounded-xl bg-[#192A4A] text-white text-xs font-bold hover:bg-[#132038]">View My Applications</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ MODAL: Open Source (attribution + freshness) ============ -->
+  <div id="source-modal" class="hidden fixed inset-0 z-[60] items-center justify-center p-4 bg-[#14233D]/45 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl w-full max-w-[440px] p-7 border border-[#E6E3DB] shadow-xl">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <div class="text-[11px] font-bold text-[#B84825] mb-1">Original Job Source</div>
+          <h2 class="font-serif-heading font-bold text-xl text-[#14233D]">TechNova Career Portal</h2>
+        </div>
+        <button onclick="closeModal('source-modal')" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[#FAF8F5] text-[#758092]">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="border border-[#E5E1D7] rounded-xl p-4 text-xs space-y-2.5 bg-[#FAF8F5]/50 mb-5">
+        <div class="flex justify-between"><span class="text-[#758092]">Source URL:</span><span class="font-bold text-[#14233D]">careers.technova.io/tn-882</span></div>
+        <div class="flex justify-between"><span class="text-[#758092]">Scraped:</span><span class="font-bold text-[#14233D]">2 hours ago</span></div>
+        <div class="flex justify-between"><span class="text-[#758092]">Freshness:</span><span class="font-bold text-[#B84825]">Fresh — Published 3 days ago</span></div>
+        <div class="flex justify-between"><span class="text-[#758092]">Verification:</span><span class="font-bold text-[#4F7A5A]">Verified Direct Employer</span></div>
+      </div>
+      <p class="text-[11px] text-[#758092] mb-5 leading-relaxed">You are leaving SkillMatch. Application status tracking remains active even when applying via the original portal.</p>
+      <div class="flex gap-3">
+        <button class="flex-1 h-10 rounded-xl border border-[#E5E1D7] text-xs font-bold text-[#525B6C] hover:bg-[#FAF8F5]" onclick="closeModal('source-modal')">Stay Here</button>
+        <button class="flex-1 h-10 rounded-xl bg-[#192A4A] text-white text-xs font-bold hover:bg-[#132038]" onclick="closeModal('source-modal')">Open Original Post ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: Ask AI Mentor ============ -->
+  <div id="mentor-modal" class="hidden fixed inset-0 z-[60] items-center justify-center p-4 bg-[#14233D]/45 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl w-full max-w-[520px] border border-[#E6E3DB] shadow-xl flex flex-col max-h-[85vh]">
+      <div class="flex items-start justify-between p-5 border-b border-[#F0ECE4]">
+        <div>
+          <div class="text-[11px] font-bold text-[#B84825] mb-1">AI Mentor</div>
+          <h2 class="font-serif-heading font-bold text-xl text-[#14233D]">Prepare for TechNova Labs</h2>
+          <p class="text-[11px] text-[#758092] mt-1">Context loaded: Senior Frontend Developer (TN-882) · 94% match</p>
+        </div>
+        <button onclick="closeModal('mentor-modal')" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[#FAF8F5] text-[#758092]">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div id="mentor-thread" class="p-5 space-y-3 overflow-y-auto flex-1 text-xs">
+        <div class="bg-[#FAF8F5] border border-[#E5E1D7] rounded-xl p-3.5 text-[#525B6C] leading-relaxed">
+          <span class="font-bold text-[#192A4A] block mb-1">Mentor:</span>
+          I've reviewed this role's requirements. Your React 19 and TypeScript depth are strong selling points, but TechNova's hiring bar emphasizes <strong>testing culture</strong>. Want a focused prep plan?
+        </div>
+      </div>
+      <div class="p-4 border-t border-[#F0ECE4] flex flex-wrap gap-2">
+        <button onclick="askMentorQuestion(this)" class="px-3 py-1.5 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#192A4A] text-[11px] font-semibold hover:bg-[#F2EEE4] transition-colors">What will the technical interview focus on?</button>
+        <button onclick="askMentorQuestion(this)" class="px-3 py-1.5 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#192A4A] text-[11px] font-semibold hover:bg-[#F2EEE4] transition-colors">How do I justify the Testing gap?</button>
+        <button onclick="askMentorQuestion(this)" class="px-3 py-1.5 rounded-lg border border-[#E5E1D7] bg-[#FAF8F5] text-[#192A4A] text-[11px] font-semibold hover:bg-[#F2EEE4] transition-colors">Draft a strong cover note</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 pointer-events-none flex flex-col gap-2.5">
+    <div id="app-toast" class="pointer-events-auto hidden transform transition-all duration-300 translate-y-4 opacity-0 bg-[#192A4A] text-white px-4 py-3 rounded-xl shadow-lg border border-[#394761] max-w-md flex items-start gap-3">
+      <div id="toast-icon" class="text-lg shrink-0 mt-0.5">🔔</div>
+      <div class="flex-1 text-xs">
+        <p id="toast-message" class="font-medium leading-relaxed">Notification</p>
+        <div id="toast-action-container" class="mt-1.5 hidden">
+          <button onclick="window.location.reload()" class="text-[11px] font-bold text-[#D95D39] bg-white px-2 py-0.5 rounded shadow-xs hover:bg-[#FAF8F5] transition-colors">Track Application →</button>
+        </div>
+      </div>
+      <button onclick="dismissToast()" class="text-[#8C95A5] hover:text-white">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let toastTimer = null;
+    let isBookmarked = false;
+    let isInRoadmap = false;
+    let currentMatchState = 'success';
+    let analyzingTimer = null;
+    let retryTimer = null;
+
+    /* ---------- Toast (kept only for lightweight feedback) ---------- */
+    function showToast(message, isApplication = false) {
+      const toast = document.getElementById('app-toast');
+      const msgEl = document.getElementById('toast-message');
+      const actionBox = document.getElementById('toast-action-container');
+      const iconEl = document.getElementById('toast-icon');
+      if (toastTimer) clearTimeout(toastTimer);
+      msgEl.innerHTML = message;
+
+      if (isApplication) { iconEl.innerHTML = '🎉'; actionBox.classList.remove('hidden'); }
+      else if (message.includes('Saved') || message.includes('Bookmark')) { iconEl.innerHTML = '★'; actionBox.classList.add('hidden'); }
+      else { iconEl.innerHTML = '✨'; actionBox.classList.add('hidden'); }
+
+      toast.classList.remove('hidden');
+      setTimeout(() => { toast.classList.remove('translate-y-4', 'opacity-0'); }, 10);
+      toastTimer = setTimeout(dismissToast, 3500);
+    }
+
+    function dismissToast() {
+      const toast = document.getElementById('app-toast');
+      toast.classList.add('translate-y-4', 'opacity-0');
+      setTimeout(() => { toast.classList.add('hidden'); }, 300);
+    }
+
+    function handleShare() {
+      showToast('📋 Job link copied to clipboard! Share with your network.');
+    }
+
+    /* ---------- Generic modal helpers ---------- */
+    function openModal(id) {
+      const m = document.getElementById(id);
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+    function closeModal(id) {
+      const m = document.getElementById(id);
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    /* ---------- Action: Save / Unsave (UI state on the button) ---------- */
+    function handleSaveBookmark() {
+      isBookmarked = !isBookmarked;
+      const btnText = document.getElementById('saved-btn-text');
+      const btn = document.getElementById('btn-save-bookmark');
+      if (isBookmarked) {
+        if (btnText) btnText.innerText = 'Saved ★';
+        if (btn) { btn.classList.add('bg-[#FBF1EC]', 'text-[#B84825]', 'border-[#F2DACF]'); }
+      } else {
+        if (btnText) btnText.innerText = 'Save';
+        if (btn) { btn.classList.remove('bg-[#FBF1EC]', 'text-[#B84825]', 'border-[#F2DACF]'); }
+      }
+    }
+
+    /* ---------- Action: Apply (opens real form modal, no alert) ---------- */
+    function handleApply(source) {
+      renderApplyView('form');
+      resetApplyValidation();
+      openModal('apply-modal');
+    }
+    function closeApplyModal() {
+      closeModal('apply-modal');
+      setTimeout(() => renderApplyView('form'), 300);
+    }
+    function renderApplyView(view) {
+      ['form', 'submitting', 'success'].forEach(v => {
+        document.getElementById('apply-view-' + v).classList.toggle('hidden', v !== view);
+      });
+    }
+    function resetApplyValidation() {
+      document.querySelectorAll('.apply-field-error').forEach(e => e.classList.add('hidden'));
+      ['apply-authorized', 'apply-start-date'].forEach(id => document.getElementById(id).classList.remove('invalid-input'));
+      document.getElementById('apply-banner-slot').innerHTML = '';
+    }
+    function attemptApplySubmit() {
+      let valid = true;
+      const cvSelected = document.querySelector('input[name="cv"]:checked');
+      const authSelect = document.getElementById('apply-authorized');
+      const startDate = document.getElementById('apply-start-date');
+      resetApplyValidation();
+
+      if (!cvSelected) {
+        document.querySelector('[data-field="cv"] .apply-field-error').classList.remove('hidden');
+        valid = false;
+      }
+      if (!authSelect.value) {
+        document.querySelector('[data-field="authorized"] .apply-field-error').classList.remove('hidden');
+        authSelect.classList.add('invalid-input');
+        valid = false;
+      }
+      if (!startDate.value) {
+        document.querySelector('[data-field="start-date"] .apply-field-error').classList.remove('hidden');
+        startDate.classList.add('invalid-input');
+        valid = false;
+      }
+      if (!valid) {
+        document.getElementById('apply-banner-slot').innerHTML =
+          '<div class="border border-[#B3271E]/30 bg-[#FBEAE8] text-[#B3271E] text-xs font-bold rounded-xl px-4 py-3 flex items-center gap-2">⚠ Please correct the highlighted errors before submitting.</div>';
+        return;
+      }
+      renderApplyView('submitting');
+      setTimeout(() => renderApplyView('success'), 1500);
+    }
+
+    /* ---------- Action: Open Source (attribution + freshness modal) ---------- */
+    function handleOpenSource() {
+      openModal('source-modal');
+    }
+
+    /* ---------- Action: Add to Roadmap (button UI toggle) ---------- */
+    function handleAddToRoadmap() {
+      isInRoadmap = !isInRoadmap;
+      document.querySelectorAll('button[onclick*="handleAddToRoadmap"]').forEach(btn => {
+        if (isInRoadmap) {
+          btn.innerHTML = '✓ Added to Roadmap';
+          btn.classList.add('bg-[#FBF1EC]', 'text-[#B84825]', 'border-[#F2DACF]');
+        } else {
+          btn.innerHTML = 'Add to Roadmap';
+          btn.classList.remove('bg-[#FBF1EC]', 'text-[#B84825]', 'border-[#F2DACF]');
+        }
+      });
+    }
+
+    /* ---------- Action: Ask Mentor (chat-style modal) ---------- */
+    function handleAskMentor() {
+      openModal('mentor-modal');
+    }
+    function askMentorQuestion(btn) {
+      const thread = document.getElementById('mentor-thread');
+      const q = btn.innerText;
+      thread.insertAdjacentHTML('beforeend',
+        '<div class="bg-[#192A4A] text-white rounded-xl p-3.5 ml-8 leading-relaxed"><span class="font-bold block mb-1 opacity-70">You:</span>' + q + '</div>');
+      thread.insertAdjacentHTML('beforeend',
+        '<div class="bg-[#FAF8F5] border border-[#E5E1D7] rounded-xl p-3.5 mr-8 text-[#525B6C] leading-relaxed"><span class="font-bold text-[#192A4A] block mb-1">Mentor:</span>Great question — based on TN-882, emphasize your multi-tenant dashboard work and be ready for a live React 19 + testing exercise. Want a mock interview drill?</div>');
+      thread.scrollTop = thread.scrollHeight;
+    }
+
+    /* ================= PAGE-LEVEL STATES (real UI changes) ================= */
+    function setPageUXState(stateKey) {
+      // Highlight active switcher button
+      document.querySelectorAll('.ux-btn').forEach(btn => {
+        btn.classList.remove('bg-[#192A4A]', 'text-white', 'border-[#192A4A]');
+        btn.classList.add('bg-[#FAF8F5]', 'text-[#4B5565]', 'border-[#E5E1D7]');
+      });
+      if (window.event && window.event.currentTarget && window.event.currentTarget.classList.contains('ux-btn')) {
+        const cur = window.event.currentTarget;
+        cur.classList.add('bg-[#192A4A]', 'text-white', 'border-[#192A4A]');
+        cur.classList.remove('bg-[#FAF8F5]', 'text-[#4B5565]', 'border-[#E5E1D7]');
+      }
+
+      const labelEl = document.getElementById('active-state-label');
+      const headerCard = document.getElementById('job-header-card');
+      const mainGrid = document.getElementById('job-main-grid');
+      const stateView = document.getElementById('page-state-view');
+      const skeleton = document.getElementById('page-skeleton');
+
+      // Clear pending timers
+      if (retryTimer) clearTimeout(retryTimer);
+      if (analyzingTimer && !['analyzing', 'success'].includes(stateKey)) clearTimeout(analyzingTimer);
+
+      const showContent = () => {
+        headerCard.style.display = 'block';
+        mainGrid.style.display = 'grid';
+        skeleton.classList.add('hidden');
+        stateView.classList.add('hidden');
+        stateView.innerHTML = '';
+      };
+      const hideContent = () => {
+        headerCard.style.display = 'none';
+        mainGrid.style.display = 'none';
+        skeleton.classList.add('hidden');
+      };
+
+      // Reset expired styling on apply buttons
+      document.querySelectorAll('button[onclick*="handleApply"]').forEach(b => b.classList.remove('btn-disabled-expired'));
+
+      /* ----- General page states ----- */
+      if (stateKey === 'loading') {
+        labelEl.innerText = 'Loading';
+        hideContent();
+        stateView.classList.add('hidden');
+        skeleton.classList.remove('hidden');
+      } else if (stateKey === 'loaded') {
+        labelEl.innerText = 'Loaded';
+        showContent();
+        renderMatchState(currentMatchState);
+      } else if (stateKey === 'not_found') {
+        labelEl.innerText = 'Not Found';
+        hideContent();
+        stateView.classList.remove('hidden');
+        stateView.innerHTML =
+          '<div class="bg-white border border-[#E6E3DB] rounded-2xl p-14 text-center shadow-sm">' +
+          '<div class="w-16 h-16 rounded-2xl bg-[#FAF8F5] border border-[#E5E1D7] flex items-center justify-center mx-auto mb-5 text-3xl">🔍</div>' +
+          '<h2 class="font-serif-heading text-3xl font-bold text-[#14233D] mb-2">Job Post Not Found</h2>' +
+          '<p class="text-sm text-[#6B7280] max-w-md mx-auto mb-7">This job posting may have been removed by the employer, or the link is incorrect. The source listing was last verified 2 hours ago.</p>' +
+          '<div class="flex items-center justify-center gap-3">' +
+          '<button onclick="setPageUXStateByKey(\'loaded\')" class="px-5 py-2.5 rounded-xl border border-[#E5E1D7] bg-white text-[#14233D] text-xs font-bold hover:bg-[#FAF8F5]">← Back to Last Loaded Job</button>' +
+          '<button onclick="setPageUXStateByKey(\'retry\')" class="px-5 py-2.5 rounded-xl bg-[#192A4A] text-white text-xs font-bold hover:bg-[#132038]">Browse Similar Roles</button>' +
+          '</div></div>';
+      } else if (stateKey === 'expired_stale') {
+        labelEl.innerText = 'Expired / Stale';
+        showContent();
+        stateView.classList.remove('hidden');
+        stateView.innerHTML =
+          '<div class="bg-[#FBF1EC] border border-[#F2DACF] text-[#B84825] rounded-2xl px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">' +
+          '<div class="flex items-start gap-3 text-xs leading-relaxed"><span class="text-xl">⚠️</span>' +
+          '<div><strong class="block text-sm mb-0.5">This job post has expired or is no longer accepting applications.</strong>' +
+          'Last verified 2 hours ago · Source listing may have been closed by TechNova Labs.</div></div>' +
+          '<button onclick="setPageUXStateByKey(\'loaded\')" class="shrink-0 px-4 py-2 rounded-lg bg-white border border-[#F2DACF] text-xs font-bold hover:bg-[#FAF8F5]">View Snapshot Anyway</button>' +
+          '</div>';
+        document.querySelectorAll('button[onclick*="handleApply"]').forEach(b => b.classList.add('btn-disabled-expired'));
+      } else if (stateKey === 'error') {
+        labelEl.innerText = 'Error';
+        hideContent();
+        stateView.classList.remove('hidden');
+        stateView.innerHTML =
+          '<div class="bg-white border border-[#E6E3DB] rounded-2xl p-14 text-center shadow-sm">' +
+          '<div class="w-16 h-16 rounded-2xl bg-[#FBEAE8] border border-[#B3271E]/20 flex items-center justify-center mx-auto mb-5 text-3xl">⚠️</div>' +
+          '<h2 class="font-serif-heading text-3xl font-bold text-[#14233D] mb-2">Unable to Load Job Details</h2>' +
+          '<p class="text-sm text-[#6B7280] max-w-md mx-auto mb-2">A network error occurred while fetching this role. Your connection or our job API may be temporarily unavailable.</p>' +
+          '<p class="text-[11px] text-[#B3271E] font-bold mb-7">Error code: ERR_JOB_FETCH_TIMEOUT</p>' +
+          '<button onclick="setPageUXStateByKey(\'retry\')" class="px-6 py-2.5 rounded-xl bg-[#192A4A] text-white text-xs font-bold hover:bg-[#132038] inline-flex items-center gap-2">↻ Retry Now</button>' +
+          '</div>';
+      } else if (stateKey === 'retry') {
+        labelEl.innerText = 'Retrying...';
+        hideContent();
+        stateView.classList.add('hidden');
+        skeleton.classList.remove('hidden');
+        retryTimer = setTimeout(() => {
+          labelEl.innerText = 'Loaded';
+          showContent();
+          renderMatchState(currentMatchState);
+        }, 1800);
+        return;
+      }
+
+      /* ----- Match-specific states (rendered inside the AI card) ----- */
+      const matchKeys = ['not_analyzed', 'analyzing', 'success', 'low_confidence', 'missing_context', 'ai_failure'];
+      if (matchKeys.includes(stateKey)) {
+        labelEl.innerText = 'Match: ' + stateKey.replace('_', ' ');
+        if (stateKey !== 'analyzing') showContent();
+        if (stateKey === 'analyzing') {
+          // keep content visible, skeleton inside AI card
+          headerCard.style.display = 'block';
+          mainGrid.style.display = 'grid';
+          skeleton.classList.add('hidden');
+          stateView.classList.add('hidden');
+        }
+        currentMatchState = stateKey;
+        renderMatchState(stateKey);
+        if (stateKey === 'analyzing') {
+          analyzingTimer = setTimeout(() => {
+            currentMatchState = 'success';
+            labelEl.innerText = 'Match: success';
+            renderMatchState('success');
+          }, 2500);
+        }
+      }
+    }
+
+    // Programmatic state change (no switcher click event available)
+    function setPageUXStateByKey(key) {
+      document.querySelectorAll('.ux-btn').forEach(btn => {
+        const onclick = btn.getAttribute('onclick') || '';
+        const isActive = onclick.includes("'" + key + "'");
+        btn.classList.toggle('bg-[#192A4A]', isActive);
+        btn.classList.toggle('text-white', isActive);
+        btn.classList.toggle('border-[#192A4A]', isActive);
+        btn.classList.toggle('bg-[#FAF8F5]', !isActive);
+        btn.classList.toggle('text-[#4B5565]', !isActive);
+        btn.classList.toggle('border-[#E5E1D7]', !isActive);
+      });
+      setPageUXState(key);
+    }
+
+    /* ================= AI MATCH CARD STATES ================= */
+    const MATCH_STATES = {
+      not_analyzed: {
+        badge: 'Not Analyzed',
+        badgeClass: 'text-[#525B6C] bg-[#F2EEE4] border-[#E2DDD2]',
+        body:
+          '<div class="text-center py-6">' +
+          '<div class="w-14 h-14 rounded-2xl bg-[#FAF8F5] border border-[#E5E1D7] flex items-center justify-center mx-auto mb-4 text-2xl">🧭</div>' +
+          '<h3 class="font-serif-heading text-xl font-bold text-[#192A4A] mb-1.5">No Match Analysis Yet</h3>' +
+          '<p class="text-xs text-[#758092] leading-relaxed max-w-xs mx-auto mb-5">Run the AI engine to compare your verified profile against TechNova\'s 9 core requirements.</p>' +
+          '<button onclick="setPageUXStateByKey(\'analyzing\')" class="px-5 py-2.5 rounded-xl bg-[#192A4A] text-white text-xs font-bold hover:bg-[#132038]">Analyze Match →</button>' +
+          '</div>'
+      },
+      analyzing: {
+        badge: 'Analyzing...',
+        badgeClass: 'text-[#B84825] bg-[#FBF1EC] border-[#F2DACF]',
+        body:
+          '<div class="space-y-3 py-2">' +
+          '<div class="flex items-center gap-2 text-[11px] text-[#758092] mb-1"><div class="w-3.5 h-3.5 border-2 border-[#E5E1D7] border-t-[#D95D39] rounded-full" style="animation:spin 0.8s linear infinite;"></div>Evaluating profile commits & stack depth...</div>' +
+          '<div class="skeleton h-3 w-full"></div>' +
+          '<div class="skeleton h-3 w-5/6"></div>' +
+          '<div class="skeleton h-2.5 w-full !rounded-full"></div>' +
+          '<div class="skeleton h-16 w-full"></div>' +
+          '<div class="skeleton h-10 w-full"></div>' +
+          '<div class="grid grid-cols-2 gap-2"><div class="skeleton h-9"></div><div class="skeleton h-9"></div></div>' +
+          '</div>'
+      },
+      success: {
+        badge: 'High Confidence (94%)',
+        badgeClass: 'text-[#B84825] bg-[#FBF1EC] border-[#F2DACF]',
+        body:
+          '<div class="flex items-baseline justify-between mb-2">' +
+          '<h3 class="font-serif-heading text-2xl font-bold text-[#192A4A]">Strong Match</h3>' +
+          '<span class="text-sm font-bold text-[#D95D39]">7 of 9 Matched</span></div>' +
+          '<div class="w-full bg-[#ECE8DF] h-2.5 rounded-full overflow-hidden mb-3 p-0.5 flex">' +
+          '<div class="bg-[#192A4A] h-full rounded-l-full duration-500" style="width:78%"></div>' +
+          '<div class="bg-[#D95D39] h-full rounded-r-full duration-500" style="width:16%"></div></div>' +
+          '<div class="bg-[#FAF8F5] border border-[#E5E1D7] rounded-xl p-3 mb-4 text-xs">' +
+          '<div class="text-[11px] font-bold text-[#192A4A] mb-1">Why this score (Explainability):</div>' +
+          '<p class="text-[#525B6C] leading-relaxed">Calculated from Alex\'s verified profile: 6 production repositories, full React 19 mastery, strict TypeScript adherence, and multi-tenant UI architecture experience.</p></div>' +
+          '<div class="mb-4">' +
+          '<span class="text-[11px] font-bold uppercase tracking-wider text-[#677284] block mb-2">Matched Requirements</span>' +
+          '<div class="flex flex-wrap gap-1.5">' +
+          '<span class="bg-[#FAF8F5] text-[#192A4A] border border-[#E4DFD4] text-xs font-semibold px-2.5 py-1 rounded-md">✓ React & Core JS</span>' +
+          '<span class="bg-[#FAF8F5] text-[#192A4A] border border-[#E4DFD4] text-xs font-semibold px-2.5 py-1 rounded-md">✓ REST APIs</span>' +
+          '<span class="bg-[#FAF8F5] text-[#192A4A] border border-[#E4DFD4] text-xs font-semibold px-2.5 py-1 rounded-md">✓ Modern Architecture</span>' +
+          '<span class="bg-[#FAF8F5] text-[#192A4A] border border-[#E4DFD4] text-xs font-semibold px-2.5 py-1 rounded-md">✓ Design Systems</span></div></div>' +
+          '<div class="bg-[#FAF8F5] border border-[#E8E4DA] rounded-xl p-3.5 mb-4 text-xs">' +
+          '<div class="flex items-center gap-1.5 text-[#B84825] font-bold mb-1">⚠ Actionable Growth Recommendation</div>' +
+          '<p class="text-[#555E70] mb-2 leading-relaxed">Bridging 2 missing skills (Jest Testing & CI/CD) boosts callback likelihood from <strong>72% to 91%</strong> for TechNova\'s hiring bar.</p>' +
+          '<div class="flex items-center justify-between bg-white p-2.5 rounded-lg border border-[#E5E1D7]">' +
+          '<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#D95D39]"></span>' +
+          '<span class="text-[11px] font-semibold text-[#192A4A]">Start 2-Hour Guided Path</span></div>' +
+          '<button onclick="showToast(\'🚀 Pathway opened: Jest & Monorepo CI/CD for TechNova\')" class="text-[11px] font-bold text-white bg-[#192A4A] hover:bg-[#132038] px-2.5 py-1 rounded transition-colors">Start Path →</button></div></div>' +
+          '<button onclick="handleApply(\'SkillMatch Profile\')" class="w-full bg-[#192A4A] hover:bg-[#132038] text-white font-bold py-3.5 px-4 rounded-xl shadow-sm transition-all duration-200 text-sm mb-3 flex items-center justify-center gap-2 group">' +
+          '<span class="w-2 h-2 rounded-full bg-[#D95D39] group-hover:scale-125 transition-transform"></span>Apply with SkillMatch Profile</button>' +
+          '<div class="grid grid-cols-2 gap-2 text-xs">' +
+          '<button onclick="handleAddToRoadmap()" class="py-2.5 px-3 rounded-xl border border-[#D8D3C6] bg-[#FAF8F5] hover:bg-[#F2EEE4] text-[#192A4A] font-semibold transition-colors text-center">Add to Roadmap</button>' +
+          '<button onclick="handleAskMentor()" class="py-2.5 px-3 rounded-xl border border-[#D8D3C6] bg-[#FAF8F5] hover:bg-[#F2EEE4] text-[#192A4A] font-semibold transition-colors text-center">Ask AI Mentor</button></div>'
+      },
+      low_confidence: {
+        badge: 'Low Confidence (58%)',
+        badgeClass: 'text-[#8A6A1F] bg-[#FBF3E3] border-[#F0E3C0]',
+        body:
+          '<div class="flex items-baseline justify-between mb-2">' +
+          '<h3 class="font-serif-heading text-2xl font-bold text-[#192A4A]">Partial Match</h3>' +
+          '<span class="text-sm font-bold text-[#C88A26]">4 of 9 Matched</span></div>' +
+          '<div class="w-full bg-[#ECE8DF] h-2.5 rounded-full overflow-hidden mb-3 p-0.5 flex">' +
+          '<div class="bg-[#192A4A] h-full rounded-l-full duration-500" style="width:45%"></div>' +
+          '<div class="bg-[#C88A26] h-full rounded-r-full duration-500" style="width:13%"></div></div>' +
+          '<div class="bg-[#FBF3E3] border border-[#F0E3C0] rounded-xl p-3 mb-4 text-xs">' +
+          '<div class="text-[11px] font-bold text-[#8A6A1F] mb-1">Why the confidence is low:</div>' +
+          '<p class="text-[#6B5A2B] leading-relaxed">Core React identified, but micro-frontend and automated testing verification data are missing from your profile.</p></div>' +
+          '<div class="mb-4">' +
+          '<span class="text-[11px] font-bold uppercase tracking-wider text-[#677284] block mb-2">Matched</span>' +
+          '<div class="flex flex-wrap gap-1.5 mb-3">' +
+          '<span class="bg-[#FAF8F5] text-[#192A4A] border border-[#E4DFD4] text-xs font-semibold px-2.5 py-1 rounded-md">✓ React & Core JS</span>' +
+          '<span class="bg-[#FAF8F5] text-[#192A4A] border border-[#E4DFD4] text-xs font-semibold px-2.5 py-1 rounded-md">✓ REST APIs</span></div>' +
+          '<span class="text-[11px] font-bold uppercase tracking-wider text-[#677284] block mb-2">Missing / Unverified</span>' +
+          '<div class="flex flex-wrap gap-1.5">' +
+          '<span class="bg-[#FBF1EC] text-[#B84825] border border-[#F2DACF] text-xs font-semibold px-2.5 py-1 rounded-md">✗ Jest Testing</span>' +
+          '<span class="bg-[#FBF1EC] text-[#B84825] border border-[#F2DACF] text-xs font-semibold px-2.5 py-1 rounded-md">✗ CI/CD Pipelines</span>' +
+          '<span class="bg-[#FBF1EC] text-[#B84825] border border-[#F2DACF] text-xs font-semibold px-2.5 py-1 rounded-md">✗ WebGL</span></div></div>' +
+          '<div class="bg-[#FAF8F5] border border-[#E8E4DA] rounded-xl p-3.5 mb-4 text-xs">' +
+          '<div class="text-[#B84825] font-bold mb-1">⚠ Recommended Next Action</div>' +
+          '<p class="text-[#555E70] leading-relaxed">You can still apply — but address the testing gap in your note. Sync GitHub to raise confidence before the recruiter screen.</p></div>' +
+          '<div class="grid grid-cols-2 gap-2 text-xs">' +
+          '<button onclick="showToast(\'🔗 Connecting GitHub & portfolio analyzer...\')" class="py-2.5 px-3 rounded-xl border border-[#D8D3C6] bg-[#FAF8F5] hover:bg-[#F2EEE4] text-[#192A4A] font-semibold transition-colors text-center">Sync GitHub</button>' +
+          '<button onclick="handleAskMentor()" class="py-2.5 px-3 rounded-xl border border-[#D8D3C6] bg-[#FAF8F5] hover:bg-[#F2EEE4] text-[#192A4A] font-semibold transition-colors text-center">Ask AI Mentor</button></div>'
+      },
+      missing_context: {
+        badge: 'Needs Sync',
+        badgeClass: 'text-[#525B6C] bg-[#F2EEE4] border-[#E2DDD2]',
+        body:
+          '<div class="text-center py-4">' +
+          '<div class="w-14 h-14 rounded-2xl bg-[#FAF8F5] border border-[#E5E1D7] flex items-center justify-center mx-auto mb-4 text-2xl">👤</div>' +
+          '<h3 class="font-serif-heading text-xl font-bold text-[#192A4A] mb-1.5">Profile Data Incomplete</h3>' +
+          '<p class="text-xs text-[#758092] leading-relaxed max-w-xs mx-auto mb-4">Unable to verify architectural depth. Only <strong class="text-[#14233D]">2 of 9 requirements</strong> could be matched from your current profile.</p>' +
+          '<div class="w-full bg-[#ECE8DF] h-2.5 rounded-full overflow-hidden mb-5 p-0.5"><div class="bg-[#192A4A] h-full rounded-full" style="width:20%"></div></div>' +
+          '<div class="bg-[#FAF8F5] border border-[#E8E4DA] rounded-xl p-3.5 mb-5 text-left text-xs">' +
+          '<div class="text-[#B84825] font-bold mb-1">⚠ What\'s missing</div>' +
+          '<p class="text-[#555E70] leading-relaxed">Connect your GitHub account or upload a project portfolio to unlock an accurate, explainable match score.</p></div>' +
+          '<button onclick="showToast(\'🔗 Connecting GitHub & portfolio analyzer...\')" class="w-full bg-[#192A4A] hover:bg-[#132038] text-white font-bold py-3 rounded-xl text-xs mb-2 flex items-center justify-center gap-2">⬆ Sync GitHub Profile</button>' +
+          '<button onclick="setPageUXStateByKey(\'analyzing\')" class="w-full py-2.5 rounded-xl border border-[#D8D3C6] bg-[#FAF8F5] hover:bg-[#F2EEE4] text-[#192A4A] font-semibold text-xs">Re-run with Limited Data</button>' +
+          '</div>'
+      },
+      ai_failure: {
+        badge: 'Service Offline',
+        badgeClass: 'text-[#B3271E] bg-[#FBEAE8] border-[#F0D2CE]',
+        body:
+          '<div class="text-center py-6">' +
+          '<div class="w-14 h-14 rounded-2xl bg-[#FBEAE8] border border-[#B3271E]/20 flex items-center justify-center mx-auto mb-4 text-2xl">⚠️</div>' +
+          '<h3 class="font-serif-heading text-xl font-bold text-[#192A4A] mb-1.5">Match Calculation Paused</h3>' +
+          '<p class="text-xs text-[#758092] leading-relaxed max-w-xs mx-auto mb-1.5">The vector embedding endpoint timed out while scoring your profile against this role.</p>' +
+          '<p class="text-[11px] text-[#B3271E] font-bold mb-6">Error: AI_MATCH_ENDPOINT_TIMEOUT</p>' +
+          '<p class="text-[11px] text-[#758092] mb-5">Cached job details remain fully active. You can still review and apply.</p>' +
+          '<div class="grid grid-cols-2 gap-2 text-xs">' +
+          '<button onclick="handleApply(\'SkillMatch Profile\')" class="py-2.5 px-3 rounded-xl border border-[#D8D3C6] bg-[#FAF8F5] hover:bg-[#F2EEE4] text-[#192A4A] font-semibold transition-colors text-center">Apply Anyway</button>' +
+          '<button onclick="setPageUXStateByKey(\'retry\')" class="py-2.5 px-3 rounded-xl bg-[#192A4A] text-white font-bold hover:bg-[#132038] transition-colors text-center">↻ Retry Analysis</button></div>' +
+          '</div>'
+      }
+    };
+
+    function renderMatchState(stateKey) {
+      const data = MATCH_STATES[stateKey];
+      if (!data) return;
+      const badge = document.getElementById('ai-confidence-badge');
+      badge.innerText = data.badge;
+      badge.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-md border ' + data.badgeClass;
+      document.getElementById('ai-card-content').innerHTML = data.body;
+    }
+  </script>
+</body>
+</html>

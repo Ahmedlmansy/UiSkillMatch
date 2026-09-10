@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Career Roadmap — SkillMatch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary":"#1F365C","primary-container":"#0F2036","on-primary":"#FFFFFF",
+        "secondary":"#9C432A",
+        "canvas-cream":"#FAF8F4","surface-white":"#FFFFFF",
+        "border-hairline":"#E5E1DA",
+        "text-primary":"#1B1C1A","text-secondary":"#44474E","text-muted":"#707780",
+        "match-forest":"#4F7A5A","match-amber":"#C88A26","status-red":"#B3271E"
+      },
+      fontFamily: { display:["DM Sans","sans-serif"], body:["Inter","sans-serif"] }
+    }
+  }
+}
+</script>
+<style>
+  body{ background:#FAF8F4; }
+  .material-symbols-outlined{ font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; vertical-align:middle; font-size:20px; }
+  .skeleton{ background:linear-gradient(90deg,#EFEDE8 25%,#F5F3EF 37%,#EFEDE8 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+  @keyframes shimmer{ 0%{background-position:100% 0;} 100%{background-position:0 0;} }
+  .view{ display:none; }
+  .view.active{ display:block; }
+  .spinner{ border-radius:50%; border:3px solid var(--border-hairline,#E5E1DA); border-top-color:#1F365C; animation:spin 0.8s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .phase-body{ display:none; }
+  .phase.open .phase-body{ display:block; }
+  .phase.open .chev{ transform:rotate(180deg); }
+  .task-row.done .task-label{ text-decoration:line-through; color:#707780; }
+  .task-row.done .task-check{ background:#4F7A5A; border-color:#4F7A5A; }
+  .task-row.done .task-check .material-symbols-outlined{ display:inline-block; }
+  .task-check .material-symbols-outlined{ display:none; }
+</style>
+</head>
+<body class="font-body text-text-primary">
+
+<!-- Demo-only state switcher — not part of production UI -->
+<div class="bg-primary-container text-white text-[12px] flex items-center justify-center gap-2 py-2 px-4 flex-wrap sticky top-0 z-50">
+  <span class="text-white/50 mr-1">Preview state:</span>
+  <button onclick="setView('empty-profile')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Missing profile</button>
+  <button onclick="setView('no-roadmap')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">No roadmap yet</button>
+  <button onclick="setView('generating')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Generating</button>
+  <button onclick="setView('generated')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Generated</button>
+  <button onclick="setView('updating')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Updating</button>
+  <button onclick="setView('error')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Error</button>
+</div>
+
+<header class="border-b border-border-hairline bg-canvas-cream">
+  <div class="max-w-[960px] mx-auto px-5 h-14 flex items-center gap-3">
+    <div class="text-[13px] text-text-muted">
+      <a href="#" class="hover:text-primary">SkillMatch</a>
+      <span class="mx-1">/</span>
+      <span class="text-text-primary font-semibold">Career Roadmap</span>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-[960px] mx-auto px-5 py-8">
+
+  <!-- ============ MISSING PROFILE CONTEXT ============ -->
+  <div class="view" id="view-empty-profile">
+    <div class="bg-white border border-border-hairline rounded-[16px] py-20 px-6 text-center">
+      <div class="w-14 h-14 rounded-[12px] bg-canvas-cream border border-border-hairline flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-text-muted text-[26px]">person_alert</span>
+      </div>
+      <h2 class="font-display font-bold text-[19px] mb-2">We need a bit more profile info first</h2>
+      <p class="text-[13px] text-text-muted max-w-sm mx-auto mb-6">A roadmap compares your current skills to a target role — complete your profile and upload a CV so we have something to compare against.</p>
+      <div class="flex items-center justify-center gap-3">
+        <button class="h-10 px-5 rounded-[8px] border border-border-hairline text-[13px] font-semibold">Upload CV</button>
+        <button class="h-10 px-5 rounded-[8px] bg-primary text-white text-[13px] font-semibold">Complete profile</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ NO ROADMAP YET ============ -->
+  <div class="view" id="view-no-roadmap">
+    <div class="bg-white border border-border-hairline rounded-[16px] p-8">
+      <div class="text-[11px] font-semibold text-secondary mb-2">CAREER ROADMAP</div>
+      <h1 class="font-display font-bold text-[24px] mb-2">Build your path to your next role</h1>
+      <p class="text-[13px] text-text-secondary max-w-lg mb-7">Pick a target role — or a job you've saved — and we'll compare it against your current profile to generate a phased plan with weekly tasks.</p>
+
+      <div class="mb-6">
+        <label class="block text-[12px] font-semibold text-text-secondary mb-2">Target role</label>
+        <select id="target-role-select" class="w-full sm:w-96 border border-border-hairline rounded-[10px] h-11 px-3 text-[13px] outline-none focus:border-primary">
+          <option>Senior Frontend Engineer</option>
+          <option>Frontend Architect</option>
+          <option>Full-Stack Engineer</option>
+          <option value="job">Use a saved job — Senior Frontend Engineer @ Vercel</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-6 text-[12px] text-text-muted mb-7">
+        <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-primary">person</span> Current profile</span>
+        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+        <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-primary">query_stats</span> Skill gap analysis</span>
+        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+        <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-primary">map</span> Phased roadmap</span>
+      </div>
+
+      <button onclick="setView('generating'); setTimeout(()=>setView('generated'), 2200);" class="h-11 px-6 rounded-[10px] bg-primary text-white text-[14px] font-semibold flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">auto_awesome</span> Generate Roadmap
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ GENERATING ============ -->
+  <div class="view" id="view-generating">
+    <div class="bg-white border border-border-hairline rounded-[16px] py-16 px-6 text-center">
+      <div class="w-10 h-10 spinner mx-auto mb-5"></div>
+      <h2 class="font-display font-bold text-[17px] mb-2">Building your roadmap</h2>
+      <p class="text-[13px] text-text-muted max-w-sm mx-auto">Comparing your profile against Senior Frontend Engineer requirements and prioritizing skill gaps — this takes a few seconds.</p>
+    </div>
+  </div>
+
+  <!-- ============ ERROR ============ -->
+  <div class="view" id="view-error">
+    <div class="bg-white border border-border-hairline rounded-[16px] py-20 px-6 text-center">
+      <div class="w-14 h-14 rounded-[12px] bg-status-red/10 border border-status-red/30 flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-status-red text-[26px]">error_outline</span>
+      </div>
+      <h2 class="font-display font-bold text-[19px] mb-2">Couldn't generate your roadmap</h2>
+      <p class="text-[13px] text-text-muted max-w-sm mx-auto mb-6">Something went wrong on our end. Nothing was saved — you can try again.</p>
+      <button onclick="setView('no-roadmap')" class="bg-primary text-white text-[13px] font-semibold px-5 h-10 rounded-[8px] inline-flex items-center gap-2">
+        <span class="material-symbols-outlined text-[16px]">refresh</span> Try again
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ GENERATED / UPDATING ============ -->
+  <div class="view" id="view-generated">
+
+    <!-- Updating banner -->
+    <div id="updating-banner" class="hidden mb-5 border border-primary/20 bg-primary/5 text-primary text-[13px] font-semibold rounded-[10px] px-4 py-3 flex items-center gap-2">
+      <div class="w-4 h-4 spinner"></div> Recalculating your roadmap — your profile or target role changed.
+    </div>
+
+    <!-- Target Role + actions -->
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+        <div>
+          <div class="text-[11px] font-semibold text-secondary mb-1">TARGET ROLE</div>
+          <h1 class="font-display font-bold text-[20px]">Senior Frontend Engineer</h1>
+          <div class="text-[12px] text-text-muted mt-1">Based on your saved job at Vercel · Generated Sep 1, 2026</div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="refreshRoadmap()" class="h-9 px-3.5 rounded-[8px] border border-border-hairline text-[12px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream">
+            <span class="material-symbols-outlined text-[16px]">refresh</span> Refresh
+          </button>
+          <button onclick="setView('no-roadmap')" class="h-9 px-3.5 rounded-[8px] border border-border-hairline text-[12px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream">
+            <span class="material-symbols-outlined text-[16px]">swap_horiz</span> Change target role
+          </button>
+          <button class="h-9 px-3.5 rounded-[8px] bg-primary text-white text-[12px] font-semibold flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">forum</span> Ask Mentor
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Baseline + Overall Progress -->
+    <div class="grid sm:grid-cols-2 gap-5 mb-5">
+      <div class="bg-white border border-border-hairline rounded-[16px] p-6">
+        <div class="text-[11px] font-semibold text-text-muted mb-3">CURRENT BASELINE</div>
+        <div class="text-[13px] font-semibold mb-1">Mid-level Frontend Developer</div>
+        <p class="text-[12px] text-text-secondary leading-relaxed mb-3">Based on your CV and confirmed skills: React, TypeScript, Next.js, REST APIs, Git.</p>
+        <div class="text-[11px] text-text-muted">3–5 years experience · Last CV update Aug 24, 2026</div>
+      </div>
+      <div class="bg-white border border-border-hairline rounded-[16px] p-6">
+        <div class="flex items-center justify-between mb-3">
+          <div class="text-[11px] font-semibold text-text-muted">OVERALL PROGRESS</div>
+          <span class="text-[13px] font-bold num text-primary">34%</span>
+        </div>
+        <div class="w-full h-2 rounded-full bg-canvas-cream overflow-hidden mb-3">
+          <div class="h-full bg-primary rounded-full" style="width:34%"></div>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div>
+            <div class="font-display font-bold text-[15px]">3</div>
+            <div class="text-[10px] text-text-muted">Phases</div>
+          </div>
+          <div>
+            <div class="font-display font-bold text-[15px]">7/22</div>
+            <div class="text-[10px] text-text-muted">Tasks done</div>
+          </div>
+          <div>
+            <div class="font-display font-bold text-[15px]">~5 wks</div>
+            <div class="text-[10px] text-text-muted">Est. remaining</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Priority Skill Gaps + Reasons -->
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+      <div class="flex items-center justify-between mb-1">
+        <h2 class="font-display font-bold text-[15px]">Priority skill gaps</h2>
+      </div>
+      <p class="text-[12px] text-text-muted mb-4">Ranked by impact on your target role — reasons are generated by the roadmap engine from job requirements and your profile.</p>
+      <div class="space-y-3">
+        <div class="flex items-start gap-3 border border-border-hairline rounded-[10px] p-3.5">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-[6px] text-[10px] font-bold bg-status-red/10 text-status-red flex-shrink-0 mt-0.5">HIGH</span>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold">System Design</div>
+            <div class="text-[12px] text-text-secondary mt-0.5">Appears as a core requirement in 9 of 10 roles you've saved, and isn't yet confirmed on your profile.</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 border border-border-hairline rounded-[10px] p-3.5">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-[6px] text-[10px] font-bold bg-match-amber/10 text-match-amber flex-shrink-0 mt-0.5">MEDIUM</span>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold">GraphQL</div>
+            <div class="text-[12px] text-text-secondary mt-0.5">Requested in the target job's tech stack; you have related API experience (REST) but no confirmed GraphQL usage.</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 border border-border-hairline rounded-[10px] p-3.5">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-[6px] text-[10px] font-bold bg-match-amber/10 text-match-amber flex-shrink-0 mt-0.5">MEDIUM</span>
+          <div class="flex-1">
+            <div class="text-[13px] font-semibold">Automated Testing (Jest)</div>
+            <div class="text-[12px] text-text-secondary mt-0.5">Common requirement at senior level; not yet reflected in your CV or confirmed skills.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Roadmap Phases (with milestones inside) -->
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+      <h2 class="font-display font-bold text-[15px] mb-4">Roadmap phases</h2>
+
+      <div class="space-y-3">
+        <!-- Phase 1 -->
+        <div class="phase open border border-border-hairline rounded-[12px] overflow-hidden">
+          <button class="w-full flex items-center gap-3 p-4 text-left" onclick="this.closest('.phase').classList.toggle('open')">
+            <div class="w-8 h-8 rounded-full bg-match-forest text-white flex items-center justify-center flex-shrink-0 text-[12px] font-bold">1</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-[13px] font-semibold">Foundations — System Design Basics</div>
+              <div class="w-full h-1.5 rounded-full bg-canvas-cream mt-1.5 overflow-hidden max-w-xs">
+                <div class="h-full bg-match-forest rounded-full" style="width:75%"></div>
+              </div>
+            </div>
+            <span class="text-[11px] font-semibold text-text-muted flex-shrink-0">75%</span>
+            <span class="material-symbols-outlined chev text-[18px] text-text-muted transition-transform flex-shrink-0">expand_more</span>
+          </button>
+          <div class="phase-body px-4 pb-4">
+            <!-- Milestone -->
+            <div class="flex items-center gap-2 text-[12px] font-semibold text-text-secondary mb-3 mt-1">
+              <span class="material-symbols-outlined text-match-amber text-[16px]">flag</span> Milestone: Complete "System Design Interview" course
+            </div>
+            <div class="space-y-2">
+              <div class="task-row done flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+                <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+                  <span class="material-symbols-outlined text-white text-[13px]">check</span>
+                </button>
+                <span class="task-label text-[13px] flex-1">Watch "Scaling Web Applications" module</span>
+                <span class="text-[11px] text-text-muted">Done Aug 30</span>
+              </div>
+              <div class="task-row flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+                <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+                  <span class="material-symbols-outlined text-white text-[13px]">check</span>
+                </button>
+                <span class="task-label text-[13px] flex-1">Design a URL-shortener system on paper</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="phase border border-border-hairline rounded-[12px] overflow-hidden">
+          <button class="w-full flex items-center gap-3 p-4 text-left" onclick="this.closest('.phase').classList.toggle('open')">
+            <div class="w-8 h-8 rounded-full border-2 border-border-hairline text-text-muted flex items-center justify-center flex-shrink-0 text-[12px] font-bold">2</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-[13px] font-semibold">Applied Skills — GraphQL &amp; Testing</div>
+              <div class="w-full h-1.5 rounded-full bg-canvas-cream mt-1.5 overflow-hidden max-w-xs">
+                <div class="h-full bg-match-amber rounded-full" style="width:15%"></div>
+              </div>
+            </div>
+            <span class="text-[11px] font-semibold text-text-muted flex-shrink-0">15%</span>
+            <span class="material-symbols-outlined chev text-[18px] text-text-muted transition-transform flex-shrink-0">expand_more</span>
+          </button>
+          <div class="phase-body px-4 pb-4">
+            <div class="flex items-center gap-2 text-[12px] font-semibold text-text-secondary mb-3 mt-1">
+              <span class="material-symbols-outlined text-match-amber text-[16px]">flag</span> Milestone: Ship one project using GraphQL + Jest
+            </div>
+            <div class="space-y-2">
+              <div class="task-row flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+                <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+                  <span class="material-symbols-outlined text-white text-[13px]">check</span>
+                </button>
+                <span class="task-label text-[13px] flex-1">Complete "GraphQL Fundamentals" module</span>
+              </div>
+              <div class="task-row flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+                <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+                  <span class="task-label text-[13px]"></span>
+                </button>
+                <span class="task-label text-[13px] flex-1">Write unit tests for an existing project with Jest</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="phase border border-border-hairline rounded-[12px] overflow-hidden">
+          <button class="w-full flex items-center gap-3 p-4 text-left" onclick="this.closest('.phase').classList.toggle('open')">
+            <div class="w-8 h-8 rounded-full border-2 border-border-hairline text-text-muted flex items-center justify-center flex-shrink-0 text-[12px] font-bold">3</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-[13px] font-semibold">Interview Ready — Mock Interviews &amp; Portfolio</div>
+              <div class="w-full h-1.5 rounded-full bg-canvas-cream mt-1.5 overflow-hidden max-w-xs">
+                <div class="h-full bg-border-hairline rounded-full" style="width:0%"></div>
+              </div>
+            </div>
+            <span class="text-[11px] font-semibold text-text-muted flex-shrink-0">0%</span>
+            <span class="material-symbols-outlined chev text-[18px] text-text-muted transition-transform flex-shrink-0">expand_more</span>
+          </button>
+          <div class="phase-body px-4 pb-4">
+            <div class="flex items-center gap-2 text-[12px] font-semibold text-text-secondary mb-3 mt-1">
+              <span class="material-symbols-outlined text-match-amber text-[16px]">flag</span> Milestone: Pass 2 AI mock interviews at "Senior" level
+            </div>
+            <div class="space-y-2">
+              <div class="task-row flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+                <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+                  <span class="material-symbols-outlined text-white text-[13px]">check</span>
+                </button>
+                <span class="task-label text-[13px] flex-1">Schedule first AI mock interview</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Tasks -->
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display font-bold text-[15px]">This week's tasks</h2>
+        <span class="text-[12px] text-text-muted">2 of 4 done</span>
+      </div>
+      <div class="space-y-2">
+        <div class="task-row done flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+          <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+            <span class="material-symbols-outlined text-white text-[13px]">check</span>
+          </button>
+          <span class="task-label text-[13px] flex-1">Watch "Scaling Web Applications" module</span>
+          <span class="text-[11px] text-text-muted">Phase 1</span>
+        </div>
+        <div class="task-row done flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+          <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+            <span class="material-symbols-outlined text-white text-[13px]">check</span>
+          </button>
+          <span class="task-label text-[13px] flex-1">Design a URL-shortener system on paper</span>
+          <span class="text-[11px] text-text-muted">Phase 1</span>
+        </div>
+        <div class="task-row flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+          <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+            <span class="material-symbols-outlined text-white text-[13px]">check</span>
+          </button>
+          <span class="task-label text-[13px] flex-1">Complete "GraphQL Fundamentals" module</span>
+          <span class="text-[11px] text-text-muted">Phase 2</span>
+        </div>
+        <div class="task-row flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+          <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+            <span class="material-symbols-outlined text-white text-[13px]">check</span>
+          </button>
+          <span class="task-label text-[13px] flex-1">Write unit tests for an existing project with Jest</span>
+          <span class="text-[11px] text-text-muted">Phase 2</span>
+        </div>
+      </div>
+      <p class="text-[11px] text-text-muted mt-3">Tap a checkbox to mark complete — tap again to undo.</p>
+    </div>
+
+    <!-- Completed Tasks (collapsed by default) -->
+    <div class="bg-white border border-border-hairline rounded-[16px] p-6">
+      <button class="w-full flex items-center justify-between" onclick="document.getElementById('completed-body').classList.toggle('hidden'); this.querySelector('.chev').classList.toggle('rotate-180')">
+        <h2 class="font-display font-bold text-[15px]">Completed tasks <span class="text-text-muted font-normal">(7)</span></h2>
+        <span class="material-symbols-outlined chev text-[18px] text-text-muted transition-transform">expand_more</span>
+      </button>
+      <div id="completed-body" class="hidden mt-4 space-y-2">
+        <div class="task-row done flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+          <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+            <span class="material-symbols-outlined text-white text-[13px]">check</span>
+          </button>
+          <span class="task-label text-[13px] flex-1">Confirmed React &amp; TypeScript proficiency from CV</span>
+          <span class="text-[11px] text-text-muted">Aug 24</span>
+        </div>
+        <div class="task-row done flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+          <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+            <span class="material-symbols-outlined text-white text-[13px]">check</span>
+          </button>
+          <span class="task-label text-[13px] flex-1">Set up learning schedule (5 hrs/week)</span>
+          <span class="text-[11px] text-text-muted">Aug 25</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  function setView(name){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    document.getElementById('updating-banner').classList.toggle('hidden', name !== 'updating');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  // Show the "Generated" view underneath so the roadmap content is visible while updating
+  const origSetView = setView;
+  setView = function(name){
+    if(name === 'updating'){
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-generated').classList.add('active');
+      document.getElementById('updating-banner').classList.remove('hidden');
+      window.scrollTo({top:0, behavior:'smooth'});
+      return;
+    }
+    origSetView(name);
+  };
+
+  function toggleTask(btn){
+    btn.closest('.task-row').classList.toggle('done');
+  }
+
+  function refreshRoadmap(){
+    setView('updating');
+    setTimeout(() => setView('generated'), 1600);
+  }
+</script>
+
+</body>
+</html>
