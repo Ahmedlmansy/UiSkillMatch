@@ -25,22 +25,119 @@
   }
 
   *{ box-sizing:border-box; }
-  html,body{ margin:0; padding:0; }
+  html,body{ margin:0; padding:0; height:100%; overflow:hidden; }
   body{
     font-family:'Inter', sans-serif;
     background:var(--canvas-cream);
     color:var(--text-primary);
-    min-height:100vh;
+    height:100vh;
   }
   a{ color:inherit; text-decoration:none; }
+
+  /* ================= Two-column shell (matches login.html) ================= */
+  .shell{
+    height:100vh;
+    display:grid;
+    grid-template-columns: 1.05fr 1fr;
+  }
+
+  /* ---------- Photo panel (left) ---------- */
+  .photo-panel{
+    position:relative;
+    overflow:hidden;
+    height:100vh;
+    background:var(--primary-container);
+    border-radius:0 0 220px 0;
+  }
+  .photo-panel img{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    object-position:center 30%;
+  }
+  .photo-panel .scrim{
+    position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(15,32,54,0.05) 0%, rgba(15,32,54,0.15) 45%, rgba(15,32,54,0.92) 88%),
+      linear-gradient(90deg, rgba(15,32,54,0.25) 0%, transparent 35%);
+  }
+  .photo-panel .decoy-blob{
+    position:absolute;
+    left:-60px; bottom:-90px;
+    width:220px; height:220px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.1);
+    pointer-events:none;
+  }
+  .photo-content{
+    position:relative; z-index:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    padding:2.5rem 3rem 3.5rem 3rem;
+    color:#fff;
+    max-width:30rem;
+  }
+  .photo-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:0.45rem;
+    align-self:flex-start;
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.28);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    border-radius:999px;
+    padding:0.4rem 0.85rem 0.4rem 0.6rem;
+    font-size:12.5px;
+    font-weight:600;
+    margin-bottom:1.1rem;
+  }
+  .photo-badge .badge-icon{
+    width:20px; height:20px;
+    border-radius:50%;
+    background:var(--secondary);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .photo-content h1{
+    font-family:'DM Sans', sans-serif;
+    font-weight:700;
+    font-size:32px;
+    line-height:1.15;
+    letter-spacing:-0.02em;
+    margin:0 0 0.75rem 0;
+  }
+  .photo-content p{
+    font-size:14.5px;
+    line-height:22px;
+    color:rgba(255,255,255,0.8);
+    margin:0;
+    max-width:24rem;
+  }
+
+  /* ---------- Form panel (right) ---------- */
+  .form-panel{
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    overflow-y:auto;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+  .form-panel::-webkit-scrollbar{ display:none; }
 
   .topbar{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:1.25rem 2rem;
-    max-width:640px;
+    padding:1.1rem 3rem 0.25rem 3rem;
+    max-width:42rem;
+    width:100%;
     margin:0 auto;
+    flex-shrink:0;
   }
   .brand{
     font-family:'DM Sans', sans-serif;
@@ -65,11 +162,14 @@
     font-weight:600;
     color:var(--text-muted);
   }
+  .topbar .exit:hover{ color:var(--text-primary); }
 
   .progress-wrap{
-    max-width:640px;
+    max-width:42rem;
+    width:100%;
     margin:0 auto;
-    padding:0 2rem 2rem 2rem;
+    padding:0 3rem 0.9rem 3rem;
+    flex-shrink:0;
   }
   .progress-track{
     display:grid;
@@ -105,52 +205,66 @@
   .progress-step.done .label{ color:var(--primary); }
 
   .stage{
-    max-width:640px;
+    max-width:42rem;
+    width:100%;
     margin:0 auto;
-    padding:0 2rem 4rem 2rem;
+    padding:0 3rem 1.25rem 3rem;
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
   }
   .card{
     background:var(--surface-white);
     border:1px solid var(--border-hairline);
     border-radius:1rem;
-    padding:2.25rem;
+    padding:1.75rem 2.25rem;
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+    display:flex;
+    flex-direction:column;
+    justify-content:safe center;
   }
+  .card::-webkit-scrollbar{ display:none; }
 
   .step-eyebrow{
-    font-size:12px;
+    font-size:11px;
     font-weight:600;
     color:var(--secondary);
-    margin-bottom:0.6rem;
+    margin-bottom:0.4rem;
   }
   .card h1{
     font-family:'DM Sans', sans-serif;
     font-weight:700;
-    font-size:26px;
-    line-height:32px;
+    font-size:23px;
+    line-height:28px;
     letter-spacing:-0.02em;
-    margin:0 0 0.4rem 0;
+    margin:0 0 0.3rem 0;
   }
   .card .sub{
-    font-size:14px;
-    line-height:20px;
+    font-size:13.5px;
+    line-height:19px;
     color:var(--text-muted);
-    margin:0 0 1.75rem 0;
+    margin:0 0 1.15rem 0;
   }
 
-  .field{ margin-bottom:1.1rem; }
+  .field{ margin-bottom:0.8rem; }
   .field-row{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:1rem;
+    gap:0.85rem;
   }
   .field label{
     display:flex;
     align-items:center;
     gap:0.4rem;
-    font-size:12px;
+    font-size:11.5px;
     font-weight:600;
     color:var(--text-secondary);
-    margin-bottom:0.45rem;
+    margin-bottom:0.35rem;
   }
   .field input, .field textarea, .field select{
     width:100%;
@@ -164,10 +278,10 @@
     outline:none;
     transition:border-color 0.15s ease, background 0.15s ease;
   }
-  .field input, .field select{ height:48px; }
+  .field input, .field select{ height:44px; }
   .field textarea{
-    padding:0.75rem 0.9rem;
-    min-height:96px;
+    padding:0.6rem 0.9rem;
+    min-height:54px;
     resize:vertical;
     font-family:'Inter', sans-serif;
   }
@@ -176,8 +290,41 @@
     border:1.5px solid var(--primary);
   }
   .field input.invalid{ border-color:#B3271E; }
-  .field-error{ display:none; font-size:12px; font-weight:600; color:#B3271E; margin-top:0.4rem; }
+  .field-error{ display:none; font-size:11.5px; font-weight:600; color:#B3271E; margin-top:0.35rem; }
   .field-error.show{ display:block; }
+
+  /* ---------- Field icons ---------- */
+  .field-wrap{ position:relative; }
+  .field-wrap .f-icon{
+    position:absolute;
+    left:0.85rem;
+    top:50%;
+    transform:translateY(-50%);
+    display:flex;
+    color:var(--text-muted);
+    pointer-events:none;
+    z-index:1;
+  }
+  .field-wrap input, .field-wrap select{ padding-left:2.6rem; }
+  .field-wrap select{ padding-right:2.2rem; appearance:auto; }
+  .field-wrap select ~ .f-icon{ pointer-events:none; }
+  .field-wrap input:focus ~ .f-icon,
+  .field-wrap select:focus ~ .f-icon{ color:var(--primary); }
+  .field-wrap .toggle-eye{
+    position:absolute;
+    right:0.75rem;
+    top:50%;
+    transform:translateY(-50%);
+    background:none;
+    border:none;
+    padding:4px;
+    cursor:pointer;
+    color:var(--text-muted);
+    display:flex;
+    z-index:1;
+  }
+  .field-wrap .toggle-eye:hover{ color:var(--text-primary); }
+  .field-wrap input[data-has-toggle]{ padding-right:2.6rem; }
 
   .field input.autofilled, .field select.autofilled{
     background:#F2F6EF;
@@ -200,9 +347,9 @@
     display:flex;
     align-items:flex-start;
     gap:0.6rem;
-    font-size:13px;
+    font-size:12.5px;
     color:var(--text-secondary);
-    margin:0.5rem 0 1.75rem 0;
+    margin:0.35rem 0 1.1rem 0;
   }
   .terms input[type="checkbox"]{
     margin-top:2px;
@@ -222,11 +369,11 @@
   .actions{
     display:flex;
     gap:0.75rem;
-    margin-top:0.5rem;
+    margin-top:0.25rem;
   }
   .btn-primary{
     flex:1;
-    height:48px;
+    height:46px;
     border-radius:0.75rem;
     background:var(--primary);
     color:var(--on-primary);
@@ -240,7 +387,7 @@
   .btn-primary:hover{ background:#152a49; }
   .btn-primary:disabled{ background:#B8C0CC; cursor:not-allowed; }
   .btn-ghost{
-    height:48px;
+    height:46px;
     padding:0 1.25rem;
     border-radius:0.75rem;
     background:transparent;
@@ -253,13 +400,13 @@
   }
   .btn-ghost:hover{ background:var(--canvas-cream); }
 
-  .otp-row{ display:flex; gap:0.6rem; margin-bottom:0.75rem; }
+  .otp-row{ display:flex; gap:0.6rem; margin-bottom:0.65rem; }
   .otp-box{
-    width:100%; height:56px;
+    width:100%; height:50px;
     text-align:center;
     font-family:'DM Sans', sans-serif;
     font-weight:700;
-    font-size:20px;
+    font-size:19px;
     border-radius:0.75rem;
     border:1px solid var(--border-hairline);
     background:var(--surface-white);
@@ -277,9 +424,9 @@
   .cv-box{
     border:1px solid var(--border-hairline);
     border-radius:0.85rem;
-    background:var(--canvas-cream);
-    padding:1.1rem;
-    margin-bottom:1.75rem;
+    background:var(--surface-white);
+    padding:0.9rem;
+    margin-bottom:1rem;
   }
   .cv-box .cv-box-title{
     font-size:12px;
@@ -299,7 +446,7 @@
   .dropzone{
     border:1.5px dashed var(--border-hairline);
     border-radius:0.85rem;
-    padding:1.5rem 1rem;
+    padding:1.1rem 1rem;
     text-align:center;
     background:var(--surface-white);
     cursor:pointer;
@@ -374,11 +521,11 @@
     display:flex;
     align-items:center;
     gap:0.9rem;
-    padding:1rem;
+    padding:0.85rem;
     border:1px solid var(--border-hairline);
     border-radius:0.75rem;
-    background:var(--canvas-cream);
-    margin-bottom:1.5rem;
+    background:var(--surface-white);
+    margin-bottom:1rem;
   }
   .spinner{
     width:20px; height:20px;
@@ -406,27 +553,27 @@
   }
 
   .skills-section-label{
-    font-size:11px;
+    font-size:10.5px;
     font-weight:600;
     letter-spacing:0.02em;
     color:var(--text-muted);
-    margin-bottom:0.75rem;
+    margin-bottom:0.5rem;
   }
   .skill-pills{
     display:flex;
     flex-wrap:wrap;
-    gap:0.5rem;
-    margin-bottom:1.5rem;
+    gap:0.4rem;
+    margin-bottom:0.9rem;
   }
   .pill{
     display:inline-flex;
     align-items:center;
-    gap:0.4rem;
-    padding:0.4rem 0.7rem;
+    gap:0.35rem;
+    padding:0.3rem 0.6rem;
     border-radius:0.5rem;
-    font-size:13px;
+    font-size:12.5px;
     font-weight:500;
-    background:var(--canvas-cream);
+    background:var(--surface-white);
   }
   .pill.matched{ border:1px solid var(--match-forest); color:var(--text-primary); }
   .pill.matched::before{ content:"✓"; color:var(--match-forest); font-weight:700; font-size:11px; }
@@ -437,13 +584,13 @@
     display:flex;
     align-items:center;
     gap:0.75rem;
-    padding:0.9rem 1rem;
+    padding:0.7rem 0.9rem;
     border-radius:0.75rem;
     background:rgba(79,122,90,0.10);
     color:var(--match-forest);
-    font-size:13px;
+    font-size:12.5px;
     font-weight:600;
-    margin-bottom:1.75rem;
+    margin-bottom:1rem;
   }
   .match-summary .dot{
     width:6px; height:6px;
@@ -452,222 +599,351 @@
     flex-shrink:0;
   }
 
-  .stepview{ display:none; }
+  .stepview{
+    display:none;
+    width:100%;
+    flex-shrink:0;
+  }
   .stepview.active{ display:block; }
 
+  .foot-note{
+    max-width:42rem;
+    width:100%;
+    margin:0 auto;
+    padding:0 3rem 1.1rem 3rem;
+    font-size:11.5px;
+    line-height:16px;
+    color:var(--text-muted);
+    text-align:center;
+    flex-shrink:0;
+  }
+  .foot-note a{
+    color:var(--text-secondary);
+    border-bottom:1px solid var(--border-hairline);
+  }
+
+  @media (max-width: 900px){
+    html,body{ overflow-y:auto; }
+    .shell{ grid-template-columns:1fr; height:auto; min-height:100vh; }
+    .photo-panel{ display:none; }
+    .form-panel{ height:auto; overflow-y:visible; }
+  }
   @media (max-width: 560px){
-    .topbar, .progress-wrap, .stage{ padding-left:1.25rem; padding-right:1.25rem; }
-    .card{ padding:1.5rem; }
+    .topbar, .progress-wrap, .stage, .foot-note{ padding-left:1.25rem; padding-right:1.25rem; }
+    .card{ padding:1.25rem; }
     .field-row{ grid-template-columns:1fr; }
+  }
+  @media (max-height: 720px){
+    .card h1{ font-size:20px; line-height:25px; }
+    .card .sub{ margin-bottom:0.85rem; }
+    .field{ margin-bottom:0.6rem; }
   }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="brand"><span class="mark">S</span>SkillMatch</div>
-  <a class="exit" href="#">Save &amp; exit</a>
-</div>
+<div class="shell">
 
-<div class="progress-wrap">
-  <div class="progress-track" id="progress-track">
-    <div class="progress-step active" data-step="0">
-      <div class="progress-bar"><div class="fill"></div></div>
-      <div class="label">Create account</div>
+  <!-- Photo panel -->
+  <aside class="photo-panel">
+    <img src="https://images.unsplash.com/photo-1633114128814-11fac33f707b?fm=jpg&q=80&w=1400&auto=format&fit=crop" alt="Team reviewing opportunities together on a laptop">
+    <div class="scrim"></div>
+    <div class="decoy-blob"></div>
+    <div class="photo-content">
+      <span class="photo-badge">
+        <span class="badge-icon">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z" stroke-linejoin="round"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-linejoin="round"/></svg>
+        </span>
+        Better Opportunities
+      </span>
+      <h1>Great companies hire great people</h1>
+      <p>Build your career with the right opportunities and take the next step toward your future.</p>
     </div>
-    <div class="progress-step" data-step="1">
-      <div class="progress-bar"><div class="fill"></div></div>
-      <div class="label">Verify email</div>
+  </aside>
+
+  <!-- Signup form panel — wizard flow unchanged -->
+  <main class="form-panel">
+
+    <div class="topbar">
+      <a href="home.html" class="brand" aria-label="SkillMatch home">
+        <svg width="150" height="37" viewBox="0 0 240 60" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <rect x="6" y="8" width="44" height="44" rx="12" fill="#1F365C"/>
+          <circle cx="21" cy="23" r="5" fill="#D06B4F"/>
+          <circle cx="35" cy="37" r="5" fill="#D4A72C"/>
+          <path d="M21 23C21 33 27 37 35 37" stroke="#FAF8F4" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="0.5 1"/>
+          <path d="M21 37L35 23" stroke="#4F7A5A" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="28" cy="30" r="3" fill="#FFFFFF"/>
+          <text x="62" y="38" font-family="'DM Sans', sans-serif" font-size="24" font-weight="800" letter-spacing="-0.5px" fill="#1F365C">Skill<tspan fill="#D06B4F">Match</tspan></text>
+          <circle cx="205" cy="22" r="3.5" fill="#D4A72C"/>
+        </svg>
+      </a>
+      <a class="exit" href="#">Save &amp; exit</a>
     </div>
-    <div class="progress-step" data-step="2">
-      <div class="progress-bar"><div class="fill"></div></div>
-      <div class="label">Upload CV</div>
-    </div>
-    <div class="progress-step" data-step="3">
-      <div class="progress-bar"><div class="fill"></div></div>
-      <div class="label">Complete profile</div>
-    </div>
-  </div>
-</div>
 
-<div class="stage">
-  <div class="card">
-
-    <div class="stepview active" data-view="0">
-      <div class="step-eyebrow">STEP 1 OF 4</div>
-      <h1>Create your account</h1>
-      <p class="sub">Start with the basics — you can round out your profile next.</p>
-
-      <div class="field">
-        <label for="full-name">Full name</label>
-        <input type="text" id="full-name" placeholder="e.g. Sara Ahmed">
-      </div>
-      <div class="field">
-        <label for="signup-email">Email address</label>
-        <input type="email" id="signup-email" placeholder="you@company.com">
-      </div>
-      <div class="field">
-        <label for="signup-password">Password</label>
-        <input type="password" id="signup-password" placeholder="At least 8 characters">
-      </div>
-      <div class="field">
-        <label for="signup-password-confirm">Confirm password</label>
-        <input type="password" id="signup-password-confirm" placeholder="Re-enter your password">
-        <p class="field-error" id="password-match-error">Passwords don't match — please check and try again.</p>
-      </div>
-
-      <div class="terms">
-        <input type="checkbox" id="terms">
-        <label for="terms">I agree to SkillMatch's <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</label>
-      </div>
-
-      <div class="actions">
-        <button class="btn-primary" onclick="startOtp()">Create account</button>
+    <div class="progress-wrap">
+      <div class="progress-track" id="progress-track">
+        <div class="progress-step active" data-step="0">
+          <div class="progress-bar"><div class="fill"></div></div>
+          <div class="label">Create account</div>
+        </div>
+        <div class="progress-step" data-step="1">
+          <div class="progress-bar"><div class="fill"></div></div>
+          <div class="label">Verify email</div>
+        </div>
+        <div class="progress-step" data-step="2">
+          <div class="progress-bar"><div class="fill"></div></div>
+          <div class="label">Upload CV</div>
+        </div>
+        <div class="progress-step" data-step="3">
+          <div class="progress-bar"><div class="fill"></div></div>
+          <div class="label">Complete profile</div>
+        </div>
       </div>
     </div>
 
-    <div class="stepview" data-view="1">
-      <div class="step-eyebrow">STEP 2 OF 4</div>
-      <h1>Verify your email</h1>
-      <p class="sub">We sent a 6-digit code to <strong id="otp-email-target" style="color:var(--text-primary);">your email</strong>. Enter it below to continue.</p>
+    <div class="stage">
+      <div class="card">
 
-      <div class="otp-row" id="otp-row">
-        <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
-        <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
-        <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
-        <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
-        <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
-        <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
-      </div>
-      <div class="otp-error" id="otp-error">That code doesn't look right — please try again.</div>
+        <div class="stepview active" data-view="0">
+          <div class="step-eyebrow">STEP 1 OF 4</div>
+          <h1>Create your account</h1>
+          <p class="sub">Start with the basics — you can round out your profile next.</p>
 
-      <div class="otp-resend">
-        <span id="resend-text">Resend code in <strong id="resend-timer">00:30</strong></span>
-        <a href="#" id="resend-link" class="resend-link" style="display:none;">Resend code</a>
-      </div>
-
-      <div class="actions" style="margin-top:1.75rem;">
-        <button class="btn-ghost" onclick="goTo(0)">Back</button>
-        <button class="btn-primary" id="otp-continue" disabled onclick="verifyOtp()">Verify &amp; continue</button>
-      </div>
-    </div>
-
-    <div class="stepview" data-view="2">
-      <div class="step-eyebrow">STEP 3 OF 4</div>
-      <h1>Upload your CV</h1>
-      <p class="sub">We'll read it once, privately, to pull out your skills and pre-fill your profile.</p>
-
-      <div class="cv-box" style="margin-bottom:0.5rem;">
-        <div class="cv-box-title">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1F365C" stroke-width="2">
-            <path d="M12 3v12m0-12 4 4m-4-4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          UPLOAD CV
-        </div>
-        <div class="cv-box-sub">PDF or DOCX, up to 10MB. This lets us auto-fill your profile and match you to better roles.</div>
-
-        <div class="dropzone" id="dropzone" onclick="document.getElementById('cv-input').click()">
-          <div class="icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1F365C" stroke-width="1.8">
-              <path d="M12 3v12m0-12 4 4m-4-4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="title">Drop your CV here, or <span class="browse">browse</span></div>
-          <div class="hint">PDF or DOCX, up to 10MB</div>
-        </div>
-        <input type="file" id="cv-input" accept=".pdf,.doc,.docx">
-
-        <div class="file-chip" id="file-chip" style="margin-top:0.75rem;">
-          <div class="doc-icon">PDF</div>
-          <div class="meta">
-            <div class="name" id="file-name">resume.pdf</div>
-            <div class="size" id="file-size">—</div>
-          </div>
-          <div class="status" id="cv-status"><div class="cv-spinner"></div> Reading…</div>
-          <button class="remove" id="file-remove">Remove</button>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="btn-ghost" onclick="skipToJobs()">Browse Jobs</button>
-        <button class="btn-primary" onclick="startExtraction()">Complete Profile</button>
-      </div>
-    </div>
-
-    <div class="stepview" data-view="3">
-      <div class="step-eyebrow">STEP 4 OF 4</div>
-      <h1 id="extract-heading">Reading your CV</h1>
-      <p class="sub" id="extract-sub">Our model is scanning for roles, tools, and skills — this takes a few seconds.</p>
-
-      <div class="extract-status" id="extract-status">
-        <div class="spinner"></div>
-        <div class="txt">
-          <div class="t1" id="status-t1">Analyzing resume.pdf</div>
-          <div class="t2" id="status-t2">Extracting skills and experience</div>
-        </div>
-      </div>
-
-      <div id="results" style="display:none;">
-        <div class="match-summary">
-          <span class="dot"></span>
-          14 skills found, 9 matched to in-demand roles
-        </div>
-
-        <div class="skills-section-label">SKILLS MATCHED TO YOUR ROLE</div>
-        <div class="skill-pills">
-          <span class="pill matched">React</span>
-          <span class="pill matched">TypeScript</span>
-          <span class="pill matched">Next.js</span>
-          <span class="pill matched">REST APIs</span>
-          <span class="pill matched">Git</span>
-        </div>
-
-        <div class="skills-section-label">GROWTH OPPORTUNITIES</div>
-        <div class="skill-pills">
-          <span class="pill growth">System Design</span>
-          <span class="pill growth">GraphQL</span>
-          <span class="pill growth">Testing (Jest)</span>
-        </div>
-
-        <div class="skills-section-label" style="margin-top:0.25rem;">YOUR PROFILE</div>
-        <div class="field">
-          <label for="job-title">Current or target job title <span class="autofill-tag" id="tag-job-title">✓ Auto-filled</span></label>
-          <input type="text" id="job-title" placeholder="e.g. Frontend Developer">
-        </div>
-        <div class="field-row">
           <div class="field">
-            <label for="location">Location <span class="autofill-tag" id="tag-location">✓ Auto-filled</span></label>
-            <input type="text" id="location" placeholder="City, Country">
+            <label for="full-name">Full name</label>
+            <div class="field-wrap">
+              <input type="text" id="full-name" placeholder="e.g. Sara Ahmed">
+              <span class="f-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7" stroke-linecap="round"/></svg>
+              </span>
+            </div>
           </div>
           <div class="field">
-            <label for="experience">Years of experience <span class="autofill-tag" id="tag-experience">✓ Auto-filled</span></label>
-            <select id="experience">
-              <option>Less than 1 year</option>
-              <option>1–2 years</option>
-              <option>3–5 years</option>
-              <option>6–10 years</option>
-              <option>10+ years</option>
-            </select>
+            <label for="signup-email">Email address</label>
+            <div class="field-wrap">
+              <input type="email" id="signup-email" placeholder="you@company.com">
+              <span class="f-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6 8.5 6 8.5-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="signup-password">Password</label>
+            <div class="field-wrap">
+              <input type="password" id="signup-password" placeholder="At least 8 characters" data-has-toggle>
+              <span class="f-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke-linecap="round"/></svg>
+              </span>
+              <button type="button" class="toggle-eye" data-toggle-for="signup-password" aria-label="Show password">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="signup-password-confirm">Confirm password</label>
+            <div class="field-wrap">
+              <input type="password" id="signup-password-confirm" placeholder="Re-enter your password" data-has-toggle>
+              <span class="f-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke-linecap="round"/></svg>
+              </span>
+              <button type="button" class="toggle-eye" data-toggle-for="signup-password-confirm" aria-label="Show password">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <p class="field-error" id="password-match-error">Passwords don't match — please check and try again.</p>
+          </div>
+
+          <div class="terms">
+            <input type="checkbox" id="terms">
+            <label for="terms">I agree to SkillMatch's <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</label>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="startOtp()">Create account</button>
           </div>
         </div>
-        <div class="field">
-          <label for="bio">Short bio <span style="font-weight:400;color:var(--text-muted);">(optional)</span> <span class="autofill-tag" id="tag-bio">✓ Auto-filled</span></label>
-          <textarea id="bio" placeholder="A couple of lines about what you do and what you're looking for."></textarea>
-        </div>
-      </div>
 
-      <div class="actions">
-        <button class="btn-ghost" onclick="goTo(2)">Back</button>
-        <button class="btn-primary" id="finish-btn" disabled onclick="alert('Welcome to SkillMatch!')">Go to dashboard</button>
+        <div class="stepview" data-view="1">
+          <div class="step-eyebrow">STEP 2 OF 4</div>
+          <h1>Verify your email</h1>
+          <p class="sub">We sent a 6-digit code to <strong id="otp-email-target" style="color:var(--text-primary);">your email</strong>. Enter it below to continue.</p>
+
+          <div class="otp-row" id="otp-row">
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
+          </div>
+          <div class="otp-error" id="otp-error">That code doesn't look right — please try again.</div>
+
+          <div class="otp-resend">
+            <span id="resend-text">Resend code in <strong id="resend-timer">00:30</strong></span>
+            <a href="#" id="resend-link" class="resend-link" style="display:none;">Resend code</a>
+          </div>
+
+          <div class="actions" style="margin-top:1.75rem;">
+            <button class="btn-ghost" onclick="goTo(0)">Back</button>
+            <button class="btn-primary" id="otp-continue" disabled onclick="verifyOtp()">Verify &amp; continue</button>
+          </div>
+        </div>
+
+        <div class="stepview" data-view="2">
+          <div class="step-eyebrow">STEP 3 OF 4</div>
+          <h1>Upload your CV</h1>
+          <p class="sub">We'll read it once, privately, to pull out your skills and pre-fill your profile.</p>
+
+          <div class="cv-box" style="margin-bottom:0.5rem;">
+            <div class="cv-box-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1F365C" stroke-width="2">
+                <path d="M12 3v12m0-12 4 4m-4-4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              UPLOAD CV
+            </div>
+            <div class="cv-box-sub">PDF or DOCX, up to 10MB. This lets us auto-fill your profile and match you to better roles.</div>
+
+            <div class="dropzone" id="dropzone" onclick="document.getElementById('cv-input').click()">
+              <div class="icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1F365C" stroke-width="1.8">
+                  <path d="M12 3v12m0-12 4 4m-4-4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="title">Drop your CV here, or <span class="browse">browse</span></div>
+              <div class="hint">PDF or DOCX, up to 10MB</div>
+            </div>
+            <input type="file" id="cv-input" accept=".pdf,.doc,.docx">
+
+            <div class="file-chip" id="file-chip" style="margin-top:0.75rem;">
+              <div class="doc-icon">PDF</div>
+              <div class="meta">
+                <div class="name" id="file-name">resume.pdf</div>
+                <div class="size" id="file-size">—</div>
+              </div>
+              <div class="status" id="cv-status"><div class="cv-spinner"></div> Reading…</div>
+              <button class="remove" id="file-remove">Remove</button>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-ghost" onclick="skipToJobs()">Browse Jobs</button>
+            <button class="btn-primary" onclick="startExtraction()">Complete Profile</button>
+          </div>
+        </div>
+
+        <div class="stepview" data-view="3">
+          <div class="step-eyebrow">STEP 4 OF 4</div>
+          <h1 id="extract-heading">Reading your CV</h1>
+          <p class="sub" id="extract-sub">Our model is scanning for roles, tools, and skills — this takes a few seconds.</p>
+
+          <div class="extract-status" id="extract-status">
+            <div class="spinner"></div>
+            <div class="txt">
+              <div class="t1" id="status-t1">Analyzing resume.pdf</div>
+              <div class="t2" id="status-t2">Extracting skills and experience</div>
+            </div>
+          </div>
+
+          <div id="results" style="display:none;">
+            <div class="match-summary">
+              <span class="dot"></span>
+              14 skills found, 9 matched to in-demand roles
+            </div>
+
+            <div class="skills-section-label">SKILLS MATCHED TO YOUR ROLE</div>
+            <div class="skill-pills">
+              <span class="pill matched">React</span>
+              <span class="pill matched">TypeScript</span>
+              <span class="pill matched">Next.js</span>
+              <span class="pill matched">REST APIs</span>
+              <span class="pill matched">Git</span>
+            </div>
+
+            <div class="skills-section-label">GROWTH OPPORTUNITIES</div>
+            <div class="skill-pills">
+              <span class="pill growth">System Design</span>
+              <span class="pill growth">GraphQL</span>
+              <span class="pill growth">Testing (Jest)</span>
+            </div>
+
+            <div class="skills-section-label" style="margin-top:0.25rem;">YOUR PROFILE</div>
+            <div class="field">
+              <label for="job-title">Current or target job title <span class="autofill-tag" id="tag-job-title">✓ Auto-filled</span></label>
+              <div class="field-wrap">
+                <input type="text" id="job-title" placeholder="e.g. Frontend Developer">
+                <span class="f-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12h18" stroke-linecap="round"/></svg>
+                </span>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="location">Location <span class="autofill-tag" id="tag-location">✓ Auto-filled</span></label>
+                <div class="field-wrap">
+                  <input type="text" id="location" placeholder="City, Country">
+                  <span class="f-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3"/></svg>
+                  </span>
+                </div>
+              </div>
+              <div class="field">
+                <label for="experience">Years of experience <span class="autofill-tag" id="tag-experience">✓ Auto-filled</span></label>
+                <div class="field-wrap">
+                <select id="experience">
+                  <option>Less than 1 year</option>
+                  <option>1–2 years</option>
+                  <option>3–5 years</option>
+                  <option>6–10 years</option>
+                  <option>10+ years</option>
+                </select>
+                  <span class="f-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label for="bio">Short bio <span style="font-weight:400;color:var(--text-muted);">(optional)</span> <span class="autofill-tag" id="tag-bio">✓ Auto-filled</span></label>
+              <div class="field-wrap">
+                <textarea id="bio" placeholder="A couple of lines about what you do and what you're looking for." style="padding-left:2.6rem;"></textarea>
+                <span class="f-icon" style="top:1.1rem; transform:none;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-ghost" onclick="goTo(2)">Back</button>
+            <button class="btn-primary" id="finish-btn" disabled onclick="alert('Welcome to SkillMatch!')">Go to dashboard</button>
+          </div>
+        </div>
+
       </div>
     </div>
 
-  </div>
+    <p class="foot-note">
+      Already have an account? <a href="login.html">Sign in</a>
+    </p>
+
+  </main>
 </div>
 
 <script>
+  document.querySelectorAll('.toggle-eye').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById(btn.dataset.toggleFor);
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+      btn.innerHTML = isHidden
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l18 18" stroke-linecap="round"/><path d="M10.6 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a15.8 15.8 0 0 1-3.4 4.2M6.6 6.6C3.7 8.4 2 12 2 12s3.5 7 10 7a10.6 10.6 0 0 0 4.2-.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+    });
+  });
+
   const steps = document.querySelectorAll('.progress-step');
   const views = document.querySelectorAll('.stepview');
 
