@@ -6,7 +6,7 @@
 <title>Application Details — SkillMatch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -27,163 +27,276 @@ tailwind.config = {
 }
 </script>
 <style>
-  body{ background:#FAF8F4; }
+  body{ background:linear-gradient(180deg,#FAF8F4 0%,#F5F2EC 260px,#FAF8F4 260px); }
   .material-symbols-outlined{ font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; vertical-align:middle; font-size:20px; }
   .skeleton{ background:linear-gradient(90deg,#EFEDE8 25%,#F5F3EF 37%,#EFEDE8 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
   @keyframes shimmer{ 0%{background-position:100% 0;} 100%{background-position:0 0;} }
   .view{ display:none; }
   .view.active{ display:block; }
+  .ring{ border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .ring-inner{ border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; }
+  .avatar-grad{ background:linear-gradient(135deg,#1F365C,#3B557D); }
+  .banner{ display:none; }
+  .banner.show{ display:flex; }
+  .conditional{ display:none; }
+  .conditional.show{ display:block; }
 </style>
 </head>
 <body class="font-body text-text-primary">
 
-<!-- Demo-only state switcher — not part of production UI -->
-<div class="bg-primary-container text-white text-[12px] flex items-center justify-center gap-2 py-2 px-4 flex-wrap">
+<!-- Demo-only state switcher -->
+<div class="bg-primary-container text-white text-[12px] flex items-center justify-center gap-2 py-2 px-4 flex-wrap sticky top-0 z-50">
   <span class="text-white/50 mr-1">Preview state:</span>
   <button onclick="setView('loading')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Loading</button>
-  <button onclick="setView('notfound')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Not Found</button>
   <button onclick="setView('loaded')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Loaded</button>
+  <button onclick="setView('notfound')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Not Found</button>
   <button onclick="setView('error')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Error</button>
+  <button onclick="setView('expired')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Expired</button>
+  <button onclick="setView('withdrawn')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Withdrawn</button>
+  <button onclick="setView('closed')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Closed</button>
 </div>
 
-<!-- App top bar -->
-<header class="border-b border-border-hairline bg-canvas-cream sticky top-0 z-20">
-  <div class="max-w-[880px] mx-auto px-5 h-14 flex items-center gap-3">
-    <button class="w-8 h-8 rounded-[8px] border border-border-hairline flex items-center justify-center hover:bg-white" onclick="history.back()">
+<header class="sticky top-[37px] z-40 bg-canvas-cream/90 backdrop-blur border-b border-border-hairline/70">
+  <div class="max-w-[900px] mx-auto px-5 h-14 flex items-center gap-3">
+    <button class="w-9 h-9 rounded-full border border-border-hairline flex items-center justify-center hover:bg-white transition-colors" onclick="history.back()">
       <span class="material-symbols-outlined text-[18px]">arrow_back</span>
     </button>
     <div class="text-[13px] text-text-muted">
-      <a href="#" class="hover:text-primary">Applications</a>
+      <a href="app-application-tracker.html" class="hover:text-primary">Applications</a>
       <span class="mx-1">/</span>
       <span class="text-text-primary font-semibold">Application details</span>
     </div>
   </div>
 </header>
 
-<main class="max-w-[880px] mx-auto px-5 py-8">
+<main class="max-w-[900px] mx-auto px-5 py-8">
 
-  <!-- ============ LOADING STATE ============ -->
+  <!-- ============ LOADING ============ -->
   <div class="view" id="view-loading">
-    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+    <div class="bg-white border border-border-hairline rounded-2xl p-6 mb-5 shadow-sm">
       <div class="flex items-start gap-4">
-        <div class="w-14 h-14 rounded-[10px] skeleton flex-shrink-0"></div>
+        <div class="w-16 h-16 rounded-2xl skeleton flex-shrink-0"></div>
         <div class="flex-1">
-          <div class="h-5 w-56 rounded-[6px] skeleton mb-3"></div>
-          <div class="h-3 w-36 rounded-[6px] skeleton mb-2"></div>
-          <div class="h-3 w-28 rounded-[6px] skeleton"></div>
+          <div class="h-5 w-56 rounded-lg skeleton mb-3"></div>
+          <div class="h-3 w-36 rounded-lg skeleton mb-2"></div>
+          <div class="h-3 w-28 rounded-lg skeleton"></div>
         </div>
-        <div class="h-7 w-24 rounded-[6px] skeleton"></div>
+        <div class="h-8 w-24 rounded-full skeleton"></div>
       </div>
     </div>
-    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
-      <div class="h-4 w-40 rounded-[6px] skeleton mb-5"></div>
+    <div class="bg-white border border-border-hairline rounded-2xl p-6 mb-5 shadow-sm">
+      <div class="h-4 w-40 rounded-lg skeleton mb-5"></div>
       <div class="space-y-4">
-        <div class="h-3 w-full rounded-[6px] skeleton"></div>
-        <div class="h-3 w-full rounded-[6px] skeleton"></div>
-        <div class="h-3 w-3/4 rounded-[6px] skeleton"></div>
+        <div class="h-3 w-full rounded-lg skeleton"></div>
+        <div class="h-3 w-full rounded-lg skeleton"></div>
+        <div class="h-3 w-3/4 rounded-lg skeleton"></div>
       </div>
     </div>
-    <div class="bg-white border border-border-hairline rounded-[16px] p-6">
-      <div class="h-4 w-32 rounded-[6px] skeleton mb-5"></div>
-      <div class="h-16 w-full rounded-[10px] skeleton"></div>
+    <div class="bg-white border border-border-hairline rounded-2xl p-6 shadow-sm">
+      <div class="h-4 w-32 rounded-lg skeleton mb-5"></div>
+      <div class="h-16 w-full rounded-xl skeleton"></div>
     </div>
   </div>
 
-  <!-- ============ NOT FOUND STATE ============ -->
+  <!-- ============ NOT FOUND ============ -->
   <div class="view" id="view-notfound">
-    <div class="bg-white border border-border-hairline rounded-[16px] py-20 px-6 text-center">
-      <div class="w-14 h-14 rounded-[12px] bg-canvas-cream border border-border-hairline flex items-center justify-center mx-auto mb-5">
-        <span class="material-symbols-outlined text-text-muted text-[26px]">search_off</span>
+    <div class="bg-white border border-border-hairline rounded-3xl py-20 px-6 text-center shadow-sm">
+      <div class="w-16 h-16 rounded-2xl bg-canvas-cream border border-border-hairline flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-text-muted text-[28px]">search_off</span>
       </div>
-      <h2 class="font-display font-bold text-[19px] mb-2">Application not found</h2>
-      <p class="text-[13px] text-text-muted max-w-sm mx-auto mb-6">This application may have been withdrawn, or the link you followed is no longer valid.</p>
-      <button class="bg-primary text-white text-[13px] font-semibold px-5 h-10 rounded-[8px]">Back to Applications</button>
+      <h2 class="font-display font-bold text-[20px] mb-2">Application not found</h2>
+      <p class="text-[13.5px] text-text-muted max-w-sm mx-auto mb-7">This application may have been removed, or the link you followed is no longer valid.</p>
+      <a href="app-application-tracker.html" class="bg-primary text-white text-[13px] font-semibold px-6 h-11 rounded-full inline-flex items-center gap-2 shadow-sm">Back to Applications</a>
     </div>
   </div>
 
-  <!-- ============ ERROR STATE ============ -->
+  <!-- ============ ERROR ============ -->
   <div class="view" id="view-error">
-    <div class="bg-white border border-border-hairline rounded-[16px] py-20 px-6 text-center">
-      <div class="w-14 h-14 rounded-[12px] bg-[#FBEAE8] border border-[#F3C9C4] flex items-center justify-center mx-auto mb-5">
-        <span class="material-symbols-outlined text-status-red text-[26px]">error_outline</span>
+    <div class="bg-white border border-border-hairline rounded-3xl py-20 px-6 text-center shadow-sm">
+      <div class="w-16 h-16 rounded-2xl bg-status-red/10 flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-status-red text-[28px]">error_outline</span>
       </div>
-      <h2 class="font-display font-bold text-[19px] mb-2">Couldn't load this application</h2>
-      <p class="text-[13px] text-text-muted max-w-sm mx-auto mb-6">Something went wrong on our end. Your data is safe — please try again.</p>
-      <button onclick="setView('loaded')" class="bg-primary text-white text-[13px] font-semibold px-5 h-10 rounded-[8px] inline-flex items-center gap-2">
+      <h2 class="font-display font-bold text-[20px] mb-2">Couldn't load this application</h2>
+      <p class="text-[13.5px] text-text-muted max-w-sm mx-auto mb-7">Something went wrong on our end. Your data is safe — please try again.</p>
+      <button onclick="setView('loaded')" class="bg-primary text-white text-[13px] font-semibold px-6 h-11 rounded-full inline-flex items-center gap-2 shadow-sm">
         <span class="material-symbols-outlined text-[16px]">refresh</span> Retry
       </button>
     </div>
   </div>
 
-  <!-- ============ LOADED STATE ============ -->
-  <div class="view active" id="view-loaded">
+  <!-- ============ LOADED (also used for Expired / Withdrawn / Closed via a banner + gated actions) ============ -->
+  <div class="view" id="view-loaded">
 
-    <!-- Header card -->
-    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+    <!-- Status banner slot — shown only for Expired / Withdrawn / Closed -->
+    <div class="banner mb-5 rounded-2xl px-5 py-4 items-start gap-3 shadow-sm" id="status-banner">
+      <span class="material-symbols-outlined text-[20px] flex-shrink-0 mt-0.5" id="banner-icon">info</span>
+      <div>
+        <div class="text-[13.5px] font-semibold" id="banner-title">—</div>
+        <div class="text-[12.5px] mt-0.5 opacity-80" id="banner-sub">—</div>
+      </div>
+    </div>
+
+    <!-- Job Summary hero -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
       <div class="flex flex-col sm:flex-row sm:items-start gap-4">
-        <div class="w-14 h-14 rounded-[10px] bg-primary/10 border border-border-hairline flex items-center justify-center flex-shrink-0">
-          <span class="font-display font-bold text-[18px] text-primary">V</span>
+        <div class="avatar-grad w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm">
+          <span class="font-display font-extrabold text-[22px] text-white">V</span>
         </div>
         <div class="flex-1 min-w-0">
-          <h1 class="font-display font-bold text-[20px] leading-tight mb-1">Senior Frontend Engineer</h1>
-          <div class="text-[13px] text-text-secondary">Vercel · Remote</div>
-          <div class="text-[12px] text-text-muted mt-1">Applied on Aug 24, 2026</div>
+          <h1 class="font-display font-extrabold text-[21px] leading-tight mb-1">Senior Frontend Engineer</h1>
+          <div class="text-[13.5px] text-text-secondary">Vercel · Remote</div>
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-text-muted mt-1.5">
+            <span>Applied Aug 24, 2026</span>
+            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">update</span> Updated Aug 27, 2026</span>
+            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">near_me</span> Source: SkillMatch Feed</span>
+          </div>
         </div>
-        <div class="flex-shrink-0">
-          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-[12px] font-semibold bg-[#EFF3EF] text-match-forest border border-match-forest/30">
-            <span class="w-1.5 h-1.5 rounded-full bg-match-forest"></span> In Review
+        <div class="flex flex-col items-end gap-2 flex-shrink-0">
+          <span id="status-pill" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-primary/10 text-primary">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Under Review
           </span>
+          <div class="flex items-center gap-2">
+            <div class="ring w-11 h-11" style="background:conic-gradient(#4F7A5A 98%, #E5E1DA 0);">
+              <div class="ring-inner w-9 h-9 text-[10px] font-bold text-match-forest">98%</div>
+            </div>
+            <span class="text-[11px] text-text-muted">match</span>
+          </div>
         </div>
       </div>
 
       <!-- Actions -->
       <div class="flex flex-wrap gap-2 mt-5 pt-5 border-t border-border-hairline">
-        <button class="h-9 px-4 rounded-[8px] bg-primary text-white text-[13px] font-semibold flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-[16px]">edit_note</span> Add note
+        <a href="#" class="h-9 px-4 rounded-full border border-border-hairline text-[12.5px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream transition-colors">
+          <span class="material-symbols-outlined text-[16px]">open_in_new</span> View Job
+        </a>
+        <a href="app-profile-cv.html" class="h-9 px-4 rounded-full border border-border-hairline text-[12.5px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream transition-colors">
+          <span class="material-symbols-outlined text-[16px]">description</span> View CV
+        </a>
+        <a href="#" class="h-9 px-4 rounded-full border border-border-hairline text-[12.5px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream transition-colors">
+          <span class="material-symbols-outlined text-[16px]">link</span> Open Source
+        </a>
+        <a href="app-ai-mentor-chat.html" class="h-9 px-4 rounded-full bg-primary text-white text-[12.5px] font-semibold flex items-center gap-1.5 hover:bg-primary-container transition-colors">
+          <span class="material-symbols-outlined text-[16px]">forum</span> Ask Mentor
+        </a>
+        <button onclick="toggleNoteForm()" class="h-9 px-4 rounded-full border border-border-hairline text-[12.5px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream transition-colors">
+          <span class="material-symbols-outlined text-[16px]">edit_note</span> Add Note
         </button>
-        <button class="h-9 px-4 rounded-[8px] border border-border-hairline text-[13px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream">
-          <span class="material-symbols-outlined text-[16px]">open_in_new</span> Open job
-        </button>
-        <button class="h-9 px-4 rounded-[8px] border border-border-hairline text-[13px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream">
-          <span class="material-symbols-outlined text-[16px]">link</span> Open source
-        </button>
-        <!-- Withdraw is business-rule gated — e.g. hidden/disabled once status is Offer, Hired, or Rejected -->
-        <button class="h-9 px-4 rounded-[8px] border border-status-red/30 text-status-red text-[13px] font-semibold flex items-center gap-1.5 hover:bg-[#FBEAE8] ml-auto">
+        <a href="#" class="conditional show h-9 px-4 rounded-full border border-match-amber/40 text-match-amber text-[12.5px] font-semibold flex items-center gap-1.5 hover:bg-match-amber/5 transition-colors" id="action-prepare">
+          <span class="material-symbols-outlined text-[16px]">mic</span> Prepare for Interview
+          <span class="text-[9px] font-bold bg-match-amber/15 rounded-full px-1.5 py-0.5">PHASE 2</span>
+        </a>
+        <a href="app-career-roadmap.html" class="h-9 px-4 rounded-full border border-border-hairline text-[12.5px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream transition-colors">
+          <span class="material-symbols-outlined text-[16px]">map</span> Add to Roadmap
+        </a>
+        <!-- Withdraw is business-rule gated: hidden once status is Offer, Rejected, Withdrawn, or the posting is Closed/Expired -->
+        <button onclick="withdraw()" class="conditional show h-9 px-4 rounded-full border border-status-red/30 text-status-red text-[12.5px] font-semibold flex items-center gap-1.5 hover:bg-status-red/5 transition-colors ml-auto" id="action-withdraw">
           <span class="material-symbols-outlined text-[16px]">cancel</span> Withdraw
         </button>
       </div>
-    </div>
 
-    <!-- Meta grid -->
-    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-5">
-        <div>
-          <div class="text-[11px] font-semibold text-text-muted mb-1">COMPANY</div>
-          <div class="text-[13px] font-semibold">Vercel</div>
-        </div>
-        <div>
-          <div class="text-[11px] font-semibold text-text-muted mb-1">APPLIED</div>
-          <div class="text-[13px] font-semibold">Aug 24, 2026</div>
-        </div>
-        <div>
-          <div class="text-[11px] font-semibold text-text-muted mb-1">METHOD</div>
-          <div class="text-[13px] font-semibold">Direct Apply</div>
-        </div>
-        <div>
-          <div class="text-[11px] font-semibold text-text-muted mb-1">SOURCE</div>
-          <div class="text-[13px] font-semibold">SkillMatch Feed</div>
+      <!-- Add note inline form -->
+      <div class="hidden mt-4 pt-4 border-t border-border-hairline" id="note-form">
+        <textarea rows="2" placeholder="Add a private note about this application…" class="w-full border border-border-hairline rounded-xl p-3 text-[13px] outline-none focus:border-primary resize-none"></textarea>
+        <div class="flex justify-end gap-2 mt-2">
+          <button onclick="toggleNoteForm()" class="h-8 px-3 rounded-full text-[12px] font-semibold text-text-secondary">Cancel</button>
+          <button onclick="saveNote()" class="h-8 px-4 rounded-full bg-primary text-white text-[12px] font-semibold">Save</button>
         </div>
       </div>
     </div>
 
-    <!-- Status timeline -->
-    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
-      <h2 class="font-display font-bold text-[15px] mb-5">Status timeline</h2>
+    <!-- AI Application Insight -->
+    <div class="bg-white border border-primary/15 rounded-3xl p-6 mb-5 shadow-sm relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full -mr-16 -mt-16"></div>
+      <div class="relative">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-[17px]">auto_awesome</span>
+          </div>
+          <h2 class="font-display font-bold text-[15px]">AI Application Insight</h2>
+        </div>
+
+        <div class="mb-4">
+          <div class="text-[11px] font-semibold text-text-muted mb-1.5">CURRENT STATUS EXPLANATION</div>
+          <p class="text-[13px] text-text-secondary leading-relaxed">Your application has been viewed by the hiring team and moved to Under Review. This typically means your profile passed the initial screening — no action is required from you right now.</p>
+        </div>
+
+        <div class="mb-4 border border-primary/20 bg-primary/5 rounded-xl p-3.5">
+          <div class="text-[11px] font-semibold text-primary mb-1 flex items-center gap-1.5"><span class="material-symbols-outlined text-[15px]">flag</span> RECOMMENDED NEXT ACTION</div>
+          <p class="text-[13px] text-text-secondary leading-relaxed">Interviews for this role often start within a week of reaching Under Review. Use the time to close your System Design gap so you're ready if one is scheduled.</p>
+        </div>
+
+        <div class="mb-4">
+          <div class="text-[11px] font-semibold text-text-muted mb-2">RELEVANT SKILL GAPS</div>
+          <div class="flex flex-wrap gap-2">
+            <a href="app-roadmap-phase-details.html" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] border border-border-hairline text-text-secondary hover:border-primary hover:text-primary transition-colors">
+              <span class="text-match-amber font-bold">+</span> System Design
+            </a>
+            <a href="app-roadmap-phase-details.html" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] border border-border-hairline text-text-secondary hover:border-primary hover:text-primary transition-colors">
+              <span class="text-match-amber font-bold">+</span> GraphQL
+            </a>
+          </div>
+        </div>
+
+        <div class="conditional show mb-4" id="insight-interview-prep">
+          <div class="text-[11px] font-semibold text-text-muted mb-2">INTERVIEW PREPARATION SUGGESTIONS</div>
+          <ul class="space-y-1.5">
+            <li class="flex items-start gap-2 text-[13px] text-text-secondary"><span class="material-symbols-outlined text-match-forest text-[15px] mt-0.5">check</span> Review system design fundamentals — scaling, caching, trade-offs</li>
+            <li class="flex items-start gap-2 text-[13px] text-text-secondary"><span class="material-symbols-outlined text-match-forest text-[15px] mt-0.5">check</span> Practice explaining your Next.js migration project end-to-end</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="text-[11px] font-semibold text-text-muted mb-2">RELATED ROADMAP STEPS</div>
+          <div class="space-y-2">
+            <a href="app-roadmap-phase-details.html" class="flex items-center gap-3 p-2.5 border border-border-hairline rounded-xl hover:bg-canvas-cream transition-colors">
+              <span class="material-symbols-outlined text-primary text-[16px]">school</span>
+              <span class="text-[12.5px] font-medium flex-1">System Design Fundamentals — Phase 1</span>
+              <span class="text-[11px] text-text-muted">75%</span>
+            </a>
+            <a href="app-roadmap-phase-details.html" class="flex items-center gap-3 p-2.5 border border-border-hairline rounded-xl hover:bg-canvas-cream transition-colors">
+              <span class="material-symbols-outlined text-primary text-[16px]">school</span>
+              <span class="text-[12.5px] font-medium flex-1">GraphQL in Practice — Phase 2</span>
+              <span class="text-[11px] text-text-muted">10%</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submitted Information + Submitted CV -->
+    <div class="grid sm:grid-cols-2 gap-5 mb-5">
+      <div class="bg-white border border-border-hairline rounded-2xl p-6 shadow-sm">
+        <h2 class="font-display font-bold text-[15px] mb-4">Submitted information</h2>
+        <div class="space-y-2.5 text-[13px]">
+          <div class="flex justify-between"><span class="text-text-muted">Name</span><span class="font-medium">Sara Ahmed</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Email</span><span class="font-medium">sara@example.com</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Location</span><span class="font-medium">Damietta, Egypt</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Method</span><span class="font-medium">Internal</span></div>
+        </div>
+      </div>
+      <div class="bg-white border border-border-hairline rounded-2xl p-6 shadow-sm">
+        <h2 class="font-display font-bold text-[15px] mb-4">Submitted CV</h2>
+        <div class="flex items-center gap-3 border border-border-hairline rounded-xl p-3">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">description</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-[13px] font-semibold truncate">resume_2026.pdf</div>
+            <div class="text-[11px] text-text-muted">Submitted Aug 24, 2026</div>
+          </div>
+          <a href="app-profile-cv.html" class="text-[12px] font-semibold text-primary flex-shrink-0">View</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Application Timeline -->
+    <div class="bg-white border border-border-hairline rounded-2xl p-6 mb-5 shadow-sm">
+      <h2 class="font-display font-bold text-[15px] mb-5">Application timeline</h2>
 
       <!-- NOTE: every entry below (status, timestamp, and any note text) is rendered
            exactly as returned by the backend. The UI never infers or generates a
            reason for a status change — only what the API provides is shown. -->
-      <div class="relative pl-1">
+      <div class="relative pl-1" id="timeline-normal">
         <div class="absolute left-[15px] top-2 bottom-2 w-px bg-border-hairline"></div>
 
         <div class="relative flex gap-4 pb-6">
@@ -201,7 +314,7 @@ tailwind.config = {
             <span class="material-symbols-outlined text-[16px]">check</span>
           </div>
           <div class="pt-1">
-            <div class="text-[13px] font-semibold">In Review</div>
+            <div class="text-[13px] font-semibold">Under Review</div>
             <div class="text-[12px] text-text-muted mt-0.5">Aug 27, 2026 · 3:40 PM</div>
           </div>
         </div>
@@ -216,6 +329,16 @@ tailwind.config = {
           </div>
         </div>
 
+        <div class="relative flex gap-4 pb-6">
+          <div class="w-8 h-8 rounded-full bg-white border-2 border-border-hairline text-text-muted flex items-center justify-center flex-shrink-0 z-10">
+            <span class="material-symbols-outlined text-[16px]">assignment</span>
+          </div>
+          <div class="pt-1">
+            <div class="text-[13px] font-semibold text-text-muted">Assessment</div>
+            <div class="text-[12px] text-text-muted mt-0.5">Pending previous steps</div>
+          </div>
+        </div>
+
         <div class="relative flex gap-4">
           <div class="w-8 h-8 rounded-full bg-white border-2 border-border-hairline text-text-muted flex items-center justify-center flex-shrink-0 z-10">
             <span class="material-symbols-outlined text-[16px]">emoji_events</span>
@@ -227,95 +350,72 @@ tailwind.config = {
         </div>
       </div>
 
-      <!-- Alternative outcome (rejected path) — shown instead of the remaining
-           steps only when the backend returns a "Rejected" status. Hidden here. -->
-      <!--
-      <div class="relative flex gap-4 mt-1">
-        <div class="w-8 h-8 rounded-full bg-status-red text-white flex items-center justify-center flex-shrink-0 z-10">
-          <span class="material-symbols-outlined text-[16px]">close</span>
+      <!-- Alternative outcome (rejected/withdrawn) — shown instead of the remaining
+           steps only when the backend returns that status. -->
+      <div class="relative pl-1 hidden" id="timeline-ended">
+        <div class="relative flex gap-4 pb-6">
+          <div class="w-8 h-8 rounded-full bg-match-forest text-white flex items-center justify-center flex-shrink-0 z-10">
+            <span class="material-symbols-outlined text-[16px]">check</span>
+          </div>
+          <div class="pt-1"><div class="text-[13px] font-semibold">Applied</div><div class="text-[12px] text-text-muted mt-0.5">Aug 24, 2026 · 10:12 AM</div></div>
         </div>
-        <div class="pt-1">
-          <div class="text-[13px] font-semibold text-status-red">Rejected</div>
-          <div class="text-[12px] text-text-muted mt-0.5">Sep 02, 2026 · 9:05 AM</div>
-          <div class="text-[12px] text-text-secondary mt-1">[reason text, only if provided by backend]</div>
+        <div class="relative flex gap-4">
+          <div class="w-8 h-8 rounded-full text-white flex items-center justify-center flex-shrink-0 z-10" id="ended-icon-wrap" style="background:#B3271E;">
+            <span class="material-symbols-outlined text-[16px]" id="ended-icon">close</span>
+          </div>
+          <div class="pt-1">
+            <div class="text-[13px] font-semibold" id="ended-label" style="color:#B3271E;">Withdrawn</div>
+            <div class="text-[12px] text-text-muted mt-0.5" id="ended-date">Sep 10, 2026 · 9:05 AM</div>
+          </div>
         </div>
       </div>
-      -->
     </div>
 
-    <!-- User notes -->
-    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+    <!-- Interview Details (conditional) -->
+    <div class="conditional bg-white border border-border-hairline rounded-2xl p-6 mb-5 shadow-sm" id="section-interview">
+      <h2 class="font-display font-bold text-[15px] mb-4">Interview details</h2>
+      <div class="grid sm:grid-cols-2 gap-3 text-[13px] mb-4">
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Date &amp; time</span><span class="font-medium">Not yet scheduled</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Format</span><span class="font-medium">Video call</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Round</span><span class="font-medium">1 of 2</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Interviewer</span><span class="font-medium">To be confirmed</span></div>
+      </div>
+      <a href="#" class="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-match-amber">
+        <span class="material-symbols-outlined text-[16px]">mic</span> Prepare for this interview <span class="text-[9px] font-bold bg-match-amber/15 rounded-full px-1.5 py-0.5">PHASE 2</span>
+      </a>
+    </div>
+
+    <!-- Assessment Details (conditional) -->
+    <div class="conditional bg-white border border-border-hairline rounded-2xl p-6 mb-5 shadow-sm" id="section-assessment">
+      <h2 class="font-display font-bold text-[15px] mb-4">Assessment details</h2>
+      <div class="grid sm:grid-cols-2 gap-3 text-[13px]">
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Type</span><span class="font-medium">Take-home coding task</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Due</span><span class="font-medium">Sep 12, 2026</span></div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="bg-white border border-border-hairline rounded-2xl p-6 shadow-sm">
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-display font-bold text-[15px]">Your notes</h2>
-        <button class="text-[12px] font-semibold text-primary flex items-center gap-1">
+        <button onclick="toggleNoteForm()" class="text-[12px] font-semibold text-primary flex items-center gap-1">
           <span class="material-symbols-outlined text-[15px]">add</span> Add note
         </button>
       </div>
-      <div class="space-y-3">
-        <div class="border border-border-hairline rounded-[10px] p-3.5">
+      <div class="space-y-3" id="notes-list">
+        <div class="border border-border-hairline rounded-xl p-3.5">
           <p class="text-[13px] text-text-secondary leading-relaxed">Recruiter mentioned the team is hiring for two openings — followed up asking about the tech stack.</p>
           <div class="flex items-center justify-between mt-2">
             <span class="text-[11px] text-text-muted">Aug 27, 2026</span>
             <button class="text-[11px] font-semibold text-primary">Edit</button>
           </div>
         </div>
-        <div class="border border-border-hairline rounded-[10px] p-3.5">
+        <div class="border border-border-hairline rounded-xl p-3.5">
           <p class="text-[13px] text-text-secondary leading-relaxed">Tailored resume to highlight design-systems work before applying.</p>
           <div class="flex items-center justify-between mt-2">
             <span class="text-[11px] text-text-muted">Aug 24, 2026</span>
             <button class="text-[11px] font-semibold text-primary">Edit</button>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Related skill gaps -->
-    <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
-      <h2 class="font-display font-bold text-[15px] mb-1">Related skill gaps</h2>
-      <p class="text-[12px] text-text-muted mb-4">Skills this role expects that aren't confirmed on your profile yet.</p>
-      <div class="flex flex-wrap gap-2">
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] border border-border-hairline text-text-muted">
-          <span class="text-match-amber font-bold">+</span> System Design
-        </span>
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] border border-border-hairline text-text-muted">
-          <span class="text-match-amber font-bold">+</span> GraphQL
-        </span>
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] border border-border-hairline text-text-muted">
-          <span class="text-match-amber font-bold">+</span> Testing (Jest)
-        </span>
-      </div>
-    </div>
-
-    <!-- Related roadmap items -->
-    <div class="bg-white border border-border-hairline rounded-[16px] p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="font-display font-bold text-[15px]">Related roadmap items</h2>
-        <a href="#" class="text-[12px] font-semibold text-primary flex items-center gap-1">Open roadmap <span class="material-symbols-outlined text-[14px]">arrow_forward</span></a>
-      </div>
-      <div class="space-y-3">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-[8px] bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-primary text-[16px]">school</span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-[13px] font-semibold">System Design Fundamentals</div>
-            <div class="w-full h-1.5 rounded-full bg-canvas-cream mt-1.5 overflow-hidden">
-              <div class="h-full bg-match-amber rounded-full" style="width:40%"></div>
-            </div>
-          </div>
-          <span class="text-[11px] font-semibold text-text-muted flex-shrink-0">40%</span>
-        </div>
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-[8px] bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-primary text-[16px]">school</span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-[13px] font-semibold">GraphQL in Practice</div>
-            <div class="w-full h-1.5 rounded-full bg-canvas-cream mt-1.5 overflow-hidden">
-              <div class="h-full bg-match-amber rounded-full" style="width:10%"></div>
-            </div>
-          </div>
-          <span class="text-[11px] font-semibold text-text-muted flex-shrink-0">10%</span>
         </div>
       </div>
     </div>
@@ -326,9 +426,76 @@ tailwind.config = {
 <script>
   function setView(name){
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + name).classList.add('active');
+
+    const bannerStates = {
+      expired: {
+        icon:'schedule', bg:'bg-canvas-cream border border-border-hairline', color:'text-text-secondary',
+        title:'This job posting has expired',
+        sub:'The employer is no longer accepting new activity on this listing. Your application history stays visible below.'
+      },
+      withdrawn: {
+        icon:'cancel', bg:'bg-canvas-cream border border-border-hairline', color:'text-text-secondary',
+        title:'You withdrew this application',
+        sub:'Withdrawn on Sep 10, 2026. You can still view everything that happened before you withdrew.'
+      },
+      closed: {
+        icon:'block', bg:'bg-canvas-cream border border-border-hairline', color:'text-text-secondary',
+        title:'This job posting has been closed',
+        sub:'The employer closed this role. No further status updates will come through for this application.'
+      }
+    };
+
+    if(['expired','withdrawn','closed'].includes(name)){
+      document.getElementById('view-loaded').classList.add('active');
+      const s = bannerStates[name];
+      const banner = document.getElementById('status-banner');
+      banner.className = 'banner show mb-5 rounded-2xl px-5 py-4 items-start gap-3 shadow-sm ' + s.bg + ' ' + s.color;
+      document.getElementById('banner-icon').textContent = s.icon;
+      document.getElementById('banner-title').textContent = s.title;
+      document.getElementById('banner-sub').textContent = s.sub;
+
+      document.getElementById('action-withdraw').classList.remove('show');
+      document.getElementById('action-prepare').classList.remove('show');
+      document.getElementById('timeline-normal').classList.add('hidden');
+      document.getElementById('timeline-ended').classList.remove('hidden');
+      document.getElementById('ended-label').textContent = name === 'withdrawn' ? 'Withdrawn' : (name === 'closed' ? 'Closed by employer' : 'Expired');
+      document.getElementById('ended-date').textContent = name === 'withdrawn' ? 'Sep 10, 2026 · 9:05 AM' : (name === 'closed' ? 'Sep 14, 2026' : 'Sep 20, 2026');
+    } else if(name === 'loaded'){
+      document.getElementById('view-loaded').classList.add('active');
+      document.getElementById('status-banner').classList.remove('show');
+      document.getElementById('action-withdraw').classList.add('show');
+      document.getElementById('action-prepare').classList.add('show');
+      document.getElementById('timeline-normal').classList.remove('hidden');
+      document.getElementById('timeline-ended').classList.add('hidden');
+    } else {
+      document.getElementById('view-' + name).classList.add('active');
+    }
     window.scrollTo({top:0, behavior:'smooth'});
   }
+
+  function toggleNoteForm(){
+    document.getElementById('note-form').classList.toggle('hidden');
+  }
+
+  function saveNote(){
+    const textarea = document.querySelector('#note-form textarea');
+    if(!textarea.value.trim()) return;
+    const list = document.getElementById('notes-list');
+    const div = document.createElement('div');
+    div.className = 'border border-border-hairline rounded-xl p-3.5';
+    div.innerHTML = '<p class="text-[13px] text-text-secondary leading-relaxed">' + textarea.value.trim() + '</p>' +
+      '<div class="flex items-center justify-between mt-2"><span class="text-[11px] text-text-muted">Just now</span><button class="text-[11px] font-semibold text-primary">Edit</button></div>';
+    list.prepend(div);
+    textarea.value = '';
+    toggleNoteForm();
+  }
+
+  function withdraw(){
+    if(confirm('Withdraw this application? This can\'t be undone.')) setView('withdrawn');
+  }
+
+  // Show Interview/Assessment sections based on the (demo) current status
+  document.getElementById('section-interview').classList.add('show');
 </script>
 
 </body>
