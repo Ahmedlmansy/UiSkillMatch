@@ -1,437 +1,570 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign in — SkillMatch</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --surface-white:#FFFFFF;
-    --canvas-cream:#FAF8F4;
-    --border-hairline:#E5E1DA;
-    --primary:#1F365C;
-    --primary-container:#0F2036;
-    --secondary:#D06B4F;
-    --tertiary:#D4A72C;
-    --match-forest:#4F7A5A;
-    --text-primary:#1B1C1A;
-    --text-secondary:#44474E;
-    --text-muted:#707780;
-    --on-primary:#FFFFFF;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillMatch - Welcome Back</title>
+    <!-- Font Awesome Icons & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Global Styles & Variables */
+        :root {
+            --primary-dark: #1e293b;
+            --brand-blue: #1d3557;
+            --brand-orange: #d97757;
+            --brand-yellow: #eab308;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --input-bg: #ffffff;
+            --radius-btn: 8px;
+        }
 
-  *{ box-sizing:border-box; }
-  html,body{ margin:0; padding:0; }
-  body{
-    font-family:'Inter', sans-serif;
-    background:var(--canvas-cream);
-    color:var(--text-primary);
-    min-height:100vh;
-  }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
 
-  a{ color:inherit; text-decoration:none; }
+        /* Full Page Wrapper */
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+            background-color: #ffffff;
+        }
 
-  .shell{
-    min-height:100vh;
-    display:grid;
-    grid-template-columns: 1.05fr 1fr;
-  }
+        .full-page-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
 
-  /* ---------- Editorial panel ---------- */
-  .editorial{
-    background:
-      radial-gradient(120% 140% at 100% 0%, rgba(208,107,79,0.16), transparent 55%),
-      var(--primary-container);
-    color:var(--on-primary);
-    padding:3rem 3.25rem;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    position:relative;
-    overflow:hidden;
-  }
+        /* Left Section - Hero Image & Content (Full Screen Height) */
+        .hero-section {
+            flex: 1.1;
+            position: relative;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.3) 0%, rgba(15, 23, 42, 0.85) 100%),
+                        url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #ffffff;
+            /* Curved bottom right corner restored */
+            border-bottom-right-radius: 40px;
+            z-index: 1;
+        }
 
-  .editorial::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
-    background-size: 100% 88px;
-    pointer-events:none;
-  }
+        .hero-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
 
-  .brand{
-    font-family:'DM Sans', sans-serif;
-    font-weight:700;
-    font-size:19px;
-    letter-spacing:-0.01em;
-    display:flex;
-    align-items:center;
-    gap:0.5rem;
-    z-index:1;
-  }
-  .brand .mark{
-    width:32px; height:32px;
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,0.35);
-    display:flex; align-items:center; justify-content:center;
-    font-family:'DM Sans', sans-serif;
-    font-weight:700;
-    font-size:15px;
-    background:rgba(255,255,255,0.06);
-  }
+        .hero-content {
+            margin-top: auto;
+            max-width: 500px;
+        }
 
-  .editorial-body{ z-index:1; max-width:30rem; }
+        /* Completely Transparent "Better Opportunities" Badge */
+        .badge-pill-transparent {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent; /* شفاف خالص */
+            border: 1px solid rgba(255, 255, 255, 0.6); /* إطار أبيض شفاف */
+            color: #ffffff;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
 
-  .eyebrow{
-    font-family:'Inter', sans-serif;
-    font-weight:600;
-    font-size:11px;
-    letter-spacing:0.04em;
-    color:rgba(255,255,255,0.55);
-    margin-bottom:1rem;
-  }
+        .hero-title {
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
 
-  .editorial h1{
-    font-family:'DM Sans', sans-serif;
-    font-weight:700;
-    font-size:34px;
-    line-height:40px;
-    letter-spacing:-0.03em;
-    margin:0 0 0.9rem 0;
-  }
+        .hero-desc {
+            font-size: 15px;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
 
-  .editorial p{
-    font-size:15px;
-    line-height:24px;
-    color:rgba(255,255,255,0.72);
-    margin:0;
-  }
+        /* Right Section - Form */
+        .form-section {
+            flex: 0.9;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #ffffff;
+            overflow-y: auto;
+        }
 
-  .stat-rail{
-    z-index:1;
-    display:flex;
-    gap:2rem;
-    padding-top:2.25rem;
-    margin-top:2.25rem;
-    border-top:1px solid rgba(255,255,255,0.14);
-  }
-  .stat-rail .stat-num{
-    font-family:'DM Sans', sans-serif;
-    font-weight:700;
-    font-size:22px;
-    letter-spacing:-0.015em;
-  }
-  .stat-rail .stat-label{
-    font-size:12px;
-    color:rgba(255,255,255,0.55);
-    margin-top:2px;
-  }
+        .form-container {
+            max-width: 420px;
+            width: 100%;
+            margin: 0 auto;
+        }
 
-  .quote-card{
-    z-index:1;
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.14);
-    border-radius:1rem;
-    padding:1.25rem;
-    margin-top:2rem;
-    max-width:26rem;
-  }
-  .quote-card p{
-    font-family:'DM Sans', sans-serif;
-    font-size:15px;
-    font-weight:600;
-    line-height:22px;
-    color:#fff;
-    margin:0 0 0.6rem 0;
-  }
-  .quote-card .who{
-    font-size:12px;
-    color:rgba(255,255,255,0.55);
-  }
-  .quote-card .who span{ color:var(--tertiary-light,#F0C044); }
+        /* SkillMatch Logo Implementation */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
 
-  /* ---------- Form panel ---------- */
-  .form-panel{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:2.5rem;
-  }
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background-color: var(--brand-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
 
-  .form-card{
-    width:100%;
-    max-width:23rem;
-  }
+        .logo-graphic {
+            width: 24px;
+            height: 24px;
+            position: relative;
+        }
+        .logo-graphic .circle-orange {
+            width: 10px;
+            height: 10px;
+            background: var(--brand-orange);
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .logo-graphic .circle-yellow {
+            width: 10px;
+            height: 10px;
+            background: var(--brand-yellow);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+        .logo-graphic .line-white {
+            width: 18px;
+            height: 2px;
+            background: #fff;
+            position: absolute;
+            top: 11px;
+            left: 3px;
+            transform: rotate(-45deg);
+        }
+        .logo-graphic .line-green {
+            width: 10px;
+            height: 2px;
+            background: #10b981;
+            position: absolute;
+            top: 14px;
+            left: 2px;
+            transform: rotate(45deg);
+        }
 
-  .form-card .top-label{
-    font-size:12px;
-    font-weight:600;
-    letter-spacing:0.02em;
-    color:var(--text-muted);
-    margin-bottom:0.5rem;
-  }
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--brand-blue);
+            letter-spacing: -0.5px;
+            position: relative;
+        }
 
-  .form-card h2{
-    font-family:'DM Sans', sans-serif;
-    font-weight:700;
-    font-size:26px;
-    line-height:32px;
-    letter-spacing:-0.02em;
-    margin:0 0 0.4rem 0;
-    color:var(--text-primary);
-  }
+        .logo-dot {
+            width: 7px;
+            height: 7px;
+            background-color: var(--brand-yellow);
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 2px;
+            vertical-align: top;
+            margin-top: 6px;
+        }
 
-  .form-card .sub{
-    font-size:14px;
-    line-height:20px;
-    color:var(--text-muted);
-    margin:0 0 1.75rem 0;
-  }
-  .form-card .sub a{
-    color:var(--primary);
-    font-weight:600;
-    border-bottom:1px solid var(--border-hairline);
-  }
+        /* Typography */
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
 
-  .field{ margin-bottom:1.1rem; }
-  .field label{
-    display:block;
-    font-size:12px;
-    font-weight:600;
-    color:var(--text-secondary);
-    margin-bottom:0.45rem;
-  }
-  .field input{
-    width:100%;
-    height:48px;
-    border-radius:0.75rem;
-    border:1px solid var(--border-hairline);
-    background:var(--surface-white);
-    padding:0 0.9rem;
-    font-family:'Inter', sans-serif;
-    font-size:14px;
-    color:var(--text-primary);
-    outline:none;
-    transition:border-color 0.15s ease;
-  }
-  .field input::placeholder{ color:var(--text-muted); }
-  .field input:focus{
-    border:1.5px solid var(--primary);
-    padding:0 calc(0.9rem - 0.5px);
-  }
+        .welcome-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
 
-  .row-between{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin:0.35rem 0 1.5rem 0;
-  }
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-  .remember{
-    display:flex;
-    align-items:center;
-    gap:0.5rem;
-    font-size:13px;
-    color:var(--text-secondary);
-  }
-  .remember input[type="checkbox"]{
-    appearance:none;
-    -webkit-appearance:none;
-    width:20px; height:20px;
-    border-radius:6px;
-    border:1px solid var(--border-hairline);
-    background:var(--surface-white);
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    flex-shrink:0;
-  }
-  .remember input[type="checkbox"]:checked{
-    background:var(--primary);
-    border-color:var(--primary);
-  }
-  .remember input[type="checkbox"]:checked::after{
-    content:"";
-    width:5px; height:9px;
-    border:solid #fff;
-    border-width:0 2px 2px 0;
-    transform:rotate(45deg) translate(-1px,-1px);
-  }
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
 
-  .forgot{
-    font-size:13px;
-    font-weight:600;
-    color:var(--primary);
-  }
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
 
-  .btn-primary{
-    width:100%;
-    height:48px;
-    border-radius:0.75rem;
-    background:var(--primary);
-    color:var(--on-primary);
-    border:none;
-    font-family:'Inter', sans-serif;
-    font-weight:600;
-    font-size:15px;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:background 0.15s ease;
-  }
-  .btn-primary:hover{ background:#152a49; }
-  .btn-primary:focus-visible{
-    outline:2px solid var(--primary);
-    outline-offset:2px;
-  }
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            color: #94a3b8;
+            font-size: 15px;
+        }
 
-  .divider{
-    display:flex;
-    align-items:center;
-    gap:0.75rem;
-    margin:1.5rem 0;
-    color:var(--text-muted);
-    font-size:12px;
-  }
-  .divider::before, .divider::after{
-    content:"";
-    flex:1;
-    height:1px;
-    background:var(--border-hairline);
-  }
+        .toggle-password {
+            position: absolute;
+            right: 16px;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
 
-  .btn-outline{
-    width:100%;
-    height:48px;
-    border-radius:0.75rem;
-    background:var(--surface-white);
-    border:1px solid var(--border-hairline);
-    color:var(--text-primary);
-    font-family:'Inter', sans-serif;
-    font-weight:600;
-    font-size:14px;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:0.6rem;
-    transition:background 0.15s ease;
-  }
-  .btn-outline:hover{ background:var(--canvas-cream); }
-  .btn-outline svg{ flex-shrink:0; }
+        .toggle-password:hover {
+            color: var(--text-dark);
+        }
 
-  .foot-note{
-    margin-top:2rem;
-    font-size:12px;
-    line-height:18px;
-    color:var(--text-muted);
-    text-align:center;
-  }
-  .foot-note a{
-    color:var(--text-secondary);
-    border-bottom:1px solid var(--border-hairline);
-  }
+        .form-input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            font-size: 14px;
+            color: var(--text-dark);
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-btn);
+            outline: none;
+            transition: all 0.2s;
+        }
 
-  @media (max-width: 900px){
-    .shell{ grid-template-columns:1fr; }
-    .editorial{ display:none; }
-    .form-panel{ padding:1.25rem; min-height:100vh; }
-  }
-</style>
+        .form-input::placeholder {
+            color: #cbd5e1;
+        }
+
+        .form-input:focus {
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 3px rgba(29, 53, 87, 0.1);
+        }
+
+        /* Options Row */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            accent-color: var(--brand-blue);
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
+        .forgot-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Buttons */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--brand-blue);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-btn);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover {
+            background-color: #112240;
+        }
+
+        /* Divider */
+        .divider {
+            position: relative;
+            text-align: center;
+            margin: 24px 0;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+
+        .divider-text {
+            position: relative;
+            background-color: #ffffff;
+            padding: 0 14px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Social Button */
+        .btn-google {
+            width: 100%;
+            padding: 12px;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-btn);
+            color: var(--text-dark);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-google:hover {
+            background-color: #f8fafc;
+        }
+
+        .google-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Footer Links */
+        .legal-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 30px;
+            line-height: 1.5;
+        }
+
+        .legal-text a {
+            color: var(--text-muted);
+            text-decoration: underline;
+        }
+
+        .signup-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .signup-link {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .signup-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Layouts */
+        @media (max-width: 900px) {
+            .full-page-container {
+                flex-direction: column;
+            }
+
+            .hero-section {
+                display: none;
+            }
+
+            .form-section {
+                flex: 1;
+                padding: 40px 24px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="shell">
-
-  <!-- Editorial brand panel -->
-  <aside class="editorial">
-    <div class="brand">
-      <span class="mark">S</span>
-      SkillMatch
-    </div>
-
-    <div class="editorial-body">
-      <div class="eyebrow">CAREER DISCOVERY, EDITED WITH CARE</div>
-      <h1>Your next role, read like a considered story.</h1>
-      <p>Every listing is weighed against your craft — skills matched, gaps named plainly, and the noise left out.</p>
-
-      <div class="quote-card">
-        <p>“The gap analysis told me exactly what to learn next. Three weeks later I had two interviews.”</p>
-        <div class="who">Mariam K. — <span>Product Designer, matched via SkillMatch</span></div>
-      </div>
-    </div>
-
-    <div class="stat-rail">
-      <div>
-        <div class="stat-num">12,400+</div>
-        <div class="stat-label">roles reviewed weekly</div>
-      </div>
-      <div>
-        <div class="stat-num">85%+</div>
-        <div class="stat-label">match threshold, verified</div>
-      </div>
-      <div>
-        <div class="stat-num">6 min</div>
-        <div class="stat-label">average to first match</div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Login form panel -->
-  <main class="form-panel">
-    <div class="form-card">
-      <div class="top-label">SIGN IN</div>
-      <h2>Welcome back</h2>
-      <p class="sub">New to SkillMatch? <a href="#">Create an account</a></p>
-
-      <form>
-        <div class="field">
-          <label for="email">Email address</label>
-          <input type="email" id="email" placeholder="you@company.com" autocomplete="email" required>
+    <div class="full-page-container">
+        
+        <!-- Left Side: Hero Section (Full Height with Curved Corner) -->
+        <div class="hero-section">
+            <div class="hero-header">
+                <i class="fa-solid fa-square-envelope"></i> SkillMatch
+            </div>
+            
+            <div class="hero-content">
+                <!-- Totally Transparent Badge -->
+                <div class="badge-pill-transparent">
+                    <i class="fa-solid fa-briefcase"></i> Better Opportunities
+                </div>
+                <h1 class="hero-title">Great companies<br>hire great people</h1>
+                <p class="hero-desc">Build your career with the right opportunities and take the next step toward your future.</p>
+            </div>
         </div>
 
-        <div class="field">
-          <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required>
+        <!-- Right Side: Login Form -->
+        <div class="form-section">
+            <div class="form-container">
+                
+                <!-- SkillMatch Logo -->
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <div class="logo-graphic">
+                            <div class="circle-orange"></div>
+                            <div class="circle-yellow"></div>
+                            <div class="line-white"></div>
+                            <div class="line-green"></div>
+                        </div>
+                    </div>
+                    <div class="logo-text">SkillMatch<span class="logo-dot"></span></div>
+                </div>
+
+                <!-- Header Titles -->
+                <h2 class="welcome-title">Welcome Back</h2>
+                <p class="welcome-subtitle">Log in to your account to continue</p>
+
+                <!-- Form -->
+                <form id="loginForm">
+                    <!-- Email Field -->
+                    <div class="form-group">
+                        <label class="form-label" for="email">EMAIL ADDRESS</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                            <input type="email" id="email" class="form-input" placeholder="you@example.com" required>
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-group">
+                        <label class="form-label" for="password">PASSWORD</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                            <i class="fa-regular fa-eye toggle-password" id="togglePassword"></i>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="remember">
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-submit">
+                        Log In <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <!-- Separator -->
+                <div class="divider">
+                    <span class="divider-text">or continue with</span>
+                </div>
+
+                <!-- Google Login Button -->
+                <button class="btn-google" type="button">
+                    <svg class="google-icon" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+
+                <!-- Legal Footer -->
+                <p class="legal-text">
+                    By signing in, you agree to SkillMatch's <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
+                </p>
+
+                <!-- Create Account Link -->
+                <p class="signup-text">
+                    Don't have an account? <a href="#" class="signup-link">Create an account &rarr;</a>
+                </p>
+
+            </div>
         </div>
 
-        <div class="row-between">
-          <label class="remember">
-            <input type="checkbox">
-            Stay signed in
-          </label>
-          <a class="forgot" href="#">Forgot password?</a>
-        </div>
-
-        <button type="submit" class="btn-primary">Sign in</button>
-      </form>
-
-      <div class="divider">or continue with</div>
-
-      <button type="button" class="btn-outline">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.87 2.7-6.62Z" fill="#4285F4"/>
-          <path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.33A9 9 0 0 0 9 18Z" fill="#34A853"/>
-          <path d="M3.95 10.7A5.4 5.4 0 0 1 3.66 9c0-.59.1-1.16.29-1.7V4.97H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.03l2.99-2.33Z" fill="#FBBC05"/>
-          <path d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.9 11.42 0 9 0A9 9 0 0 0 .96 4.97l2.99 2.33C4.66 5.17 6.65 3.58 9 3.58Z" fill="#EA4335"/>
-        </svg>
-        Continue with Google
-      </button>
-
-      <p class="foot-note">
-        By signing in, you agree to SkillMatch's <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
-      </p>
     </div>
-  </main>
 
-</div>
+    <!-- JavaScript Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const togglePassword = document.querySelector('#togglePassword');
+            const passwordInput = document.querySelector('#password');
+            const loginForm = document.querySelector('#loginForm');
 
+            // Toggle Password Visibility Logic
+            togglePassword.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle Eye Icon
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+
+            // Form Submission Handling
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = passwordInput.value;
+
+                if(email && password) {
+                    alert(`Welcome Back!\nEmail: ${email}`);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

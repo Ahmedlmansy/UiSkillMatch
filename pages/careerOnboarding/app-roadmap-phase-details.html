@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 1: Foundations — SkillMatch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary":"#1F365C","primary-container":"#0F2036","on-primary":"#FFFFFF",
+        "secondary":"#9C432A",
+        "canvas-cream":"#FAF8F4","surface-white":"#FFFFFF",
+        "border-hairline":"#E5E1DA",
+        "text-primary":"#1B1C1A","text-secondary":"#44474E","text-muted":"#707780",
+        "match-forest":"#4F7A5A","match-amber":"#C88A26","status-red":"#B3271E"
+      },
+      fontFamily: { display:["DM Sans","sans-serif"], body:["Inter","sans-serif"] }
+    }
+  }
+}
+</script>
+<style>
+  body{ background:#FAF8F4; }
+  .material-symbols-outlined{ font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; vertical-align:middle; font-size:20px; }
+  .task-row.done .task-title{ text-decoration:line-through; color:#707780; }
+  .task-row.done .task-check{ background:#4F7A5A; border-color:#4F7A5A; }
+  .task-row.done .task-check .material-symbols-outlined{ display:inline-block; }
+  .task-check .material-symbols-outlined{ display:none; }
+  .modal-overlay{ display:none; }
+  .modal-overlay.active{ display:flex; }
+</style>
+</head>
+<body class="font-body text-text-primary">
+
+<header class="border-b border-border-hairline bg-canvas-cream">
+  <div class="max-w-[880px] mx-auto px-5 h-14 flex items-center gap-3">
+    <button class="w-8 h-8 rounded-[8px] border border-border-hairline flex items-center justify-center hover:bg-white" onclick="history.back()">
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+    </button>
+    <div class="text-[13px] text-text-muted">
+      <a href="#" class="hover:text-primary">Roadmap</a>
+      <span class="mx-1">/</span>
+      <span class="text-text-primary font-semibold">Phase 1: Foundations</span>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-[880px] mx-auto px-5 py-8">
+
+  <!-- Phase header -->
+  <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-8 h-8 rounded-full bg-match-forest text-white flex items-center justify-center text-[12px] font-bold flex-shrink-0">1</div>
+          <div class="text-[11px] font-semibold text-secondary">PHASE 1 OF 3</div>
+        </div>
+        <h1 class="font-display font-bold text-[22px] mb-2">Foundations — System Design Basics</h1>
+        <p class="text-[13px] text-text-secondary max-w-lg leading-relaxed">
+          <span class="font-semibold text-text-primary">Goal:</span> build a working vocabulary for system design so you can reason about scale, trade-offs, and architecture in interviews and on the job.
+        </p>
+      </div>
+      <button class="h-10 px-4 rounded-[8px] bg-primary text-white text-[13px] font-semibold flex items-center gap-2 flex-shrink-0">
+        <span class="material-symbols-outlined text-[16px]">forum</span> Ask Mentor
+      </button>
+    </div>
+
+    <div class="mt-5 pt-5 border-t border-border-hairline flex items-center gap-4">
+      <div class="flex-1">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-[11px] font-semibold text-text-muted">COMPLETION</span>
+          <span class="text-[13px] font-bold text-primary">75%</span>
+        </div>
+        <div class="w-full h-2 rounded-full bg-canvas-cream overflow-hidden">
+          <div class="h-full bg-match-forest rounded-full" style="width:75%"></div>
+        </div>
+      </div>
+      <div class="text-[12px] text-text-muted flex-shrink-0">3 of 4 tasks complete</div>
+    </div>
+  </div>
+
+  <!-- Skills covered — explicitly linked to priority gaps -->
+  <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+    <h2 class="font-display font-bold text-[15px] mb-1">Skills covered in this phase</h2>
+    <p class="text-[12px] text-text-muted mb-4">Every skill here addresses a priority gap from your roadmap — nothing in this phase is unlinked busywork.</p>
+    <div class="space-y-2">
+      <div class="flex items-center justify-between border border-border-hairline rounded-[10px] px-3.5 py-2.5">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[16px]">architecture</span>
+          <span class="text-[13px] font-semibold">System Design</span>
+        </div>
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] text-[10px] font-bold bg-status-red/10 text-status-red">
+          <span class="material-symbols-outlined text-[12px]">priority_high</span> HIGH PRIORITY GAP
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Milestones -->
+  <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
+    <h2 class="font-display font-bold text-[15px] mb-4">Milestones</h2>
+    <div class="space-y-3">
+      <div class="flex items-start gap-3">
+        <span class="material-symbols-outlined text-match-forest text-[18px] mt-0.5">flag_circle</span>
+        <div class="flex-1">
+          <div class="text-[13px] font-semibold">Complete "System Design Interview" course</div>
+          <div class="text-[12px] text-text-muted mt-0.5">In progress — 2 of 3 linked tasks done</div>
+        </div>
+      </div>
+      <div class="flex items-start gap-3">
+        <span class="material-symbols-outlined text-border-hairline text-[18px] mt-0.5">flag_circle</span>
+        <div class="flex-1">
+          <div class="text-[13px] font-semibold text-text-muted">Design 2 systems end-to-end on paper</div>
+          <div class="text-[12px] text-text-muted mt-0.5">Not started</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekly actions / Tasks -->
+  <div class="bg-white border border-border-hairline rounded-[16px] p-6">
+    <h2 class="font-display font-bold text-[15px] mb-4">This phase's weekly actions</h2>
+    <div class="space-y-2">
+
+      <div class="task-row done flex items-center gap-3 p-3 border border-border-hairline rounded-[10px]" id="task-1">
+        <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(event, 'task-1')">
+          <span class="material-symbols-outlined text-white text-[13px]">check</span>
+        </button>
+        <div class="flex-1 min-w-0 cursor-pointer" onclick="openTask('task-1')">
+          <div class="task-title text-[13px] font-semibold">Watch "Scaling Web Applications" module</div>
+          <div class="text-[11px] text-text-muted mt-0.5">Target skill: System Design · Done Aug 30</div>
+        </div>
+        <button class="text-[12px] font-semibold text-primary flex-shrink-0" onclick="openTask('task-1')">Open</button>
+      </div>
+
+      <div class="task-row done flex items-center gap-3 p-3 border border-border-hairline rounded-[10px]" id="task-2">
+        <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(event, 'task-2')">
+          <span class="material-symbols-outlined text-white text-[13px]">check</span>
+        </button>
+        <div class="flex-1 min-w-0 cursor-pointer" onclick="openTask('task-2')">
+          <div class="task-title text-[13px] font-semibold">Design a URL-shortener system on paper</div>
+          <div class="text-[11px] text-text-muted mt-0.5">Target skill: System Design · Done Sep 1</div>
+        </div>
+        <button class="text-[12px] font-semibold text-primary flex-shrink-0" onclick="openTask('task-2')">Open</button>
+      </div>
+
+      <div class="task-row done flex items-center gap-3 p-3 border border-border-hairline rounded-[10px]" id="task-3">
+        <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(event, 'task-3')">
+          <span class="material-symbols-outlined text-white text-[13px]">check</span>
+        </button>
+        <div class="flex-1 min-w-0 cursor-pointer" onclick="openTask('task-3')">
+          <div class="task-title text-[13px] font-semibold">Read "Designing Data-Intensive Applications" — Ch. 1–2</div>
+          <div class="text-[11px] text-text-muted mt-0.5">Target skill: System Design · Done Sep 3</div>
+        </div>
+        <button class="text-[12px] font-semibold text-primary flex-shrink-0" onclick="openTask('task-3')">Open</button>
+      </div>
+
+      <div class="task-row flex items-center gap-3 p-3 border border-border-hairline rounded-[10px]" id="task-4">
+        <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(event, 'task-4')">
+          <span class="material-symbols-outlined text-white text-[13px]">check</span>
+        </button>
+        <div class="flex-1 min-w-0 cursor-pointer" onclick="openTask('task-4')">
+          <div class="task-title text-[13px] font-semibold">Design a rate limiter and present your trade-offs</div>
+          <div class="text-[11px] text-text-muted mt-0.5">Target skill: System Design · Not started</div>
+        </div>
+        <button class="text-[12px] font-semibold text-primary flex-shrink-0" onclick="openTask('task-4')">Open</button>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- ============ TASK DETAIL — expand/modal within this page ============ -->
+<div class="modal-overlay fixed inset-0 z-40 items-center justify-center p-4" id="task-modal" style="background:rgba(27,28,26,0.32);">
+  <div class="bg-white rounded-[16px] w-full max-w-[520px] max-h-[88vh] overflow-y-auto">
+    <div class="flex items-start justify-between p-6 border-b border-border-hairline">
+      <div>
+        <div class="text-[11px] font-semibold text-secondary mb-1" id="modal-target-skill">TARGET SKILL: SYSTEM DESIGN</div>
+        <h2 class="font-display font-bold text-[17px]" id="modal-title">Watch "Scaling Web Applications" module</h2>
+      </div>
+      <button onclick="closeTask()" class="w-8 h-8 rounded-[8px] flex items-center justify-center hover:bg-canvas-cream flex-shrink-0">
+        <span class="material-symbols-outlined text-[18px]">close</span>
+      </button>
+    </div>
+
+    <div class="p-6 space-y-5">
+      <div>
+        <div class="text-[11px] font-semibold text-text-muted mb-1.5">DESCRIPTION</div>
+        <p class="text-[13px] text-text-secondary leading-relaxed" id="modal-description">A 40-minute video module covering horizontal vs. vertical scaling, load balancing, and caching strategies for high-traffic web applications.</p>
+      </div>
+
+      <div>
+        <div class="text-[11px] font-semibold text-text-muted mb-1.5">WHY THIS TASK MATTERS</div>
+        <p class="text-[13px] text-text-secondary leading-relaxed" id="modal-why">System Design was flagged as a high-priority gap because it appears in 9 of 10 roles you've saved and isn't yet confirmed on your profile. This module builds the core vocabulary used throughout the rest of this phase.</p>
+      </div>
+
+      <div>
+        <div class="text-[11px] font-semibold text-text-muted mb-1.5">EXPECTED OUTCOME</div>
+        <p class="text-[13px] text-text-secondary leading-relaxed" id="modal-outcome">You'll be able to explain the trade-offs between scaling strategies and describe how caching reduces load on a backend system.</p>
+      </div>
+
+      <div>
+        <div class="text-[11px] font-semibold text-text-muted mb-1.5">COMPLETION STATE</div>
+        <div class="flex items-center gap-2" id="modal-state">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] font-semibold bg-[#EFF3EF] text-match-forest">
+            <span class="material-symbols-outlined text-[14px]">check_circle</span> Completed on Aug 30, 2026
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3 p-6 border-t border-border-hairline sticky bottom-0 bg-white rounded-b-[16px]">
+      <button class="h-10 px-4 rounded-[8px] border border-border-hairline text-[13px] font-semibold flex items-center gap-1.5" onclick="askMentorAboutTask()">
+        <span class="material-symbols-outlined text-[16px]">forum</span> Ask Mentor
+      </button>
+      <button class="flex-1 h-10 rounded-[8px] text-[13px] font-semibold" id="modal-toggle-btn" onclick="toggleFromModal()"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const tasks = {
+    'task-1': {
+      skill: 'TARGET SKILL: SYSTEM DESIGN',
+      title: 'Watch "Scaling Web Applications" module',
+      description: 'A 40-minute video module covering horizontal vs. vertical scaling, load balancing, and caching strategies for high-traffic web applications.',
+      why: 'System Design was flagged as a high-priority gap because it appears in 9 of 10 roles you\'ve saved and isn\'t yet confirmed on your profile. This module builds the core vocabulary used throughout the rest of this phase.',
+      outcome: 'You\'ll be able to explain the trade-offs between scaling strategies and describe how caching reduces load on a backend system.'
+    },
+    'task-2': {
+      skill: 'TARGET SKILL: SYSTEM DESIGN',
+      title: 'Design a URL-shortener system on paper',
+      description: 'A guided exercise: sketch the architecture for a URL-shortening service, covering the data model, API design, and how you\'d handle scale.',
+      why: 'Applies what you learned in the scaling module to a concrete, commonly-asked interview problem — closing the gap between theory and practice.',
+      outcome: 'A one-page architecture sketch you can reuse and adapt for similar system design interview questions.'
+    },
+    'task-3': {
+      skill: 'TARGET SKILL: SYSTEM DESIGN',
+      title: 'Read "Designing Data-Intensive Applications" — Ch. 1–2',
+      description: 'Foundational reading on reliability, scalability, and maintainability in data systems.',
+      why: 'Builds the conceptual depth behind the practical exercises in this phase, so your reasoning holds up under follow-up questions.',
+      outcome: 'A working understanding of the core trade-offs system designers reason about, in your own words.'
+    },
+    'task-4': {
+      skill: 'TARGET SKILL: SYSTEM DESIGN',
+      title: 'Design a rate limiter and present your trade-offs',
+      description: 'Design a rate-limiting system for a public API and be ready to explain your algorithm choice (token bucket vs. sliding window) and its trade-offs.',
+      why: 'Rate limiting is one of the most commonly asked system design prompts for this role level — practicing it now closes a known interview gap.',
+      outcome: 'A short write-up or diagram you can walk through confidently in a live interview setting.'
+    }
+  };
+
+  let currentTaskId = null;
+
+  function openTask(id){
+    currentTaskId = id;
+    const t = tasks[id];
+    document.getElementById('modal-target-skill').textContent = t.skill;
+    document.getElementById('modal-title').textContent = t.title;
+    document.getElementById('modal-description').textContent = t.description;
+    document.getElementById('modal-why').textContent = t.why;
+    document.getElementById('modal-outcome').textContent = t.outcome;
+    renderModalState(id);
+    document.getElementById('task-modal').classList.add('active');
+  }
+
+  function closeTask(){
+    document.getElementById('task-modal').classList.remove('active');
+    currentTaskId = null;
+  }
+
+  function renderModalState(id){
+    const row = document.getElementById(id);
+    const isDone = row.classList.contains('done');
+    const stateEl = document.getElementById('modal-state');
+    const btn = document.getElementById('modal-toggle-btn');
+    if(isDone){
+      stateEl.innerHTML = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] font-semibold bg-[#EFF3EF] text-match-forest"><span class="material-symbols-outlined text-[14px]">check_circle</span> Completed</span>';
+      btn.textContent = 'Undo completion';
+      btn.className = 'flex-1 h-10 rounded-[8px] text-[13px] font-semibold border border-border-hairline text-text-secondary';
+    } else {
+      stateEl.innerHTML = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] font-semibold bg-canvas-cream text-text-muted border border-border-hairline"><span class="material-symbols-outlined text-[14px]">radio_button_unchecked</span> Not completed</span>';
+      btn.textContent = 'Mark task complete';
+      btn.className = 'flex-1 h-10 rounded-[8px] text-[13px] font-semibold bg-primary text-white';
+    }
+  }
+
+  function toggleTask(event, id){
+    event.stopPropagation();
+    document.getElementById(id).classList.toggle('done');
+  }
+
+  function toggleFromModal(){
+    if(!currentTaskId) return;
+    document.getElementById(currentTaskId).classList.toggle('done');
+    renderModalState(currentTaskId);
+  }
+
+  function askMentorAboutTask(){
+    // Opens the AI Mentor with this task's context pre-loaded.
+    alert('Opening AI Mentor with this task\'s context…');
+  }
+</script>
+
+</body>
+</html>
