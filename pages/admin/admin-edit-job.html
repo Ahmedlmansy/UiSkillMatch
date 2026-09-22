@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MatchIn — Edit Job</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-primary: #1f365c;
+      --color-secondary: #d06b4f;
+      --color-accent: #d4a72c;
+      --color-background: #faf8f4;
+      --color-surface: #ffffff;
+      --color-ink: #222831;
+      --color-muted: #707780;
+      --color-border: #e5e1da;
+      --color-success: #4f7a5a;
+      --color-warning: #c88a26;
+      --color-error: #b85450;
+      --color-primary-foreground: #ffffff;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-card: 0 2px 8px rgba(0,0,0,0.03);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--color-background);
+      color: var(--color-ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 32px 28px 64px;
+      min-height: 100vh;
+    }
+
+    .page { max-width: 920px; margin: 0 auto; }
+
+    /* ========== Header ========== */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .page-header-left { display: flex; flex-direction: column; gap: 6px; }
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--color-muted);
+    }
+    .breadcrumb a {
+      color: var(--color-muted);
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { color: var(--color-primary); }
+    .breadcrumb svg { width: 14px; height: 14px; opacity: 0.6; }
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    .page-header .meta {
+      font-size: 13px;
+      color: var(--color-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .page-header .meta .dot {
+      width: 3px; height: 3px; border-radius: 50%; background: var(--color-border);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* ========== Buttons ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      padding: 0 16px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn-primary {
+      background: var(--color-primary);
+      color: var(--color-primary-foreground);
+    }
+    .btn-primary:hover { background: #182a4a; }
+    .btn-primary:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background: var(--color-surface);
+      color: var(--color-ink);
+      border: 1px solid var(--color-border);
+    }
+    .btn-secondary:hover {
+      background: #f5f2ec;
+      border-color: #d9d4cb;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--color-muted);
+      border: 1px solid transparent;
+    }
+    .btn-ghost:hover {
+      color: var(--color-ink);
+      background: rgba(0,0,0,0.04);
+    }
+    .btn-danger {
+      background: transparent;
+      color: var(--color-error);
+      border: 1px solid transparent;
+    }
+    .btn-danger:hover {
+      background: rgba(184,84,80,0.08);
+    }
+
+    /* ========== Unsaved Banner ========== */
+    .unsaved-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(200,138,38,0.1);
+      border: 1px solid rgba(200,138,38,0.28);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .unsaved-banner-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13.5px;
+      font-weight: 550;
+      color: var(--color-warning);
+    }
+    .unsaved-banner-left svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* ========== Success / Error Toast ========== */
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+      font-size: 13.5px;
+      font-weight: 550;
+    }
+    .toast svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .toast-success {
+      background: rgba(79,122,90,0.1);
+      border: 1px solid rgba(79,122,90,0.25);
+      color: var(--color-success);
+    }
+    .toast-error {
+      background: rgba(184,84,80,0.1);
+      border: 1px solid rgba(184,84,80,0.25);
+      color: var(--color-error);
+    }
+
+    /* ========== Form Card ========== */
+    .form-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .form-card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .form-card-header h2 {
+      font-size: 15px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+    }
+    .form-card-header .hint {
+      font-size: 12.5px;
+      color: var(--color-muted);
+      font-weight: 400;
+    }
+    .form-card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* ========== Form Fields ========== */
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 640px) {
+      .field-row { grid-template-columns: 1fr; }
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 13px;
+      font-weight: 550;
+      color: var(--color-ink);
+    }
+    label .required {
+      color: var(--color-error);
+      margin-left: 2px;
+    }
+    label .optional {
+      font-weight: 400;
+      color: var(--color-muted);
+      font-size: 12px;
+      margin-left: 4px;
+    }
+
+    .input,
+    .select,
+    .textarea {
+      width: 100%;
+      height: 42px;
+      padding: 0 14px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--color-ink);
+      background: var(--color-surface);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    .textarea {
+      height: auto;
+      min-height: 110px;
+      padding: 12px 14px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(31,54,92,0.12);
+    }
+    .input.error,
+    .select.error,
+    .textarea.error {
+      border-color: var(--color-error);
+      box-shadow: 0 0 0 3px rgba(184,84,80,0.1);
+    }
+    .input:disabled,
+    .select:disabled,
+    .textarea:disabled {
+      background: #f5f2ec;
+      color: var(--color-muted);
+      cursor: not-allowed;
+    }
+
+    .field-error {
+      font-size: 12px;
+      color: var(--color-error);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .field-hint {
+      font-size: 12px;
+      color: var(--color-muted);
+    }
+
+    /* Select arrow */
+    .select-wrap { position: relative; }
+    .select-wrap select {
+      appearance: none;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0; height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid var(--color-muted);
+      pointer-events: none;
+    }
+
+    /* ========== Skills Tags ========== */
+    .skills-input-wrap {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 48px;
+      align-items: center;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      background: var(--color-surface);
+    }
+    .skills-input-wrap:focus-within {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(31,54,92,0.12);
+    }
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 28px;
+      padding: 0 10px;
+      background: rgba(31,54,92,0.08);
+      color: var(--color-primary);
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 550;
+    }
+    .skill-tag button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      color: var(--color-primary);
+      opacity: 0.6;
+    }
+    .skill-tag button:hover { opacity: 1; }
+    .skill-tag button svg { width: 12px; height: 12px; }
+    .skills-input {
+      flex: 1;
+      min-width: 120px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      font-family: inherit;
+      height: 28px;
+      background: transparent;
+      color: var(--color-ink);
+    }
+    .skills-input::placeholder { color: var(--color-muted); }
+
+    /* ========== Status Toggle ========== */
+    .status-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .status-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 550;
+      transition: all 0.15s;
+      background: var(--color-surface);
+      user-select: none;
+    }
+    .status-option input { display: none; }
+    .status-option:hover { border-color: #d0cbc3; }
+    .status-option.active {
+      border-color: var(--color-primary);
+      background: rgba(31,54,92,0.06);
+      color: var(--color-primary);
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .status-dot.open { background: var(--color-success); }
+    .status-dot.closed { background: var(--color-muted); }
+    .status-dot.draft { background: var(--color-warning); }
+    .status-dot.suspended { background: var(--color-error); }
+
+    /* ========== Work Mode / Job Type chips ========== */
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      height: 36px;
+      padding: 0 14px;
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 550;
+      cursor: pointer;
+      background: var(--color-surface);
+      color: var(--color-ink);
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .chip input { display: none; }
+    .chip:hover { border-color: #d0cbc3; }
+    .chip.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    /* ========== Footer Actions ========== */
+    .form-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+    .form-footer-left,
+    .form-footer-right {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* ========== Audit Note ========== */
+    .audit-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(31,54,92,0.04);
+      border: 1px solid rgba(31,54,92,0.1);
+      border-radius: var(--radius-md);
+      font-size: 12.5px;
+      color: var(--color-muted);
+      line-height: 1.45;
+    }
+    .audit-note svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: var(--color-primary);
+      opacity: 0.7;
+    }
+
+    /* ========== Loading Overlay (demo) ========== */
+    .loading-overlay {
+      display: none; /* toggle to flex for demo */
+      position: fixed;
+      inset: 0;
+      background: rgba(250,248,244,0.7);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--color-border);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ========== PAGE HEADER ========== -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="breadcrumb">
+          <a href="#">Jobs</a>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+          <a href="#">JOB-2841</a>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+          <span>Edit</span>
+        </div>
+        <h1>Edit Job</h1>
+        <div class="meta">
+          <span>ID: JOB-2841</span>
+          <span class="dot"></span>
+          <span>Last updated · 3 hours ago</span>
+          <span class="dot"></span>
+          <span>by BrightPath Inc.</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
+          Cancel
+        </button>
+        <button class="btn btn-secondary" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182"/></svg>
+          Reset
+        </button>
+        <button class="btn btn-primary" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+          Save Changes
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== UNSAVED CHANGES BANNER (state demo) ========== -->
+    <div class="unsaved-banner">
+      <div class="unsaved-banner-left">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg>
+        You have unsaved changes
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost" style="height:34px;font-size:12.5px;">Discard</button>
+        <button class="btn btn-primary" style="height:34px;font-size:12.5px;">Save now</button>
+      </div>
+    </div>
+
+    <!-- Success toast (hidden by default – uncomment to show)
+    <div class="toast toast-success">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+      Job updated successfully. Changes logged in Audit Logs.
+    </div>
+    -->
+
+    <!-- ========== 1. JOB INFORMATION ========== -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <h2>Job Information</h2>
+        <span class="hint">Core details visible to candidates</span>
+      </div>
+      <div class="form-card-body">
+        <div class="field-row">
+          <div class="field full">
+            <label>Job Title <span class="required">*</span></label>
+            <input class="input" type="text" value="Senior Frontend Engineer" placeholder="e.g. Senior Frontend Engineer" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Company <span class="required">*</span></label>
+            <div class="select-wrap">
+              <select class="select">
+                <option>BrightPath Inc.</option>
+                <option>Nexus Labs</option>
+                <option>CloudStack</option>
+                <option>Horizon Digital</option>
+              </select>
+            </div>
+            <span class="field-hint">Linked company account</span>
+          </div>
+          <div class="field">
+            <label>Source <span class="optional">(optional)</span></label>
+            <div class="select-wrap">
+              <select class="select">
+                <option>Internal</option>
+                <option>LinkedIn</option>
+                <option>Indeed</option>
+                <option>Company Website</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 2. DESCRIPTION ========== -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <h2>Description</h2>
+        <span class="hint">Main job overview</span>
+      </div>
+      <div class="form-card-body">
+        <div class="field">
+          <label>Job Description <span class="required">*</span></label>
+          <textarea class="textarea" rows="5" placeholder="Describe the role, team, and impact...">We are looking for a Senior Frontend Engineer to join our product team and help build delightful, performant user experiences across our platform. You will work closely with design and backend teams to ship features that matter.</textarea>
+          <span class="field-hint">Minimum 50 characters recommended</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 3. RESPONSIBILITIES ========== -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <h2>Responsibilities</h2>
+        <span class="hint">What the candidate will own</span>
+      </div>
+      <div class="form-card-body">
+        <div class="field">
+          <label>Key Responsibilities <span class="required">*</span></label>
+          <textarea class="textarea" rows="5" placeholder="One responsibility per line...">• Own and evolve core frontend modules using React & TypeScript
+• Collaborate with design to implement accessible, responsive UIs
+• Write clean, tested code and participate in code reviews
+• Mentor junior engineers and contribute to technical decisions
+• Improve performance and monitoring of critical user flows</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 4. REQUIRED & PREFERRED SKILLS ========== -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <h2>Skills</h2>
+        <span class="hint">Required vs preferred</span>
+      </div>
+      <div class="form-card-body">
+        <div class="field">
+          <label>Required Skills <span class="required">*</span></label>
+          <div class="skills-input-wrap">
+            <span class="skill-tag">
+              React
+              <button type="button" aria-label="Remove"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
+            </span>
+            <span class="skill-tag">
+              TypeScript
+              <button type="button" aria-label="Remove"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
+            </span>
+            <span class="skill-tag">
+              CSS / Tailwind
+              <button type="button" aria-label="Remove"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
+            </span>
+            <span class="skill-tag">
+              Git
+              <button type="button" aria-label="Remove"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
+            </span>
+            <input class="skills-input" type="text" placeholder="Add skill and press Enter" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Preferred Skills <span class="optional">(optional)</span></label>
+          <div class="skills-input-wrap">
+            <span class="skill-tag">
+              Next.js
+              <button type="button" aria-label="Remove"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
+            </span>
+            <span class="skill-tag">
+              GraphQL
+              <button type="button" aria-label="Remove"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
+            </span>
+            <span class="skill-tag">
+              Framer Motion
+              <button type="button" aria-label="Remove"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
+            </span>
+            <input class="skills-input" type="text" placeholder="Add skill and press Enter" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 5. LOCATION & WORK DETAILS ========== -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <h2>Location &amp; Work Details</h2>
+      </div>
+      <div class="form-card-body">
+        <div class="field-row">
+          <div class="field">
+            <label>Location <span class="required">*</span></label>
+            <input class="input" type="text" value="Cairo, Egypt" placeholder="City, Country or Remote" />
+          </div>
+          <div class="field">
+            <label>Experience Level <span class="required">*</span></label>
+            <div class="select-wrap">
+              <select class="select">
+                <option>Internship</option>
+                <option>Junior</option>
+                <option>Mid-Level</option>
+                <option selected>Senior</option>
+                <option>Lead / Principal</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Work Mode <span class="required">*</span></label>
+          <div class="chip-group">
+            <label class="chip">
+              <input type="radio" name="workMode" />
+              On-site
+            </label>
+            <label class="chip active">
+              <input type="radio" name="workMode" checked />
+              Hybrid
+            </label>
+            <label class="chip">
+              <input type="radio" name="workMode" />
+              Remote
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Job Type <span class="required">*</span></label>
+          <div class="chip-group">
+            <label class="chip active">
+              <input type="radio" name="jobType" checked />
+              Full-time
+            </label>
+            <label class="chip">
+              <input type="radio" name="jobType" />
+              Part-time
+            </label>
+            <label class="chip">
+              <input type="radio" name="jobType" />
+              Contract
+            </label>
+            <label class="chip">
+              <input type="radio" name="jobType" />
+              Internship
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 6. STATUS ========== -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <h2>Status</h2>
+        <span class="hint">Visibility &amp; lifecycle</span>
+      </div>
+      <div class="form-card-body">
+        <div class="field">
+          <label>Job Status <span class="required">*</span></label>
+          <div class="status-options">
+            <label class="status-option active">
+              <input type="radio" name="status" checked />
+              <span class="status-dot open"></span>
+              Open
+            </label>
+            <label class="status-option">
+              <input type="radio" name="status" />
+              <span class="status-dot draft"></span>
+              Draft
+            </label>
+            <label class="status-option">
+              <input type="radio" name="status" />
+              <span class="status-dot closed"></span>
+              Closed
+            </label>
+            <label class="status-option">
+              <input type="radio" name="status" />
+              <span class="status-dot suspended"></span>
+              Suspended
+            </label>
+          </div>
+        </div>
+
+        <div class="audit-note">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg>
+          <span>
+            All changes made by Super Admin are automatically recorded in <strong>Audit Logs</strong>
+            (who, what, when). Status changes and field updates are fully traceable.
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== FOOTER ACTIONS ========== -->
+    <div class="form-footer">
+      <div class="form-footer-left">
+        <button class="btn btn-danger" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182"/></svg>
+          Reset Changes
+        </button>
+      </div>
+      <div class="form-footer-right">
+        <button class="btn btn-secondary" type="button">Cancel</button>
+        <button class="btn btn-primary" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+          Save Changes
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Loading overlay (toggle display:flex to demo) -->
+  <div class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+</body>
+</html>

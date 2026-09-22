@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MatchIn — Company Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-primary: #1f365c;
+      --color-secondary: #d06b4f;
+      --color-accent: #d4a72c;
+      --color-background: #faf8f4;
+      --color-surface: #ffffff;
+      --color-ink: #222831;
+      --color-muted: #707780;
+      --color-border: #e5e1da;
+      --color-success: #4f7a5a;
+      --color-warning: #c88a26;
+      --color-error: #b85450;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-card: 0 2px 8px rgba(0,0,0,0.03);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--color-background);
+      color: var(--color-ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 32px 28px 64px;
+      min-height: 100vh;
+    }
+
+    .page { max-width: 1100px; margin: 0 auto; }
+
+    /* ========== Buttons ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      padding: 0 16px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 600;
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+      background: var(--color-surface);
+      color: var(--color-ink);
+    }
+    .btn:hover { background: #f5f2ec; border-color: #d9d4cb; }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn-primary {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+    .btn-primary:hover { background: #182a4a; border-color: #182a4a; }
+    .btn-success {
+      background: var(--color-success);
+      color: #fff;
+      border-color: var(--color-success);
+    }
+    .btn-success:hover { background: #3f6349; border-color: #3f6349; }
+    .btn-warning {
+      background: transparent;
+      color: var(--color-warning);
+      border-color: rgba(200,138,38,0.4);
+    }
+    .btn-warning:hover {
+      background: rgba(200,138,38,0.08);
+      border-color: var(--color-warning);
+    }
+    .btn-danger {
+      background: transparent;
+      color: var(--color-error);
+      border-color: rgba(184,84,80,0.35);
+    }
+    .btn-danger:hover {
+      background: rgba(184,84,80,0.08);
+      border-color: var(--color-error);
+    }
+    .btn-ghost {
+      background: transparent;
+      border-color: transparent;
+      color: var(--color-muted);
+    }
+    .btn-ghost:hover {
+      background: rgba(0,0,0,0.04);
+      color: var(--color-ink);
+    }
+    .btn-sm {
+      height: 34px;
+      padding: 0 12px;
+      font-size: 12.5px;
+      border-radius: var(--radius-sm);
+    }
+    .btn-sm svg { width: 14px; height: 14px; }
+
+    /* ========== Breadcrumb ========== */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--color-muted);
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .breadcrumb a { color: var(--color-muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--color-primary); }
+    .breadcrumb svg { width: 14px; height: 14px; opacity: 0.55; }
+
+    /* ========== Header ========== */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .company-logo-lg {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      background: #3d6b8a;
+      flex-shrink: 0;
+    }
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    .page-header .company-id {
+      font-size: 13px;
+      color: var(--color-muted);
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      margin-top: 2px;
+    }
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* ========== Verification Banner (always visible) ========== */
+    .verify-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+      border: 1px solid;
+    }
+    .verify-banner.pending {
+      background: rgba(200,138,38,0.1);
+      border-color: rgba(200,138,38,0.3);
+    }
+    .verify-banner.verified {
+      background: rgba(79,122,90,0.1);
+      border-color: rgba(79,122,90,0.25);
+    }
+    .verify-banner.not-verified {
+      background: rgba(112,119,128,0.08);
+      border-color: rgba(112,119,128,0.2);
+    }
+    .verify-banner-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .verify-banner-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .verify-banner.pending .verify-banner-icon {
+      background: rgba(200,138,38,0.18);
+      color: var(--color-warning);
+    }
+    .verify-banner.verified .verify-banner-icon {
+      background: rgba(79,122,90,0.18);
+      color: var(--color-success);
+    }
+    .verify-banner.not-verified .verify-banner-icon {
+      background: rgba(112,119,128,0.15);
+      color: var(--color-muted);
+    }
+    .verify-banner-icon svg { width: 20px; height: 20px; }
+    .verify-banner-title {
+      font-size: 14.5px;
+      font-weight: 650;
+    }
+    .verify-banner.pending .verify-banner-title { color: var(--color-warning); }
+    .verify-banner.verified .verify-banner-title { color: var(--color-success); }
+    .verify-banner.not-verified .verify-banner-title { color: var(--color-muted); }
+    .verify-banner-desc {
+      font-size: 13px;
+      color: var(--color-muted);
+      margin-top: 2px;
+    }
+    .verify-banner-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ========== Overview Stats ========== */
+    .overview-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    @media (max-width: 800px) {
+      .overview-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 440px) {
+      .overview-stats { grid-template-columns: 1fr; }
+    }
+    .stat-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-card);
+    }
+    .stat-label {
+      font-size: 12.5px;
+      color: var(--color-muted);
+      font-weight: 500;
+    }
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-top: 4px;
+      color: var(--color-ink);
+    }
+    .stat-sub {
+      font-size: 12px;
+      color: var(--color-muted);
+      margin-top: 2px;
+    }
+
+    /* ========== Layout: 2 cols ========== */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .content-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ========== Cards ========== */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .card-header h2 {
+      font-size: 14.5px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+    }
+    .card-header .hint {
+      font-size: 12.5px;
+      color: var(--color-muted);
+    }
+    .card-body { padding: 20px; }
+
+    /* Info grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 24px;
+    }
+    @media (max-width: 560px) {
+      .info-grid { grid-template-columns: 1fr; }
+    }
+    .info-field label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-muted);
+      margin-bottom: 4px;
+    }
+    .info-field .value {
+      font-size: 14.5px;
+      font-weight: 550;
+      color: var(--color-ink);
+    }
+    .info-field .value.mono {
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 13.5px;
+      font-weight: 500;
+    }
+    .info-field .value.muted { color: var(--color-muted); font-weight: 400; }
+    .info-field.full { grid-column: 1 / -1; }
+    .info-field a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 550;
+    }
+    .info-field a:hover { text-decoration: underline; }
+
+    /* Form fields (edit mode demo) */
+    .input, .textarea, .select {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--color-ink);
+      background: var(--color-surface);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .textarea {
+      height: auto;
+      min-height: 90px;
+      padding: 10px 12px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    .input:focus, .textarea:focus, .select:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(31,54,92,0.12);
+    }
+    .select {
+      appearance: none;
+      padding-right: 32px;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%707780' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label {
+      font-size: 13px;
+      font-weight: 550;
+      color: var(--color-ink);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    /* ========== Jobs list ========== */
+    .job-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .job-row:last-child { border-bottom: none; }
+    .job-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-ink);
+    }
+    .job-meta {
+      font-size: 12.5px;
+      color: var(--color-muted);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .job-meta .dot {
+      width: 3px; height: 3px; border-radius: 50%; background: var(--color-border);
+    }
+    .job-status {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 9px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 650;
+    }
+    .job-status.open { background: rgba(79,122,90,0.12); color: var(--color-success); }
+    .job-status.closed { background: rgba(112,119,128,0.1); color: var(--color-muted); }
+    .job-status.draft { background: rgba(200,138,38,0.12); color: var(--color-warning); }
+
+    /* ========== Activity ========== */
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .activity-dot.green { background: var(--color-success); }
+    .activity-dot.orange { background: var(--color-warning); }
+    .activity-dot.blue { background: var(--color-primary); }
+    .activity-dot.slate { background: var(--color-muted); }
+    .activity-text {
+      font-size: 13.5px;
+      color: var(--color-ink);
+      font-weight: 500;
+    }
+    .activity-time {
+      font-size: 12px;
+      color: var(--color-muted);
+      margin-top: 2px;
+    }
+
+    /* ========== Sidebar sticky ========== */
+    .sidebar-col { position: sticky; top: 24px; }
+
+    /* Dates card */
+    .date-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 13.5px;
+    }
+    .date-row:last-child { border-bottom: none; }
+    .date-label { color: var(--color-muted); }
+    .date-value { font-weight: 550; color: var(--color-ink); text-align: right; }
+    .date-value small {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--color-muted);
+      margin-top: 1px;
+    }
+
+    /* Quick actions in sidebar */
+    .quick-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .quick-actions .btn { width: 100%; justify-content: center; }
+
+    /* Footer */
+    .page-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+      padding-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ========== BREADCRUMB ========== -->
+    <div class="breadcrumb">
+      <a href="#">Companies</a>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+      <span>CMP-1098</span>
+    </div>
+
+    <!-- ========== PAGE HEADER ========== -->
+    <div class="page-header">
+      <div class="header-left">
+        <div class="company-logo-lg">CS</div>
+        <div>
+          <h1>CloudStack</h1>
+          <div class="company-id">CMP-1098</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a href="#" class="btn btn-ghost">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
+          Back
+        </a>
+        <button class="btn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+          Edit Company
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== VERIFICATION BANNER (always visible) ========== -->
+    <div class="verify-banner pending">
+      <div class="verify-banner-left">
+        <div class="verify-banner-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+        </div>
+        <div>
+          <div class="verify-banner-title">Pending Verification</div>
+          <div class="verify-banner-desc">Submitted for review · Sep 22, 2026 · 41 min ago</div>
+        </div>
+      </div>
+      <div class="verify-banner-actions">
+        <button class="btn btn-sm btn-success">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+          Verify Company
+        </button>
+        <button class="btn btn-sm btn-warning">Keep Pending</button>
+        <button class="btn btn-sm btn-danger">Reject</button>
+      </div>
+    </div>
+
+    <!-- ========== OVERVIEW STATS ========== -->
+    <div class="overview-stats">
+      <div class="stat-card">
+        <div class="stat-label">Open Jobs</div>
+        <div class="stat-value">4</div>
+        <div class="stat-sub">2 drafts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Applications</div>
+        <div class="stat-value">86</div>
+        <div class="stat-sub">12 this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Created</div>
+        <div class="stat-value" style="font-size:16px;margin-top:8px;">Sep 22, 2026</div>
+        <div class="stat-sub">Today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Last Updated</div>
+        <div class="stat-value" style="font-size:16px;margin-top:8px;">Sep 22, 2026</div>
+        <div class="stat-sub">41 min ago</div>
+      </div>
+    </div>
+
+    <!-- ========== MAIN + SIDEBAR ========== -->
+    <div class="content-grid">
+
+      <!-- LEFT COLUMN -->
+      <div>
+
+        <!-- Company Information -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Company Information</h2>
+            <span class="hint">Core profile details</span>
+          </div>
+          <div class="card-body">
+            <div class="info-grid">
+              <div class="info-field">
+                <label>Company Name</label>
+                <div class="value">CloudStack</div>
+              </div>
+              <div class="info-field">
+                <label>Legal Name</label>
+                <div class="value">CloudStack Technologies LLC</div>
+              </div>
+              <div class="info-field">
+                <label>Industry</label>
+                <div class="value">Cloud Infrastructure</div>
+              </div>
+              <div class="info-field">
+                <label>Company Size</label>
+                <div class="value">51–200 employees</div>
+              </div>
+              <div class="info-field">
+                <label>Website</label>
+                <div class="value"><a href="#">https://cloudstack.io</a></div>
+              </div>
+              <div class="info-field">
+                <label>Headquarters</label>
+                <div class="value">Cairo, Egypt</div>
+              </div>
+              <div class="info-field full">
+                <label>About</label>
+                <div class="value muted" style="font-weight:400;line-height:1.55;">
+                  CloudStack builds scalable cloud infrastructure tools for startups and mid-size companies across MENA. Founded in 2021, the team focuses on developer experience and reliable multi-region deployments.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Contact Information</h2>
+          </div>
+          <div class="card-body">
+            <div class="info-grid">
+              <div class="info-field">
+                <label>Primary Email</label>
+                <div class="value"><a href="mailto:ops@cloudstack.io">ops@cloudstack.io</a></div>
+              </div>
+              <div class="info-field">
+                <label>Phone</label>
+                <div class="value">+20 100 555 0123</div>
+              </div>
+              <div class="info-field">
+                <label>HR / Recruiting Email</label>
+                <div class="value"><a href="mailto:careers@cloudstack.io">careers@cloudstack.io</a></div>
+              </div>
+              <div class="info-field">
+                <label>LinkedIn</label>
+                <div class="value"><a href="#">linkedin.com/company/cloudstack</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Company Jobs -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Jobs</h2>
+            <a href="#" class="btn btn-sm btn-ghost" style="height:30px;">View all jobs →</a>
+          </div>
+          <div class="card-body" style="padding-top:8px;padding-bottom:8px;">
+            <div class="job-row">
+              <div>
+                <div class="job-title">Senior Backend Engineer</div>
+                <div class="job-meta">
+                  <span>Full-time</span>
+                  <span class="dot"></span>
+                  <span>Cairo · Hybrid</span>
+                  <span class="dot"></span>
+                  <span>24 applications</span>
+                </div>
+              </div>
+              <span class="job-status open">Open</span>
+            </div>
+            <div class="job-row">
+              <div>
+                <div class="job-title">DevOps Engineer</div>
+                <div class="job-meta">
+                  <span>Full-time</span>
+                  <span class="dot"></span>
+                  <span>Remote</span>
+                  <span class="dot"></span>
+                  <span>18 applications</span>
+                </div>
+              </div>
+              <span class="job-status open">Open</span>
+            </div>
+            <div class="job-row">
+              <div>
+                <div class="job-title">Product Designer</div>
+                <div class="job-meta">
+                  <span>Full-time</span>
+                  <span class="dot"></span>
+                  <span>Cairo · On-site</span>
+                  <span class="dot"></span>
+                  <span>31 applications</span>
+                </div>
+              </div>
+              <span class="job-status open">Open</span>
+            </div>
+            <div class="job-row">
+              <div>
+                <div class="job-title">Junior Frontend Developer</div>
+                <div class="job-meta">
+                  <span>Full-time</span>
+                  <span class="dot"></span>
+                  <span>Cairo</span>
+                  <span class="dot"></span>
+                  <span>13 applications</span>
+                </div>
+              </div>
+              <span class="job-status open">Open</span>
+            </div>
+            <div class="job-row">
+              <div>
+                <div class="job-title">Technical Writer</div>
+                <div class="job-meta">
+                  <span>Part-time</span>
+                  <span class="dot"></span>
+                  <span>Remote</span>
+                </div>
+              </div>
+              <span class="job-status draft">Draft</span>
+            </div>
+            <div class="job-row">
+              <div>
+                <div class="job-title">Office Manager</div>
+                <div class="job-meta">
+                  <span>Full-time</span>
+                  <span class="dot"></span>
+                  <span>Cairo</span>
+                </div>
+              </div>
+              <span class="job-status closed">Closed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Activity</h2>
+            <a href="#" class="btn btn-sm btn-ghost" style="height:30px;">View all →</a>
+          </div>
+          <div class="card-body" style="padding-top:8px;padding-bottom:8px;">
+            <div class="activity-item">
+              <div class="activity-dot orange"></div>
+              <div>
+                <div class="activity-text">Company submitted for verification review</div>
+                <div class="activity-time">Sep 22, 2026 · 14:02 · System</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot blue"></div>
+              <div>
+                <div class="activity-text">Profile details updated (website, about)</div>
+                <div class="activity-time">Sep 22, 2026 · 13:48 · Company owner</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot green"></div>
+              <div>
+                <div class="activity-text">Job posted: Senior Backend Engineer</div>
+                <div class="activity-time">Sep 22, 2026 · 12:15 · Company owner</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot green"></div>
+              <div>
+                <div class="activity-text">Job posted: DevOps Engineer</div>
+                <div class="activity-time">Sep 22, 2026 · 12:10 · Company owner</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot slate"></div>
+              <div>
+                <div class="activity-text">Company account created</div>
+                <div class="activity-time">Sep 22, 2026 · 11:30 · System</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDEBAR -->
+      <div class="sidebar-col">
+
+        <!-- Verification Status (persistent) -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Verification Status</h2>
+          </div>
+          <div class="card-body">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+              <span class="verify-badge" style="display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:999px;font-size:12.5px;font-weight:650;background:rgba(200,138,38,0.14);color:var(--color-warning);border:1px solid rgba(200,138,38,0.3);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                Pending
+              </span>
+            </div>
+            <div class="quick-actions">
+              <button class="btn btn-success">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                Verify Company
+              </button>
+              <button class="btn btn-warning">Keep Pending</button>
+              <button class="btn btn-danger">Reject Company</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dates -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Dates</h2>
+          </div>
+          <div class="card-body" style="padding-top:6px;padding-bottom:6px;">
+            <div class="date-row">
+              <span class="date-label">Created</span>
+              <div class="date-value">
+                Sep 22, 2026
+                <small>11:30 EEST</small>
+              </div>
+            </div>
+            <div class="date-row">
+              <span class="date-label">Last Updated</span>
+              <div class="date-value">
+                Sep 22, 2026
+                <small>14:02 EEST · 41 min ago</small>
+              </div>
+            </div>
+            <div class="date-row">
+              <span class="date-label">Submitted</span>
+              <div class="date-value">
+                Sep 22, 2026
+                <small>14:02 EEST</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick links -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Quick Links</h2>
+          </div>
+          <div class="card-body">
+            <div class="quick-actions">
+              <a href="#" class="btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.875m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                View Company Jobs
+              </a>
+              <a href="#" class="btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                View Activity
+              </a>
+              <a href="#" class="btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+                Audit Logs
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <div class="page-footer">
+      <a href="#" class="btn btn-ghost">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
+        Back to Companies
+      </a>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn">Edit Company</button>
+        <button class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+          Save Changes
+        </button>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

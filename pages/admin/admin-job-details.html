@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Details — SkillMatch Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary":"#1F365C","primary-container":"#0F2036","on-primary":"#FFFFFF",
+        "secondary":"#9C432A",
+        "canvas-cream":"#FAF8F4","surface-white":"#FFFFFF",
+        "border-hairline":"#E5E1DA",
+        "text-primary":"#1B1C1A","text-secondary":"#44474E","text-muted":"#707780",
+        "match-forest":"#4F7A5A","match-amber":"#C88A26","status-red":"#B3271E"
+      },
+      fontFamily: { display:["DM Sans","sans-serif"], body:["Inter","sans-serif"] }
+    }
+  }
+}
+</script>
+<style>
+  body{ background:linear-gradient(180deg,#FAF8F4 0%,#F5F2EC 240px,#FAF8F4 240px); }
+  .material-symbols-outlined{ font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; vertical-align:middle; font-size:20px; }
+  .skeleton{ background:linear-gradient(90deg,#EFEDE8 25%,#F5F3EF 37%,#EFEDE8 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+  @keyframes shimmer{ 0%{background-position:100% 0;} 100%{background-position:0 0;} }
+  .view{ display:none; }
+  .view.active{ display:block; }
+  .spinner-dark{ border-radius:50%; border:2.5px solid var(--border-hairline,#E5E1DA); border-top-color:#1F365C; animation:spin 0.7s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .banner{ display:none; }
+  .banner.show{ display:flex; }
+  .field-display{ display:block; }
+  .field-input{ display:none; }
+  body.editing .field-display{ display:none; }
+  body.editing .field-input{ display:block; }
+  body.editing .field-input.inline{ display:inline-flex; }
+  .field-error{ display:none; font-size:11.5px; font-weight:600; color:#B3271E; margin-top:0.3rem; }
+  .field-error.show{ display:block; }
+  .invalid-input{ border-color:#B3271E !important; }
+  .locked-note{ display:none; }
+  body.editing .locked-note{ display:flex; }
+</style>
+</head>
+<body class="font-body text-text-primary">
+
+<!-- Demo-only state switcher -->
+<div class="bg-primary-container text-white text-[12px] flex items-center justify-center gap-2 py-2 px-4 flex-wrap sticky top-0 z-50">
+  <span class="text-white/50 mr-1">Preview state:</span>
+  <button onclick="setView('loading')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Loading</button>
+  <button onclick="setView('loaded')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Loaded</button>
+  <button onclick="setView('stale')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Expired/Stale</button>
+  <button onclick="setView('notfound')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Not Found</button>
+  <button onclick="setView('error')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Error</button>
+</div>
+
+<header class="sticky top-[37px] z-40 bg-canvas-cream/90 backdrop-blur border-b border-border-hairline/70">
+  <div class="max-w-[900px] mx-auto px-5 h-14 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <button class="w-9 h-9 rounded-full border border-border-hairline flex items-center justify-center hover:bg-white transition-colors" onclick="window.location.href='admin-job-management.html'">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+      </button>
+      <div class="text-[13px] text-text-muted">
+        <span class="font-semibold text-primary">SkillMatch Admin</span>
+        <span class="mx-1">/</span>
+        <a href="admin-job-management.html" class="hover:text-primary">Jobs</a>
+        <span class="mx-1">/</span>
+        <span class="text-text-primary font-semibold">Job Details</span>
+      </div>
+    </div>
+    <span class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-primary/10 text-primary">
+      <span class="material-symbols-outlined text-[13px]">shield_person</span> Super Admin
+    </span>
+  </div>
+</header>
+
+<main class="max-w-[900px] mx-auto px-5 py-8">
+
+  <!-- ============ LOADING ============ -->
+  <div class="view" id="view-loading">
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <div class="flex items-start gap-4">
+        <div class="w-16 h-16 rounded-2xl skeleton flex-shrink-0"></div>
+        <div class="flex-1">
+          <div class="h-5 w-56 rounded-lg skeleton mb-3"></div>
+          <div class="h-3 w-36 rounded-lg skeleton mb-2"></div>
+          <div class="h-3 w-28 rounded-lg skeleton"></div>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 shadow-sm">
+      <div class="h-4 w-32 rounded-lg skeleton mb-5"></div>
+      <div class="space-y-3">
+        <div class="h-3 w-full rounded-lg skeleton"></div>
+        <div class="h-3 w-full rounded-lg skeleton"></div>
+        <div class="h-3 w-3/4 rounded-lg skeleton"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ NOT FOUND ============ -->
+  <div class="view" id="view-notfound">
+    <div class="bg-white border border-border-hairline rounded-3xl py-20 px-6 text-center shadow-sm">
+      <div class="w-16 h-16 rounded-2xl bg-canvas-cream border border-border-hairline flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-text-muted text-[28px]">search_off</span>
+      </div>
+      <h2 class="font-display font-bold text-[20px] mb-2">Job not found</h2>
+      <p class="text-[13.5px] text-text-muted max-w-sm mx-auto mb-7">This job may have been deleted, or the link you followed is no longer valid.</p>
+      <a href="admin-job-management.html" class="bg-primary text-white text-[13px] font-semibold px-6 h-11 rounded-full inline-flex items-center gap-2 shadow-sm">Return to Jobs</a>
+    </div>
+  </div>
+
+  <!-- ============ ERROR ============ -->
+  <div class="view" id="view-error">
+    <div class="bg-white border border-border-hairline rounded-3xl py-20 px-6 text-center shadow-sm">
+      <div class="w-16 h-16 rounded-2xl bg-status-red/10 flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-status-red text-[28px]">error_outline</span>
+      </div>
+      <h2 class="font-display font-bold text-[20px] mb-2">Couldn't load this job</h2>
+      <p class="text-[13.5px] text-text-muted max-w-sm mx-auto mb-7">Something went wrong on our end. Please try again.</p>
+      <button onclick="setView('loaded')" class="bg-primary text-white text-[13px] font-semibold px-6 h-11 rounded-full inline-flex items-center gap-2 shadow-sm">
+        <span class="material-symbols-outlined text-[16px]">refresh</span> Retry
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ LOADED (shared: Loaded / Stale / Editing / Saving / Validation Error / Success) ============ -->
+  <div class="view" id="view-loaded">
+
+    <!-- Stale/Expired banner -->
+    <div class="banner mb-5 rounded-2xl px-5 py-4 items-start gap-3 shadow-sm border bg-match-amber/10 border-match-amber/25 text-match-amber" id="stale-banner">
+      <span class="material-symbols-outlined text-[20px] flex-shrink-0 mt-0.5">schedule</span>
+      <div class="flex-1">
+        <div class="text-[13.5px] font-bold">This listing is stale — last published 45 days ago</div>
+        <div class="text-[12.5px] mt-0.5 opacity-85">Consider updating its status or reaching out to the source before candidates keep seeing it.</div>
+      </div>
+    </div>
+
+    <!-- Success banner (never hides the record — just confirms alongside it) -->
+    <div class="banner mb-5 rounded-2xl px-5 py-4 items-center gap-3 shadow-sm border bg-match-forest/10 border-match-forest/25 text-match-forest" id="success-banner">
+      <span class="material-symbols-outlined text-[20px] flex-shrink-0">check_circle</span>
+      <div class="flex-1 text-[13.5px] font-semibold">Changes saved successfully.</div>
+      <button onclick="document.getElementById('success-banner').classList.remove('show')" class="text-[12px] font-semibold opacity-70 hover:opacity-100">Dismiss</button>
+    </div>
+
+    <!-- Validation error banner -->
+    <div class="banner mb-5 rounded-2xl px-5 py-4 items-start gap-3 shadow-sm border bg-status-red/10 border-status-red/25 text-status-red" id="validation-banner">
+      <span class="material-symbols-outlined text-[20px] flex-shrink-0 mt-0.5">error_outline</span>
+      <div class="flex-1 text-[13.5px] font-semibold">Please fix the highlighted fields before saving.</div>
+    </div>
+
+    <!-- Job Header -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center flex-shrink-0 shadow-sm">
+          <span class="font-display font-extrabold text-[22px] text-white">V</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="field-display">
+            <h1 class="font-display font-extrabold text-[21px] leading-tight mb-1">Senior Frontend Engineer</h1>
+          </div>
+          <input type="text" class="field-input w-full border border-border-hairline rounded-xl h-11 px-3 text-[16px] font-display font-bold outline-none focus:border-primary mb-1" id="input-title" value="Senior Frontend Engineer">
+          <p class="field-error" id="error-title">Job title is required.</p>
+
+          <button onclick="alert('Opening Vercel company profile…')" class="text-[13px] text-text-secondary hover:text-primary flex items-center gap-1 mt-1">Vercel <span class="material-symbols-outlined text-[13px]">open_in_new</span></button>
+
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-text-muted mt-2">
+            <span class="flex items-center gap-1 field-display"><span class="material-symbols-outlined text-[14px]">place</span> Remote</span>
+            <select class="field-input inline text-[12px] border border-border-hairline rounded-lg h-8 px-2" id="input-location"><option>Remote</option><option>Hybrid</option><option>Onsite</option></select>
+
+            <span class="flex items-center gap-1 field-display"><span class="material-symbols-outlined text-[14px]">work</span> Full-time</span>
+            <select class="field-input inline text-[12px] border border-border-hairline rounded-lg h-8 px-2" id="input-type"><option>Full-time</option><option>Part-time</option><option>Contract</option><option>Internship</option></select>
+
+            <span class="flex items-center gap-1 field-display"><span class="material-symbols-outlined text-[14px]">military_tech</span> Senior level</span>
+            <select class="field-input inline text-[12px] border border-border-hairline rounded-lg h-8 px-2" id="input-level"><option>Entry level</option><option>Mid level</option><option selected>Senior level</option><option>Lead / Principal</option></select>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-end gap-2 flex-shrink-0">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-match-forest/10 text-match-forest">
+            <span class="w-1.5 h-1.5 rounded-full bg-match-forest"></span> Active
+          </span>
+        </div>
+      </div>
+
+      <!-- Publication date + Freshness — preserved, never editable -->
+      <div class="mt-4 pt-4 border-t border-border-hairline flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-canvas-cream text-text-secondary border border-border-hairline">
+          <span class="material-symbols-outlined text-[13px]">event</span> Published Sep 15, 2026
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-match-forest/10 text-match-forest">
+          ● Fresh · 3h ago
+        </span>
+        <span class="locked-note items-center gap-1 text-[11px] text-text-muted ml-1">
+          <span class="material-symbols-outlined text-[13px]">lock</span> Preserved from source — not editable
+        </span>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-wrap gap-2 mt-5 pt-5 border-t border-border-hairline" id="view-actions">
+        <button onclick="enterEdit()" class="h-10 px-4 rounded-full bg-primary text-white text-[12.5px] font-semibold flex items-center gap-1.5 shadow-sm hover:bg-primary-container transition-colors">
+          <span class="material-symbols-outlined text-[16px]">edit</span> Edit Job
+        </button>
+        <button onclick="alert('Opening Vercel company profile…')" class="h-10 px-4 rounded-full border border-border-hairline text-[12.5px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream transition-colors">
+          <span class="material-symbols-outlined text-[16px]">apartment</span> View Company
+        </button>
+        <button onclick="alert('Update Status: change Active / Draft / Closed…')" class="h-10 px-4 rounded-full border border-border-hairline text-[12.5px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream transition-colors">
+          <span class="material-symbols-outlined text-[16px]">update</span> Update Status
+        </button>
+        <a href="#" class="h-10 px-4 rounded-full border border-border-hairline text-[12.5px] font-semibold flex items-center gap-1.5 hover:bg-canvas-cream transition-colors">
+          <span class="material-symbols-outlined text-[16px]">link</span> Open Source
+        </a>
+        <a href="admin-job-management.html" class="h-10 px-4 rounded-full text-[12.5px] font-semibold text-text-secondary hover:text-primary transition-colors flex items-center gap-1.5 ml-auto">
+          <span class="material-symbols-outlined text-[16px]">arrow_back</span> Return to Jobs
+        </a>
+      </div>
+
+      <!-- Edit-mode actions -->
+      <div class="hidden flex-wrap gap-2 mt-5 pt-5 border-t border-border-hairline items-center" id="edit-actions">
+        <button onclick="saveChanges()" id="save-btn" class="h-10 px-5 rounded-full bg-primary text-white text-[12.5px] font-semibold flex items-center gap-1.5 shadow-sm hover:bg-primary-container transition-colors">
+          <span class="material-symbols-outlined text-[16px]">save</span> Save Changes
+        </button>
+        <button onclick="exitEdit()" class="h-10 px-4 rounded-full border border-border-hairline text-[12.5px] font-semibold hover:bg-canvas-cream transition-colors">Cancel</button>
+        <div class="hidden items-center gap-2 text-[13px] font-medium text-text-secondary" id="saving-indicator">
+          <div class="w-4 h-4 spinner-dark"></div> Saving changes…
+        </div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <h2 class="font-display font-bold text-[15px] mb-3">Description</h2>
+      <p class="field-display text-[13px] text-text-secondary leading-relaxed">We're looking for a Senior Frontend Engineer to help scale our design system and developer platform. You'll work closely with product and design to ship features used by millions of developers worldwide.</p>
+      <textarea class="field-input w-full border border-border-hairline rounded-xl p-3 text-[13px] outline-none focus:border-primary resize-none" rows="4" id="input-description">We're looking for a Senior Frontend Engineer to help scale our design system and developer platform. You'll work closely with product and design to ship features used by millions of developers worldwide.</textarea>
+    </div>
+
+    <!-- Responsibilities -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <h2 class="font-display font-bold text-[15px] mb-3">Responsibilities</h2>
+      <ul class="field-display space-y-1.5">
+        <li class="flex items-start gap-2 text-[13px] text-text-secondary"><span class="material-symbols-outlined text-primary text-[15px] mt-0.5">chevron_right</span> Build and maintain core UI components used across the platform</li>
+        <li class="flex items-start gap-2 text-[13px] text-text-secondary"><span class="material-symbols-outlined text-primary text-[15px] mt-0.5">chevron_right</span> Partner with design on the next version of the design system</li>
+        <li class="flex items-start gap-2 text-[13px] text-text-secondary"><span class="material-symbols-outlined text-primary text-[15px] mt-0.5">chevron_right</span> Mentor junior engineers and review pull requests</li>
+      </ul>
+      <textarea class="field-input w-full border border-border-hairline rounded-xl p-3 text-[13px] outline-none focus:border-primary resize-none" rows="4" id="input-responsibilities">Build and maintain core UI components used across the platform
+Partner with design on the next version of the design system
+Mentor junior engineers and review pull requests</textarea>
+      <p class="locked-note text-[11px] text-text-muted mt-1.5">One item per line.</p>
+    </div>
+
+    <!-- Required Skills -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <h2 class="font-display font-bold text-[15px] mb-3">Required skills</h2>
+      <div class="field-display flex flex-wrap gap-2">
+        <span class="px-2.5 py-1 rounded-full text-[12px] font-medium bg-primary/10 text-primary">React</span>
+        <span class="px-2.5 py-1 rounded-full text-[12px] font-medium bg-primary/10 text-primary">TypeScript</span>
+        <span class="px-2.5 py-1 rounded-full text-[12px] font-medium bg-primary/10 text-primary">Next.js</span>
+      </div>
+      <input type="text" class="field-input w-full border border-border-hairline rounded-xl h-11 px-3 text-[13px] outline-none focus:border-primary" id="input-required-skills" value="React, TypeScript, Next.js">
+      <p class="locked-note text-[11px] text-text-muted mt-1.5">Comma-separated.</p>
+    </div>
+
+    <!-- Preferred Skills -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <h2 class="font-display font-bold text-[15px] mb-3">Preferred skills</h2>
+      <div class="field-display flex flex-wrap gap-2">
+        <span class="px-2.5 py-1 rounded-full text-[12px] font-medium border border-border-hairline text-text-secondary">System Design</span>
+        <span class="px-2.5 py-1 rounded-full text-[12px] font-medium border border-border-hairline text-text-secondary">GraphQL</span>
+      </div>
+      <input type="text" class="field-input w-full border border-border-hairline rounded-xl h-11 px-3 text-[13px] outline-none focus:border-primary" id="input-preferred-skills" value="System Design, GraphQL">
+      <p class="locked-note text-[11px] text-text-muted mt-1.5">Comma-separated.</p>
+    </div>
+
+    <!-- Source & Application Method — preserved -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <div class="flex items-center gap-2 mb-4">
+        <h2 class="font-display font-bold text-[15px]">Source &amp; application method</h2>
+        <span class="material-symbols-outlined text-text-muted text-[15px]" title="Preserved — not editable">lock</span>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-3 text-[13px]">
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Source</span><span class="font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[12px]">Internal</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Application method</span><span class="font-medium">Internal — via SkillMatch form</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Posted by</span><span class="font-medium">Vercel (verified company)</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Original listing</span><a href="#" class="font-medium text-primary flex items-center gap-1">Open Source <span class="material-symbols-outlined text-[13px]">open_in_new</span></a></div>
+      </div>
+    </div>
+
+    <!-- Job Status -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 shadow-sm">
+      <h2 class="font-display font-bold text-[15px] mb-4">Job status</h2>
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-match-forest/10 text-match-forest">
+            <span class="w-1.5 h-1.5 rounded-full bg-match-forest"></span> Active
+          </span>
+          <p class="text-[12px] text-text-muted mt-2">Visible to candidates in search and recommendations.</p>
+        </div>
+        <button onclick="alert('Update Status: change Active / Draft / Closed…')" class="h-9 px-3.5 rounded-full border border-border-hairline text-[12px] font-semibold hover:bg-canvas-cream transition-colors">Update Status</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  function setView(name){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+    if(name === 'loading' || name === 'notfound' || name === 'error'){
+      document.getElementById('view-' + name).classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+      return;
+    }
+
+    document.getElementById('view-loaded').classList.add('active');
+    document.getElementById('stale-banner').classList.toggle('show', name === 'stale');
+    document.getElementById('success-banner').classList.remove('show');
+    document.getElementById('validation-banner').classList.remove('show');
+    exitEdit();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function enterEdit(){
+    document.body.classList.add('editing');
+    document.getElementById('view-actions').classList.add('hidden');
+    document.getElementById('edit-actions').classList.remove('hidden');
+    document.getElementById('edit-actions').classList.add('flex');
+    document.getElementById('success-banner').classList.remove('show');
+    document.getElementById('validation-banner').classList.remove('show');
+  }
+
+  function exitEdit(){
+    document.body.classList.remove('editing');
+    document.getElementById('view-actions').classList.remove('hidden');
+    document.getElementById('edit-actions').classList.add('hidden');
+    document.getElementById('edit-actions').classList.remove('flex');
+    document.getElementById('saving-indicator').classList.add('hidden');
+    document.getElementById('saving-indicator').classList.remove('flex');
+    document.getElementById('save-btn').disabled = false;
+    document.getElementById('input-title').classList.remove('invalid-input');
+    document.getElementById('error-title').classList.remove('show');
+  }
+
+  function saveChanges(){
+    const titleInput = document.getElementById('input-title');
+    document.getElementById('validation-banner').classList.remove('show');
+    titleInput.classList.remove('invalid-input');
+    document.getElementById('error-title').classList.remove('show');
+
+    if(!titleInput.value.trim()){
+      titleInput.classList.add('invalid-input');
+      document.getElementById('error-title').classList.add('show');
+      document.getElementById('validation-banner').classList.add('show');
+      window.scrollTo({top:0, behavior:'smooth'});
+      return;
+    }
+
+    // Saving state
+    document.getElementById('save-btn').disabled = true;
+    document.getElementById('saving-indicator').classList.remove('hidden');
+    document.getElementById('saving-indicator').classList.add('flex');
+
+    setTimeout(() => {
+      // Reflect edited title back into the display heading
+      document.querySelector('#view-loaded h1').textContent = titleInput.value.trim();
+      exitEdit();
+      document.getElementById('success-banner').classList.add('show');
+      window.scrollTo({top:0, behavior:'smooth'});
+    }, 1300);
+  }
+</script>
+
+</body>
+</html>

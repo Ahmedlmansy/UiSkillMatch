@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MatchIn — Audit Logs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-primary: #1f365c;
+      --color-secondary: #d06b4f;
+      --color-accent: #d4a72c;
+      --color-background: #faf8f4;
+      --color-surface: #ffffff;
+      --color-ink: #222831;
+      --color-muted: #707780;
+      --color-border: #e5e1da;
+      --color-success: #4f7a5a;
+      --color-warning: #c88a26;
+      --color-error: #b85450;
+      --color-primary-foreground: #ffffff;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-card: 0 2px 8px rgba(0,0,0,0.03);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--color-background);
+      color: var(--color-ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 32px 28px 64px;
+      min-height: 100vh;
+    }
+
+    .page { max-width: 1280px; margin: 0 auto; }
+
+    /* ========== Header ========== */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    .page-header p {
+      font-size: 14px;
+      color: var(--color-muted);
+      margin-top: 4px;
+    }
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--color-muted);
+      margin-top: 6px;
+    }
+    .header-meta .dot {
+      width: 3px; height: 3px; border-radius: 50%; background: var(--color-border);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      padding: 0 16px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+      background: var(--color-surface);
+      color: var(--color-ink);
+      border: 1px solid var(--color-border);
+    }
+    .btn:hover { background: #f5f2ec; border-color: #d9d4cb; }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn-primary {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+    .btn-primary:hover { background: #182a4a; border-color: #182a4a; }
+    .btn-sm {
+      height: 34px;
+      padding: 0 12px;
+      font-size: 12.5px;
+      border-radius: var(--radius-sm);
+    }
+    .btn-ghost {
+      background: transparent;
+      border-color: transparent;
+      color: var(--color-muted);
+    }
+    .btn-ghost:hover {
+      background: rgba(0,0,0,0.04);
+      color: var(--color-ink);
+    }
+
+    /* ========== Toolbar: Search + Filters ========== */
+    .toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .toolbar-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-wrap {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--color-muted);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      height: 42px;
+      padding: 0 14px 0 42px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--color-ink);
+      background: var(--color-surface);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .search-input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(31,54,92,0.12);
+    }
+    .search-input::placeholder { color: var(--color-muted); }
+
+    .filter-select {
+      height: 42px;
+      padding: 0 36px 0 14px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-family: inherit;
+      font-weight: 500;
+      color: var(--color-ink);
+      background: var(--color-surface);
+      appearance: none;
+      cursor: pointer;
+      outline: none;
+      min-width: 150px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%707780' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      transition: border-color 0.15s;
+    }
+    .filter-select:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(31,54,92,0.12);
+    }
+
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 28px;
+      padding: 0 10px;
+      background: rgba(31,54,92,0.08);
+      color: var(--color-primary);
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 550;
+    }
+    .filter-chip button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      color: var(--color-primary);
+      opacity: 0.65;
+    }
+    .filter-chip button:hover { opacity: 1; }
+    .filter-chip button svg { width: 12px; height: 12px; }
+    .clear-filters {
+      font-size: 12.5px;
+      font-weight: 550;
+      color: var(--color-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+    .clear-filters:hover { color: var(--color-ink); text-decoration: underline; }
+
+    /* ========== Results meta ========== */
+    .results-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .results-count {
+      font-size: 13.5px;
+      color: var(--color-muted);
+    }
+    .results-count strong { color: var(--color-ink); font-weight: 600; }
+    .sort-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--color-muted);
+    }
+
+    /* ========== Table Card ========== */
+    .table-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 960px;
+    }
+    thead {
+      background: #f7f4ef;
+      border-bottom: 1px solid var(--color-border);
+    }
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 11.5px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-muted);
+      white-space: nowrap;
+    }
+    th.sortable {
+      cursor: pointer;
+      user-select: none;
+    }
+    th.sortable:hover { color: var(--color-ink); }
+    th .sort-icon {
+      display: inline-flex;
+      margin-left: 4px;
+      opacity: 0.45;
+      vertical-align: middle;
+    }
+    th.sorted .sort-icon { opacity: 1; color: var(--color-primary); }
+
+    td {
+      padding: 14px 16px;
+      font-size: 13.5px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tbody tr {
+      transition: background 0.12s;
+      cursor: pointer;
+    }
+    tbody tr:hover { background: #faf9f6; }
+
+    /* Actor cell */
+    .actor-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .actor-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 650;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .actor-avatar.sara { background: var(--color-primary); }
+    .actor-avatar.omar { background: var(--color-secondary); }
+    .actor-avatar.system { background: var(--color-muted); }
+    .actor-name { font-weight: 550; color: var(--color-ink); }
+    .actor-role { font-size: 12px; color: var(--color-muted); }
+
+    /* Action badge */
+    .action-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .action-badge svg { width: 13px; height: 13px; }
+    .badge-verified { background: rgba(79,122,90,0.12); color: var(--color-success); }
+    .badge-updated { background: rgba(31,54,92,0.1); color: var(--color-primary); }
+    .badge-rejected { background: rgba(184,84,80,0.12); color: var(--color-error); }
+    .badge-created { background: rgba(212,167,44,0.14); color: #a07e1a; }
+    .badge-status { background: rgba(208,107,79,0.12); color: var(--color-secondary); }
+    .badge-login { background: rgba(112,119,128,0.12); color: var(--color-muted); }
+
+    .entity-type {
+      font-size: 12.5px;
+      font-weight: 550;
+      color: var(--color-ink);
+    }
+    .entity-id {
+      font-size: 12px;
+      color: var(--color-muted);
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    }
+
+    .timestamp {
+      font-size: 13px;
+      color: var(--color-ink);
+      white-space: nowrap;
+    }
+    .timestamp-rel {
+      font-size: 12px;
+      color: var(--color-muted);
+    }
+
+    .value-cell {
+      max-width: 160px;
+    }
+    .value-prev, .value-new {
+      font-size: 12.5px;
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .value-prev { color: var(--color-muted); text-decoration: line-through; opacity: 0.85; }
+    .value-new { color: var(--color-success); font-weight: 550; }
+    .value-empty { color: var(--color-muted); font-style: italic; font-size: 12.5px; }
+
+    .ip-meta {
+      font-size: 12px;
+      color: var(--color-muted);
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    }
+
+    .row-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--color-muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all 0.12s;
+    }
+    .icon-btn:hover {
+      background: rgba(31,54,92,0.08);
+      color: var(--color-primary);
+    }
+    .icon-btn svg { width: 16px; height: 16px; }
+
+    /* ========== Pagination ========== */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-top: 1px solid var(--color-border);
+      flex-wrap: wrap;
+    }
+    .pagination-info {
+      font-size: 13px;
+      color: var(--color-muted);
+    }
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .page-btn {
+      min-width: 34px;
+      height: 34px;
+      padding: 0 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      font-size: 13px;
+      font-weight: 550;
+      color: var(--color-ink);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.12s;
+    }
+    .page-btn:hover:not(:disabled):not(.active) {
+      background: #f5f2ec;
+    }
+    .page-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+    .page-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ========== Empty / No Results / Error states ========== */
+    .state-box {
+      padding: 56px 24px;
+      text-align: center;
+    }
+    .state-box .state-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(112,119,128,0.1);
+      color: var(--color-muted);
+    }
+    .state-box .state-icon svg { width: 24px; height: 24px; }
+    .state-box .state-icon.error {
+      background: rgba(184,84,80,0.1);
+      color: var(--color-error);
+    }
+    .state-box h3 {
+      font-size: 16px;
+      font-weight: 650;
+      margin-bottom: 6px;
+    }
+    .state-box p {
+      font-size: 14px;
+      color: var(--color-muted);
+      max-width: 360px;
+      margin: 0 auto 18px;
+    }
+
+    /* ========== Detail Drawer (static preview) ========== */
+    .detail-panel {
+      margin-top: 20px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .detail-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--color-border);
+      background: #f7f4ef;
+    }
+    .detail-panel-header h2 {
+      font-size: 14.5px;
+      font-weight: 650;
+    }
+    .detail-panel-body {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 32px;
+    }
+    @media (max-width: 700px) {
+      .detail-panel-body { grid-template-columns: 1fr; }
+    }
+    .detail-field label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-muted);
+      margin-bottom: 4px;
+    }
+    .detail-field .value {
+      font-size: 14px;
+      color: var(--color-ink);
+      font-weight: 500;
+    }
+    .detail-field .value.mono {
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+    }
+    .detail-field.full { grid-column: 1 / -1; }
+    .diff-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .diff-side {
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      line-height: 1.45;
+    }
+    .diff-prev {
+      background: rgba(184,84,80,0.06);
+      border: 1px solid rgba(184,84,80,0.15);
+      color: var(--color-error);
+    }
+    .diff-new {
+      background: rgba(79,122,90,0.06);
+      border: 1px solid rgba(79,122,90,0.18);
+      color: var(--color-success);
+    }
+    .diff-label {
+      font-size: 11px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 4px;
+      opacity: 0.8;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .read-only-note {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-top: 1px solid var(--color-border);
+      font-size: 12.5px;
+      color: var(--color-muted);
+      background: #faf9f6;
+    }
+    .read-only-note svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ========== PAGE HEADER ========== -->
+    <div class="page-header">
+      <div>
+        <h1>Audit Logs</h1>
+        <p>Complete record of administrative actions across the platform</p>
+        <div class="header-meta">
+          <span>Read-only</span>
+          <span class="dot"></span>
+          <span>Last synced · just now</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+          Export
+        </button>
+        <button class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182"/></svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== SEARCH + FILTERS ========== -->
+    <div class="toolbar">
+      <div class="toolbar-row">
+        <div class="search-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+          <input class="search-input" type="search" placeholder="Search by actor, action, entity ID, or IP…" value="" />
+        </div>
+        <select class="filter-select" aria-label="Action">
+          <option value="">All Actions</option>
+          <option>Company Verified</option>
+          <option>Company Updated</option>
+          <option>Company Rejected</option>
+          <option>Job Created</option>
+          <option>Job Updated</option>
+          <option>Job Status Changed</option>
+          <option>Admin Login</option>
+        </select>
+        <select class="filter-select" aria-label="Entity Type">
+          <option value="">All Entities</option>
+          <option>Company</option>
+          <option>Job</option>
+          <option>User</option>
+          <option>Admin</option>
+        </select>
+        <select class="filter-select" aria-label="Actor">
+          <option value="">All Actors</option>
+          <option>Sara Ahmed</option>
+          <option>Omar Hassan</option>
+          <option>System</option>
+        </select>
+        <select class="filter-select" aria-label="Date range">
+          <option value="">Any time</option>
+          <option>Today</option>
+          <option>Last 7 days</option>
+          <option>Last 30 days</option>
+          <option>Custom range</option>
+        </select>
+      </div>
+      <div class="active-filters">
+        <span class="filter-chip">
+          Action: Job Status Changed
+          <button type="button" aria-label="Remove filter">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+          </button>
+        </span>
+        <span class="filter-chip">
+          Last 7 days
+          <button type="button" aria-label="Remove filter">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+          </button>
+        </span>
+        <button class="clear-filters" type="button">Clear all</button>
+      </div>
+    </div>
+
+    <!-- ========== RESULTS BAR ========== -->
+    <div class="results-bar">
+      <div class="results-count">
+        Showing <strong>1–10</strong> of <strong>248</strong> logs
+      </div>
+      <div class="sort-wrap">
+        <span>Sort by</span>
+        <select class="filter-select" style="height:34px;min-width:140px;font-size:13px;">
+          <option selected>Newest first</option>
+          <option>Oldest first</option>
+          <option>Actor A–Z</option>
+          <option>Action type</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ========== AUDIT LOG TABLE ========== -->
+    <div class="table-card">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable sorted">
+                Timestamp
+                <span class="sort-icon">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m18 15-6-6-6 6"/></svg>
+                </span>
+              </th>
+              <th>Actor</th>
+              <th>Action</th>
+              <th>Entity</th>
+              <th>Previous</th>
+              <th>New</th>
+              <th>IP / Meta</th>
+              <th style="width:48px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- Row 1 -->
+            <tr>
+              <td>
+                <div class="timestamp">Sep 22, 2026 · 14:42</div>
+                <div class="timestamp-rel">2 min ago</div>
+              </td>
+              <td>
+                <div class="actor-cell">
+                  <div class="actor-avatar sara">SA</div>
+                  <div>
+                    <div class="actor-name">Sara Ahmed</div>
+                    <div class="actor-role">Super Admin</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="action-badge badge-verified">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                  Company Verified
+                </span>
+              </td>
+              <td>
+                <div class="entity-type">Company</div>
+                <div class="entity-id">CMP-1042</div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <div class="value-prev">pending</div>
+                </div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <div class="value-new">verified</div>
+                </div>
+              </td>
+              <td>
+                <div class="ip-meta">185.23.41.12</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View details" aria-label="View log details">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 2 -->
+            <tr>
+              <td>
+                <div class="timestamp">Sep 22, 2026 · 14:18</div>
+                <div class="timestamp-rel">26 min ago</div>
+              </td>
+              <td>
+                <div class="actor-cell">
+                  <div class="actor-avatar omar">OH</div>
+                  <div>
+                    <div class="actor-name">Omar Hassan</div>
+                    <div class="actor-role">Super Admin</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="action-badge badge-status">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182"/></svg>
+                  Job Status Changed
+                </span>
+              </td>
+              <td>
+                <div class="entity-type">Job</div>
+                <div class="entity-id">JOB-2841</div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <div class="value-prev">open</div>
+                </div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <div class="value-new">suspended</div>
+                </div>
+              </td>
+              <td>
+                <div class="ip-meta">41.68.102.9</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View details">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 3 -->
+            <tr>
+              <td>
+                <div class="timestamp">Sep 22, 2026 · 13:55</div>
+                <div class="timestamp-rel">49 min ago</div>
+              </td>
+              <td>
+                <div class="actor-cell">
+                  <div class="actor-avatar sara">SA</div>
+                  <div>
+                    <div class="actor-name">Sara Ahmed</div>
+                    <div class="actor-role">Super Admin</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="action-badge badge-updated">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+                  Job Updated
+                </span>
+              </td>
+              <td>
+                <div class="entity-type">Job</div>
+                <div class="entity-id">JOB-2790</div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <div class="value-prev">title: "FE Dev"</div>
+                </div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <div class="value-new">title: "Senior FE"</div>
+                </div>
+              </td>
+              <td>
+                <div class="ip-meta">185.23.41.12</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View details">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 4 -->
+            <tr>
+              <td>
+                <div class="timestamp">Sep 22, 2026 · 12:30</div>
+                <div class="timestamp-rel">2 hr ago</div>
+              </td>
+              <td>
+                <div class="actor-cell">
+                  <div class="actor-avatar omar">OH</div>
+                  <div>
+                    <div class="actor-name">Omar Hassan</div>
+                    <div class="actor-role">Super Admin</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="action-badge badge-rejected">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                  Company Rejected
+                </span>
+              </td>
+              <td>
+                <div class="entity-type">Company</div>
+                <div class="entity-id">CMP-1098</div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <div class="value-prev">pending</div>
+                </div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <div class="value-new">rejected</div>
+                </div>
+              </td>
+              <td>
+                <div class="ip-meta">41.68.102.9</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View details">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 5 -->
+            <tr>
+              <td>
+                <div class="timestamp">Sep 22, 2026 · 11:05</div>
+                <div class="timestamp-rel">3 hr ago</div>
+              </td>
+              <td>
+                <div class="actor-cell">
+                  <div class="actor-avatar system">SY</div>
+                  <div>
+                    <div class="actor-name">System</div>
+                    <div class="actor-role">Automated</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="action-badge badge-created">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                  Job Created
+                </span>
+              </td>
+              <td>
+                <div class="entity-type">Job</div>
+                <div class="entity-id">JOB-2855</div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <span class="value-empty">—</span>
+                </div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <div class="value-new">draft</div>
+                </div>
+              </td>
+              <td>
+                <div class="ip-meta">—</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View details">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 6 -->
+            <tr>
+              <td>
+                <div class="timestamp">Sep 22, 2026 · 09:12</div>
+                <div class="timestamp-rel">5 hr ago</div>
+              </td>
+              <td>
+                <div class="actor-cell">
+                  <div class="actor-avatar sara">SA</div>
+                  <div>
+                    <div class="actor-name">Sara Ahmed</div>
+                    <div class="actor-role">Super Admin</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="action-badge badge-login">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/></svg>
+                  Admin Login
+                </span>
+              </td>
+              <td>
+                <div class="entity-type">Admin</div>
+                <div class="entity-id">ADM-001</div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <span class="value-empty">—</span>
+                </div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <span class="value-empty">—</span>
+                </div>
+              </td>
+              <td>
+                <div class="ip-meta">185.23.41.12 · Cairo</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View details">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 7 -->
+            <tr>
+              <td>
+                <div class="timestamp">Sep 21, 2026 · 18:40</div>
+                <div class="timestamp-rel">Yesterday</div>
+              </td>
+              <td>
+                <div class="actor-cell">
+                  <div class="actor-avatar omar">OH</div>
+                  <div>
+                    <div class="actor-name">Omar Hassan</div>
+                    <div class="actor-role">Super Admin</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="action-badge badge-updated">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+                  Company Updated
+                </span>
+              </td>
+              <td>
+                <div class="entity-type">Company</div>
+                <div class="entity-id">CMP-0881</div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <div class="value-prev">name: "Nexus"</div>
+                </div>
+              </td>
+              <td>
+                <div class="value-cell">
+                  <div class="value-new">name: "Nexus Labs"</div>
+                </div>
+              </td>
+              <td>
+                <div class="ip-meta">41.68.102.9</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View details">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <div class="pagination-info">Page 1 of 25</div>
+        <div class="pagination-controls">
+          <button class="page-btn" disabled aria-label="Previous">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn" style="pointer-events:none;border:none;background:transparent;">…</button>
+          <button class="page-btn">25</button>
+          <button class="page-btn" aria-label="Next">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== LOG DETAIL PANEL (example of "View Log Details") ========== -->
+    <div class="detail-panel">
+      <div class="detail-panel-header">
+        <h2>Log Details · #AL-94821</h2>
+        <button class="btn btn-sm btn-ghost" type="button">Close</button>
+      </div>
+      <div class="detail-panel-body">
+        <div class="detail-field">
+          <label>Timestamp</label>
+          <div class="value">Sep 22, 2026 · 14:18:07 EEST</div>
+        </div>
+        <div class="detail-field">
+          <label>Actor</label>
+          <div class="value">Omar Hassan (Super Admin)</div>
+        </div>
+        <div class="detail-field">
+          <label>Action</label>
+          <div class="value">
+            <span class="action-badge badge-status" style="margin-top:2px;">Job Status Changed</span>
+          </div>
+        </div>
+        <div class="detail-field">
+          <label>Entity</label>
+          <div class="value">Job · <span class="mono">JOB-2841</span></div>
+        </div>
+        <div class="detail-field">
+          <label>IP Address</label>
+          <div class="value mono">41.68.102.9</div>
+        </div>
+        <div class="detail-field">
+          <label>User Agent / Meta</label>
+          <div class="value" style="font-size:13px;color:var(--color-muted);">Chrome 128 · macOS · Cairo</div>
+        </div>
+        <div class="detail-field full">
+          <label>Value Change</label>
+          <div class="diff-box">
+            <div class="diff-side diff-prev">
+              <div class="diff-label">Previous</div>
+              status: "open"
+            </div>
+            <div class="diff-side diff-new">
+              <div class="diff-label">New</div>
+              status: "suspended"
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="read-only-note">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+        Audit logs are immutable read-only records. They cannot be edited or deleted.
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

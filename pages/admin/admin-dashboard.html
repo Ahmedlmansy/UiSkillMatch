@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MatchIn — Admin Dashboard (Content Only)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-primary: #1f365c;
+      --color-secondary: #d06b4f;
+      --color-accent: #d4a72c;
+      --color-background: #faf8f4;
+      --color-surface: #ffffff;
+      --color-ink: #222831;
+      --color-muted: #707780;
+      --color-border: #e5e1da;
+      --color-success: #4f7a5a;
+      --color-warning: #c88a26;
+      --color-error: #b85450;
+      --color-primary-foreground: #ffffff;
+      --color-secondary-foreground: #ffffff;
+      --color-accent-foreground: #222831;
+      --color-success-foreground: #ffffff;
+      --color-warning-foreground: #ffffff;
+      --color-error-foreground: #ffffff;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-card: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--color-background);
+      color: var(--color-ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 32px 28px 48px;
+      min-height: 100vh;
+    }
+
+    /* ========== Page Container ========== */
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    /* ========== Page Header (title only) ========== */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--color-ink);
+    }
+    .page-header p {
+      font-size: 14px;
+      color: var(--color-muted);
+      margin-top: 4px;
+    }
+    .page-header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* ========== Buttons ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      padding: 0 16px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn-primary {
+      background: var(--color-primary);
+      color: var(--color-primary-foreground);
+    }
+    .btn-primary:hover { background: #182a4a; }
+    .btn-secondary {
+      background: var(--color-surface);
+      color: var(--color-ink);
+      border: 1px solid var(--color-border);
+    }
+    .btn-secondary:hover {
+      background: #f5f2ec;
+      border-color: #d9d4cb;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--color-muted);
+      padding: 0 12px;
+      height: 36px;
+    }
+    .btn-ghost:hover { color: var(--color-ink); background: rgba(0,0,0,0.04); }
+    .btn-sm {
+      height: 34px;
+      padding: 0 12px;
+      font-size: 12.5px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ========== Stats Grid ========== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 1100px) {
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 700px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 440px) {
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+
+    .stat-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 20px 18px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .stat-card:hover {
+      border-color: rgba(31, 54, 92, 0.25);
+      box-shadow: var(--shadow-md);
+    }
+    .stat-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+    }
+    .stat-icon svg { width: 20px; height: 20px; }
+    .stat-icon.blue { background: rgba(31,54,92,0.1); color: var(--color-primary); }
+    .stat-icon.orange { background: rgba(208,107,79,0.12); color: var(--color-secondary); }
+    .stat-icon.gold { background: rgba(212,167,44,0.14); color: var(--color-accent); }
+    .stat-icon.green { background: rgba(79,122,90,0.12); color: var(--color-success); }
+    .stat-icon.slate { background: rgba(112,119,128,0.12); color: var(--color-muted); }
+
+    .stat-trend {
+      font-size: 11.5px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px 7px;
+      border-radius: 999px;
+    }
+    .stat-trend.up { background: rgba(79,122,90,0.12); color: var(--color-success); }
+    .stat-trend.down { background: rgba(184,84,80,0.12); color: var(--color-error); }
+    .stat-trend.neutral { background: rgba(112,119,128,0.1); color: var(--color-muted); }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--color-ink);
+      line-height: 1.1;
+    }
+    .stat-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-muted);
+    }
+    .stat-sub {
+      font-size: 12px;
+      color: var(--color-muted);
+      margin-top: 2px;
+    }
+
+    /* ========== Section ========== */
+    .section {
+      margin-bottom: 28px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .section-header h2 {
+      font-size: 16px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      color: var(--color-ink);
+    }
+    .section-header .view-all {
+      font-size: 13px;
+      font-weight: 550;
+      color: var(--color-primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .section-header .view-all:hover { text-decoration: underline; }
+
+    /* ========== Cards Grid (2 columns) ========== */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .card-body {
+      padding: 4px 0;
+    }
+
+    /* ========== Activity / Audit List ========== */
+    .list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--color-border);
+      transition: background 0.12s;
+    }
+    .list-item:last-child { border-bottom: none; }
+    .list-item:hover { background: #faf9f6; }
+
+    .list-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .list-icon svg { width: 16px; height: 16px; }
+    .list-icon.blue { background: rgba(31,54,92,0.1); color: var(--color-primary); }
+    .list-icon.orange { background: rgba(208,107,79,0.12); color: var(--color-secondary); }
+    .list-icon.green { background: rgba(79,122,90,0.12); color: var(--color-success); }
+    .list-icon.gold { background: rgba(212,167,44,0.14); color: var(--color-accent); }
+    .list-icon.red { background: rgba(184,84,80,0.12); color: var(--color-error); }
+    .list-icon.slate { background: rgba(112,119,128,0.1); color: var(--color-muted); }
+
+    .list-content { flex: 1; min-width: 0; }
+    .list-title {
+      font-size: 13.5px;
+      font-weight: 550;
+      color: var(--color-ink);
+      line-height: 1.35;
+    }
+    .list-title a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .list-title a:hover { text-decoration: underline; }
+    .list-meta {
+      font-size: 12px;
+      color: var(--color-muted);
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .list-meta .dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--color-border);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    .badge-success { background: rgba(79,122,90,0.12); color: var(--color-success); }
+    .badge-warning { background: rgba(200,138,38,0.14); color: var(--color-warning); }
+    .badge-error { background: rgba(184,84,80,0.12); color: var(--color-error); }
+    .badge-primary { background: rgba(31,54,92,0.1); color: var(--color-primary); }
+    .badge-muted { background: rgba(112,119,128,0.1); color: var(--color-muted); }
+
+    /* ========== Quick Actions ========== */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 900px) {
+      .quick-actions { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .quick-actions { grid-template-columns: 1fr; }
+    }
+
+    .action-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+      box-shadow: var(--shadow-card);
+    }
+    .action-card:hover {
+      border-color: rgba(31, 54, 92, 0.3);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .action-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+    }
+    .action-icon svg { width: 22px; height: 22px; }
+    .action-icon.blue { background: rgba(31,54,92,0.1); color: var(--color-primary); }
+    .action-icon.orange { background: rgba(208,107,79,0.12); color: var(--color-secondary); }
+    .action-icon.gold { background: rgba(212,167,44,0.14); color: var(--color-accent); }
+    .action-icon.green { background: rgba(79,122,90,0.12); color: var(--color-success); }
+
+    .action-title {
+      font-size: 14.5px;
+      font-weight: 650;
+      color: var(--color-ink);
+      letter-spacing: -0.01em;
+    }
+    .action-desc {
+      font-size: 12.5px;
+      color: var(--color-muted);
+      line-height: 1.4;
+    }
+    .action-arrow {
+      margin-top: auto;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--color-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ========== Empty / Loading / Error States (demo) ========== */
+    .state-box {
+      padding: 36px 24px;
+      text-align: center;
+      color: var(--color-muted);
+    }
+    .state-box svg {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 12px;
+      opacity: 0.5;
+    }
+    .state-box p {
+      font-size: 13.5px;
+      margin-bottom: 14px;
+    }
+
+    /* Skeleton loading */
+    .skeleton {
+      background: linear-gradient(90deg, #f0ece6 25%, #e8e3db 50%, #f0ece6 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ========== Utility ========== */
+    .divider {
+      height: 1px;
+      background: var(--color-border);
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ========== PAGE HEADER ========== -->
+    <div class="page-header">
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p>Platform overview &amp; operational snapshot</p>
+      </div>
+      <div class="page-header-actions">
+        <button class="btn btn-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" /></svg>
+          Refresh
+        </button>
+        <button class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+          New Company
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== OVERVIEW STATISTICS ========== -->
+    <div class="stats-grid">
+
+      <!-- Companies -->
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon blue">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>
+          </div>
+          <span class="stat-trend up">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 15l7-7 7 7"/></svg>
+            +12%
+          </span>
+        </div>
+        <div>
+          <div class="stat-value">148</div>
+          <div class="stat-label">Companies</div>
+          <div class="stat-sub">132 active · 16 inactive</div>
+        </div>
+      </div>
+
+      <!-- Pending Companies -->
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon orange">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+          </div>
+          <span class="stat-trend neutral">Needs review</span>
+        </div>
+        <div>
+          <div class="stat-value">23</div>
+          <div class="stat-label">Pending Companies</div>
+          <div class="stat-sub">7 submitted today</div>
+        </div>
+      </div>
+
+      <!-- Jobs -->
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon gold">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.875m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
+          </div>
+          <span class="stat-trend up">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 15l7-7 7 7"/></svg>
+            +8%
+          </span>
+        </div>
+        <div>
+          <div class="stat-value">1,284</div>
+          <div class="stat-label">Jobs</div>
+          <div class="stat-sub">942 open · 342 closed</div>
+        </div>
+      </div>
+
+      <!-- Applications -->
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon green">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+          </div>
+          <span class="stat-trend up">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 15l7-7 7 7"/></svg>
+            +24%
+          </span>
+        </div>
+        <div>
+          <div class="stat-value">9,417</div>
+          <div class="stat-label">Applications</div>
+          <div class="stat-sub">312 this week</div>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon slate">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>
+          </div>
+          <span class="stat-trend up">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 15l7-7 7 7"/></svg>
+            +5%
+          </span>
+        </div>
+        <div>
+          <div class="stat-value">6,892</div>
+          <div class="stat-label">Users</div>
+          <div class="stat-sub">Candidates + Recruiters</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== QUICK ACTIONS ========== -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Quick Actions</h2>
+      </div>
+      <div class="quick-actions">
+        <a href="#" class="action-card">
+          <div class="action-icon blue">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>
+          </div>
+          <div>
+            <div class="action-title">Manage Companies</div>
+            <div class="action-desc">View, edit &amp; suspend company accounts</div>
+          </div>
+          <span class="action-arrow">
+            Open
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="#" class="action-card">
+          <div class="action-icon orange">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+          </div>
+          <div>
+            <div class="action-title">Review Pending</div>
+            <div class="action-desc">Approve or reject new company requests</div>
+          </div>
+          <span class="action-arrow">
+            Open
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="#" class="action-card">
+          <div class="action-icon gold">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.875m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
+          </div>
+          <div>
+            <div class="action-title">Manage Jobs</div>
+            <div class="action-desc">Moderate listings &amp; featured positions</div>
+          </div>
+          <span class="action-arrow">
+            Open
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="#" class="action-card">
+          <div class="action-icon green">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12H9.75m9-6h-1.5m-9 0H5.625c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+          </div>
+          <div>
+            <div class="action-title">View Audit Logs</div>
+            <div class="action-desc">Track admin actions &amp; system events</div>
+          </div>
+          <span class="action-arrow">
+            Open
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ========== RECENT ACTIVITY + AUDIT LOGS ========== -->
+    <div class="two-col">
+
+      <!-- Recent Activity -->
+      <div class="section" style="margin-bottom:0">
+        <div class="section-header">
+          <h2>Recent Activity</h2>
+          <a href="#" class="view-all">
+            View all
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="card">
+          <div class="card-body">
+
+            <div class="list-item">
+              <div class="list-icon green">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+              </div>
+              <div class="list-content">
+                <div class="list-title">
+                  Company <a href="#">Nexus Labs</a> was approved
+                </div>
+                <div class="list-meta">
+                  <span class="badge badge-success">Approved</span>
+                  <span class="dot"></span>
+                  <span>2 min ago</span>
+                  <span class="dot"></span>
+                  <span>by Admin · Sara</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="list-item">
+              <div class="list-icon gold">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.875m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
+              </div>
+              <div class="list-content">
+                <div class="list-title">
+                  New job posted: <a href="#">Senior Frontend Engineer</a>
+                </div>
+                <div class="list-meta">
+                  <span class="badge badge-primary">Job</span>
+                  <span class="dot"></span>
+                  <span>18 min ago</span>
+                  <span class="dot"></span>
+                  <span>by BrightPath Inc.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="list-item">
+              <div class="list-icon orange">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+              </div>
+              <div class="list-content">
+                <div class="list-title">
+                  Company <a href="#">CloudStack</a> submitted for review
+                </div>
+                <div class="list-meta">
+                  <span class="badge badge-warning">Pending</span>
+                  <span class="dot"></span>
+                  <span>41 min ago</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="list-item">
+              <div class="list-icon blue">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+              </div>
+              <div class="list-content">
+                <div class="list-title">
+                  New user registered: <a href="#">maya.k@matchin.io</a>
+                </div>
+                <div class="list-meta">
+                  <span class="badge badge-muted">User</span>
+                  <span class="dot"></span>
+                  <span>1 hr ago</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="list-item">
+              <div class="list-icon red">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+              </div>
+              <div class="list-content">
+                <div class="list-title">
+                  Job <a href="#">Junior Data Analyst</a> was suspended
+                </div>
+                <div class="list-meta">
+                  <span class="badge badge-error">Suspended</span>
+                  <span class="dot"></span>
+                  <span>2 hr ago</span>
+                  <span class="dot"></span>
+                  <span>by Admin · Omar</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Audit Logs -->
+      <div class="section" style="margin-bottom:0">
+        <div class="section-header">
+          <h2>Recent Audit Logs</h2>
+          <a href="#" class="view-all">
+            View all
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="card">
+          <div class="card-body">
+
+            <div class="list-item">
+              <div class="list-icon blue">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+              </div>
+              <div class="list-content">
+                <div class="list-title">
+                  Role updated for <a href="#">recruiter@brightpath.com</a>
+                </div>
+                <div class="list-meta">
+                  <span class="badge badge-primary">Permission</span>
+                  <span class="dot"></span>
+                  <span>5 min ago</span>
+                  <span class="dot"></span>
+                  <span>Admin · Sara</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="list-item">
+              <div class="list-icon green">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+              </div>
+              <div class="list-content">
+                <div class="list-title">
+                  Company status changed → <strong>Active</strong>
+                </div>
+                <div class="list-meta">
+                  <span class="badge badge-success">Status</span>
+                  <span class="dot"></span>
+                  <span>12 min ago</span>
+                  <span class="dot"></span>
+                  <span>Admin · Sara</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="list-item">
+              <div class="list-icon slate">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" /></svg>
+              </div>
+              <div class="list-content">
+                <div class="list-title">
+                  Admin login from 185.23.xx.xx
+                </div>
+                <div class="list-meta">
+                  <span class="badge badge-muted">Auth</span>
+                  <span class="dot"></span>
+                  <span>28 min ago</span>
+                  <span class="dot"></span>
+                  <span>Omar · Cairo</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="list-item">
+              <div class="list-icon red">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
+              </div>
+              <div class="list-content">
+                <div class="list-title">
+                  Job listing deleted: <a href="#">Intern Marketing</a>
+                </div>
+                <div class="list-meta">
+                  <span class="badge badge-error">Delete</span>
+                  <span class="dot"></span>
+                  <span>1 hr ago</span>
+                  <span class="dot"></span>
+                  <span>Admin · Omar</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="list-item">
+              <div class="list-icon orange">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" /></svg>
+              </div>
+              <div class="list-content">
+                <div class="list-title">
+                  Settings updated: Application rate limits
+                </div>
+                <div class="list-meta">
+                  <span class="badge badge-warning">Config</span>
+                  <span class="dot"></span>
+                  <span>3 hr ago</span>
+                  <span class="dot"></span>
+                  <span>Admin · Sara</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</body>
+</html>

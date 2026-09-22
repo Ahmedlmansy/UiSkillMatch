@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Management — SkillMatch Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary":"#1F365C","primary-container":"#0F2036","on-primary":"#FFFFFF",
+        "secondary":"#9C432A",
+        "canvas-cream":"#FAF8F4","surface-white":"#FFFFFF",
+        "border-hairline":"#E5E1DA",
+        "text-primary":"#1B1C1A","text-secondary":"#44474E","text-muted":"#707780",
+        "match-forest":"#4F7A5A","match-amber":"#C88A26","status-red":"#B3271E"
+      },
+      fontFamily: { display:["DM Sans","sans-serif"], body:["Inter","sans-serif"] }
+    }
+  }
+}
+</script>
+<style>
+  body{ background:linear-gradient(180deg,#FAF8F4 0%,#F5F2EC 240px,#FAF8F4 240px); }
+  .material-symbols-outlined{ font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; vertical-align:middle; font-size:20px; }
+  .skeleton{ background:linear-gradient(90deg,#EFEDE8 25%,#F5F3EF 37%,#EFEDE8 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+  @keyframes shimmer{ 0%{background-position:100% 0;} 100%{background-position:0 0;} }
+  .view{ display:none; }
+  .view.active{ display:block; }
+  .job-row.js-hidden{ display:none !important; }
+  .filter-pill.active{ background:#1F365C; color:#fff; border-color:#1F365C; }
+  .menu{ display:none; }
+  .menu.open{ display:block; }
+  ::-webkit-scrollbar{ height:6px; }
+  ::-webkit-scrollbar-thumb{ background:#DAD6CC; border-radius:99px; }
+</style>
+</head>
+<body class="font-body text-text-primary" onclick="closeMenus(event)">
+
+<!-- Demo-only state switcher -->
+<div class="bg-primary-container text-white text-[12px] flex items-center justify-center gap-2 py-2 px-4 flex-wrap sticky top-0 z-50">
+  <span class="text-white/50 mr-1">Preview state:</span>
+  <button onclick="setView('loading')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Loading</button>
+  <button onclick="setView('loaded')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Loaded</button>
+  <button onclick="setView('empty')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Empty</button>
+  <button onclick="setView('error')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Error</button>
+</div>
+
+<header class="sticky top-[37px] z-40 bg-canvas-cream/90 backdrop-blur border-b border-border-hairline/70">
+  <div class="max-w-[1180px] mx-auto px-5 h-14 flex items-center justify-between gap-3">
+    <div class="text-[13px] text-text-muted">
+      <span class="font-semibold text-primary">SkillMatch Admin</span>
+      <span class="mx-1">/</span>
+      <span class="text-text-primary font-semibold">Job Management</span>
+    </div>
+    <span class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-primary/10 text-primary">
+      <span class="material-symbols-outlined text-[13px]">shield_person</span> Super Admin
+    </span>
+  </div>
+</header>
+
+<main class="max-w-[1180px] mx-auto px-5 py-8">
+
+  <div class="mb-6">
+    <h1 class="font-display font-extrabold text-[24px] tracking-tight">Job Management</h1>
+    <p class="text-[13.5px] text-text-muted mt-1">Monitor and manage every job listed on SkillMatch — internal postings and external sources alike.</p>
+  </div>
+
+  <!-- ============ LOADING ============ -->
+  <div class="view" id="view-loading">
+    <div class="flex gap-2.5 mb-5">
+      <div class="h-11 flex-1 rounded-full skeleton"></div>
+      <div class="h-11 w-40 rounded-full skeleton"></div>
+    </div>
+    <div class="space-y-3">
+      <div class="h-24 rounded-2xl skeleton"></div>
+      <div class="h-24 rounded-2xl skeleton"></div>
+      <div class="h-24 rounded-2xl skeleton"></div>
+      <div class="h-24 rounded-2xl skeleton"></div>
+    </div>
+  </div>
+
+  <!-- ============ EMPTY (no jobs on the platform at all) ============ -->
+  <div class="view" id="view-empty">
+    <div class="bg-white border border-border-hairline rounded-3xl py-20 px-6 text-center shadow-sm">
+      <div class="w-16 h-16 rounded-2xl bg-canvas-cream border border-border-hairline flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-text-muted text-[28px]">work_off</span>
+      </div>
+      <h2 class="font-display font-bold text-[20px] mb-2">No jobs on the platform yet</h2>
+      <p class="text-[13.5px] text-text-muted max-w-sm mx-auto">Jobs will appear here once companies post internally or external sources start syncing listings.</p>
+    </div>
+  </div>
+
+  <!-- ============ ERROR ============ -->
+  <div class="view" id="view-error">
+    <div class="bg-white border border-border-hairline rounded-3xl py-20 px-6 text-center shadow-sm">
+      <div class="w-16 h-16 rounded-2xl bg-status-red/10 flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-status-red text-[28px]">error_outline</span>
+      </div>
+      <h2 class="font-display font-bold text-[20px] mb-2">Couldn't load jobs</h2>
+      <p class="text-[13.5px] text-text-muted max-w-sm mx-auto mb-7">Something went wrong on our end. Please try again.</p>
+      <button onclick="setView('loaded')" class="bg-primary text-white text-[13px] font-semibold px-6 h-11 rounded-full inline-flex items-center gap-2 shadow-sm">
+        <span class="material-symbols-outlined text-[16px]">refresh</span> Retry
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ LOADED ============ -->
+  <div class="view active" id="view-loaded">
+
+    <!-- Search + Sort -->
+    <div class="flex flex-col sm:flex-row gap-2.5 mb-4">
+      <div class="flex-1 flex items-center gap-2 border border-border-hairline rounded-full bg-white h-11 px-4 shadow-sm focus-within:border-primary transition-colors">
+        <span class="material-symbols-outlined text-text-muted text-[18px]">search</span>
+        <input type="text" id="job-search" placeholder="Search by job title or company…" class="flex-1 outline-none text-[13.5px] placeholder:text-text-muted bg-transparent" oninput="applyFilters()">
+      </div>
+      <div class="relative">
+        <select id="sort-by" class="h-11 pl-4 pr-9 border border-border-hairline rounded-full bg-white text-[13px] font-medium outline-none focus:border-primary shadow-sm appearance-none cursor-pointer" onchange="applyFilters()">
+          <option value="created-desc">Newest created</option>
+          <option value="published-desc">Recently published</option>
+          <option value="freshness">Freshness (newest first)</option>
+        </select>
+        <span class="material-symbols-outlined text-text-muted text-[16px] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">unfold_more</span>
+      </div>
+    </div>
+
+    <!-- Filter pills -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-1 mb-3 -mx-1 px-1">
+      <button class="filter-pill active flex-shrink-0 px-3.5 h-8 rounded-full border border-border-hairline text-[12px] font-semibold text-text-secondary bg-white transition-colors" data-filter-group="status" data-filter="all" onclick="setFilter('status','all', this)">All statuses</button>
+      <button class="filter-pill flex-shrink-0 px-3.5 h-8 rounded-full border border-border-hairline text-[12px] font-semibold text-text-secondary bg-white transition-colors" data-filter-group="status" data-filter="active" onclick="setFilter('status','active', this)">Active</button>
+      <button class="filter-pill flex-shrink-0 px-3.5 h-8 rounded-full border border-border-hairline text-[12px] font-semibold text-text-secondary bg-white transition-colors" data-filter-group="status" data-filter="draft" onclick="setFilter('status','draft', this)">Draft</button>
+      <button class="filter-pill flex-shrink-0 px-3.5 h-8 rounded-full border border-border-hairline text-[12px] font-semibold text-text-secondary bg-white transition-colors" data-filter-group="status" data-filter="expired" onclick="setFilter('status','expired', this)">Expired</button>
+      <button class="filter-pill flex-shrink-0 px-3.5 h-8 rounded-full border border-border-hairline text-[12px] font-semibold text-text-secondary bg-white transition-colors" data-filter-group="status" data-filter="closed" onclick="setFilter('status','closed', this)">Closed</button>
+      <span class="w-px h-5 bg-border-hairline flex-shrink-0 mx-1"></span>
+      <button class="filter-pill flex-shrink-0 px-3.5 h-8 rounded-full border border-border-hairline text-[12px] font-semibold text-text-secondary bg-white transition-colors" data-filter-group="source" data-filter="internal" onclick="setFilter('source','internal', this)">Internal</button>
+      <button class="filter-pill flex-shrink-0 px-3.5 h-8 rounded-full border border-border-hairline text-[12px] font-semibold text-text-secondary bg-white transition-colors" data-filter-group="source" data-filter="external" onclick="setFilter('source','external', this)">External sources</button>
+    </div>
+
+    <!-- Column header (desktop) -->
+    <div class="hidden lg:grid grid-cols-12 gap-3 px-4 py-2 text-[10.5px] font-semibold text-text-muted uppercase tracking-wide">
+      <div class="col-span-4">Job / Company</div>
+      <div class="col-span-2">Location &amp; Mode</div>
+      <div class="col-span-2">Status</div>
+      <div class="col-span-2">Source &amp; Freshness</div>
+      <div class="col-span-1">Dates</div>
+      <div class="col-span-1 text-right">Actions</div>
+    </div>
+
+    <div id="job-list" class="space-y-3">
+
+      <!-- Row 1: Internal, Active, New -->
+      <div class="job-row bg-white border border-border-hairline rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow grid grid-cols-1 lg:grid-cols-12 gap-3 lg:items-center"
+           data-title="senior frontend engineer vercel" data-status="active" data-source="internal" data-created="2026-09-15" data-published="2026-09-15" data-freshness="3">
+        <div class="lg:col-span-4 flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center font-display font-bold text-[13px] text-white flex-shrink-0">V</div>
+          <div class="min-w-0">
+            <div class="text-[13.5px] font-semibold truncate">Senior Frontend Engineer</div>
+            <button onclick="alert('Opening Vercel company profile…')" class="text-[11.5px] text-text-muted hover:text-primary flex items-center gap-1">Vercel <span class="material-symbols-outlined text-[12px]">open_in_new</span></button>
+          </div>
+        </div>
+        <div class="lg:col-span-2 text-[12.5px] text-text-secondary">
+          <div>Remote</div>
+          <div class="text-text-muted text-[11.5px]">Full-time</div>
+        </div>
+        <div class="lg:col-span-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-match-forest/10 text-match-forest">
+            <span class="w-1.5 h-1.5 rounded-full bg-match-forest"></span> Active
+          </span>
+        </div>
+        <div class="lg:col-span-2 flex flex-col gap-1">
+          <span class="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-primary/10 text-primary">Internal</span>
+          <span class="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-match-forest/10 text-match-forest">● New · 3h ago</span>
+        </div>
+        <div class="lg:col-span-1 text-[11px] text-text-muted">
+          <div>Pub: Sep 15</div>
+          <div>Created: Sep 15</div>
+        </div>
+        <div class="lg:col-span-1 flex lg:justify-end items-center gap-1">
+          <a href="#" class="w-8 h-8 rounded-full flex items-center justify-center text-primary hover:bg-primary/10 transition-colors" title="View Job"><span class="material-symbols-outlined text-[18px]">visibility</span></a>
+          <a href="#" class="w-8 h-8 rounded-full flex items-center justify-center text-text-secondary hover:bg-canvas-cream transition-colors" title="Edit Job"><span class="material-symbols-outlined text-[18px]">edit</span></a>
+          <div class="relative">
+            <button class="w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:bg-canvas-cream transition-colors" onclick="toggleMenu(event, this)"><span class="material-symbols-outlined text-[18px]">more_vert</span></button>
+            <div class="menu absolute right-0 top-9 z-20 bg-white border border-border-hairline rounded-xl shadow-lg py-1.5 w-44">
+              <button onclick="alert('Opening Vercel company profile…')" class="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-text-secondary hover:bg-canvas-cream"><span class="material-symbols-outlined text-[16px]">apartment</span> Open Company</button>
+              <button onclick="alert('Update Job: mark featured / change status…')" class="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-text-secondary hover:bg-canvas-cream"><span class="material-symbols-outlined text-[16px]">update</span> Update Job</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: External (LinkedIn), Active, Fresh -->
+      <div class="job-row bg-white border border-border-hairline rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow grid grid-cols-1 lg:grid-cols-12 gap-3 lg:items-center"
+           data-title="lead frontend architect stripe" data-status="active" data-source="external" data-created="2026-09-10" data-published="2026-09-11" data-freshness="2">
+        <div class="lg:col-span-4 flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#635BFF] to-[#3B31D6] flex items-center justify-center font-display font-bold text-[13px] text-white flex-shrink-0">S</div>
+          <div class="min-w-0">
+            <div class="text-[13.5px] font-semibold truncate">Lead Frontend Architect</div>
+            <button onclick="alert('Opening Stripe company profile…')" class="text-[11.5px] text-text-muted hover:text-primary flex items-center gap-1">Stripe <span class="material-symbols-outlined text-[12px]">open_in_new</span></button>
+          </div>
+        </div>
+        <div class="lg:col-span-2 text-[12.5px] text-text-secondary">
+          <div>San Francisco</div>
+          <div class="text-text-muted text-[11.5px]">Hybrid · Full-time</div>
+        </div>
+        <div class="lg:col-span-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-match-forest/10 text-match-forest">
+            <span class="w-1.5 h-1.5 rounded-full bg-match-forest"></span> Active
+          </span>
+        </div>
+        <div class="lg:col-span-2 flex flex-col gap-1">
+          <span class="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-secondary/10 text-secondary">LinkedIn</span>
+          <span class="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-match-amber/10 text-match-amber">● Fresh · 2d ago</span>
+        </div>
+        <div class="lg:col-span-1 text-[11px] text-text-muted">
+          <div>Pub: Sep 11</div>
+          <div>Created: Sep 10</div>
+        </div>
+        <div class="lg:col-span-1 flex lg:justify-end items-center gap-1">
+          <a href="#" class="w-8 h-8 rounded-full flex items-center justify-center text-primary hover:bg-primary/10 transition-colors" title="View Job"><span class="material-symbols-outlined text-[18px]">visibility</span></a>
+          <a href="#" class="w-8 h-8 rounded-full flex items-center justify-center text-text-secondary hover:bg-canvas-cream transition-colors" title="Edit Job"><span class="material-symbols-outlined text-[18px]">edit</span></a>
+          <div class="relative">
+            <button class="w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:bg-canvas-cream transition-colors" onclick="toggleMenu(event, this)"><span class="material-symbols-outlined text-[18px]">more_vert</span></button>
+            <div class="menu absolute right-0 top-9 z-20 bg-white border border-border-hairline rounded-xl shadow-lg py-1.5 w-44">
+              <button onclick="alert('Opening Stripe company profile…')" class="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-text-secondary hover:bg-canvas-cream"><span class="material-symbols-outlined text-[16px]">apartment</span> Open Company</button>
+              <button onclick="alert('Update Job: mark featured / change status…')" class="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-text-secondary hover:bg-canvas-cream"><span class="material-symbols-outlined text-[16px]">update</span> Update Job</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: External (Indeed), Active, Stale -->
+      <div class="job-row bg-white border border-border-hairline rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow grid grid-cols-1 lg:grid-cols-12 gap-3 lg:items-center"
+           data-title="backend engineer pulsehealth" data-status="active" data-source="external" data-created="2026-08-20" data-published="2026-08-22" data-freshness="20">
+        <div class="lg:col-span-4 flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0EA5A5] to-[#0B7D7D] flex items-center justify-center font-display font-bold text-[13px] text-white flex-shrink-0">P</div>
+          <div class="min-w-0">
+            <div class="text-[13.5px] font-semibold truncate">Backend Engineer</div>
+            <button onclick="alert('Opening PulseHealth company profile…')" class="text-[11.5px] text-text-muted hover:text-primary flex items-center gap-1">PulseHealth <span class="material-symbols-outlined text-[12px]">open_in_new</span></button>
+          </div>
+        </div>
+        <div class="lg:col-span-2 text-[12.5px] text-text-secondary">
+          <div>Cairo, Egypt</div>
+          <div class="text-text-muted text-[11.5px]">Onsite · Full-time</div>
+        </div>
+        <div class="lg:col-span-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-match-forest/10 text-match-forest">
+            <span class="w-1.5 h-1.5 rounded-full bg-match-forest"></span> Active
+          </span>
+        </div>
+        <div class="lg:col-span-2 flex flex-col gap-1">
+          <span class="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-secondary/10 text-secondary">Indeed</span>
+          <span class="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-status-red/10 text-status-red">● Stale · 20d ago</span>
+        </div>
+        <div class="lg:col-span-1 text-[11px] text-text-muted">
+          <div>Pub: Aug 22</div>
+          <div>Created: Aug 20</div>
+        </div>
+        <div class="lg:col-span-1 flex lg:justify-end items-center gap-1">
+          <a href="#" class="w-8 h-8 rounded-full flex items-center justify-center text-primary hover:bg-primary/10 transition-colors" title="View Job"><span class="material-symbols-outlined text-[18px]">visibility</span></a>
+          <a href="#" class="w-8 h-8 rounded-full flex items-center justify-center text-text-secondary hover:bg-canvas-cream transition-colors" title="Edit Job"><span class="material-symbols-outlined text-[18px]">edit</span></a>
+          <div class="relative">
+            <button class="w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:bg-canvas-cream transition-colors" onclick="toggleMenu(event, this)"><span class="material-symbols-outlined text-[18px]">more_vert</span></button>
+            <div class="menu absolute right-0 top-9 z-20 bg-white border border-border-hairline rounded-xl shadow-lg py-1.5 w-44">
+              <button onclick="alert('Opening PulseHealth company profile…')" class="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-text-secondary hover:bg-canvas-cream"><span class="material-symbols-outlined text-[16px]">apartment</span> Open Company</button>
+              <button onclick="alert('Update Job: mark featured / change status…')" class="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-text-secondary hover:bg-canvas-cream"><span class="material-symbols-outlined text-[16px]">update</span> Update Job</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: Internal, Draft -->
+      <div class="job-row bg-white border border-border-hairline rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow grid grid-cols-1 lg:grid-cols-12 gap-3 lg:items-center"
+           data-title="frontend infra engineer cloudscale" data-status="draft" data-source="internal" data-created="2026-09-18" data-published="" data-freshness="0">
+        <div class="lg:col-span-4 flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-canvas-cream border border-border-hairline flex items-center justify-center font-display font-bold text-[13px] text-text-muted flex-shrink-0">C</div>
+          <div class="min-w-0">
+            <div class="text-[13.5px] font-semibold truncate text-text-secondary">Frontend Infra Engineer</div>
+            <button onclick="alert('Opening CloudScale company profile…')" class="text-[11.5px] text-text-muted hover:text-primary flex items-center gap-1">CloudScale Systems <span class="material-symbols-outlined text-[12px]">open_in_new</span></button>
+          </div>
+        </div>
+        <div class="lg:col-span-2 text-[12.5px] text-text-secondary">
+          <div>Remote</div>
+          <div class="text-text-muted text-[11.5px]">Full-time</div>
+        </div>
+        <div class="lg:col-span-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-canvas-cream text-text-secondary border border-border-hairline">
+            <span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span> Draft
+          </span>
+        </div>
+        <div class="lg:col-span-2 flex flex-col gap-1">
+          <span class="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-primary/10 text-primary">Internal</span>
+          <span class="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-canvas-cream text-text-muted border border-border-hairline">Not published</span>
+        </div>
+        <div class="lg:col-span-1 text-[11px] text-text-muted">
+          <div>Pub: —</div>
+          <div>Created: Sep 18</div>
+        </div>
+        <div class="lg:col-span-1 flex lg:justify-end items-center gap-1">
+          <a href="#" class="w-8 h-8 rounded-full flex items-center justify-center text-primary hover:bg-primary/10 transition-colors" title="View Job"><span class="material-symbols-outlined text-[18px]">visibility</span></a>
+          <a href="#" class="w-8 h-8 rounded-full flex items-center justify-center text-text-secondary hover:bg-canvas-cream transition-colors" title="Edit Job"><span class="material-symbols-outlined text-[18px]">edit</span></a>
+          <div class="relative">
+            <button class="w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:bg-canvas-cream transition-colors" onclick="toggleMenu(event, this)"><span class="material-symbols-outlined text-[18px]">more_vert</span></button>
+            <div class="menu absolute right-0 top-9 z-20 bg-white border border-border-hairline rounded-xl shadow-lg py-1.5 w-44">
+              <button onclick="alert('Opening CloudScale company profile…')" class="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-text-secondary hover:bg-canvas-cream"><span class="material-symbols-outlined text-[16px]">apartment</span> Open Company</button>
+              <button onclick="alert('Update Job: publish this draft…')" class="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-text-secondary hover:bg-canvas-cream"><span class="material-symbols-outlined text-[16px]">update</span> Update Job</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 5: External (Referral), Expired -->
+      <div class="job-row bg-white border border-border-hairline rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow grid grid-cols-1 lg:grid-cols-12 gap-3 lg:items-center opacity-90"
+           data-title="full stack engineer finedge" data-status="expired" data-source="external" data-created="2026-07-01" data-published="2026-07-02" data-freshness="45">
+        <div class="lg:col-span-4 flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-[#C86A4C] flex items-center justify-center font-display font-bold text-[13px] text-white flex-shrink-0">F</div>
+          <div class="min-w-0">
+            <div class="text-[13.5px] font-semibold truncate text-text-secondary">Full Stack Engineer</div>
+            <button onclick="alert('Opening FinEdge company profile…')" class="text-[11.5px] text-text-muted hover:text-primary flex items-center gap-1">FinEdge Solutions <span class="material-symbols-outlined text-[12px]">open_in_new</span></button>
+          </div>
+        </div>
+        <div class="lg:col-span-2 text-[12.5px] text-text-secondary">
+          <div>Riyadh, KSA</div>
+          <div class="text-text-muted text-[11.5px]">Onsite · Full-time</div>
+        </div>
+        <div class="lg:col-span-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-status-red/10 text-status-red">
+            <span class="w-1.5 h-1.5 rounded-full bg-status-red"></span> Expired
+          </span>
+        </div>
+        <div class="lg:col-span-2 flex flex-col gap-1">
+          <span class="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-secondary/10 text-secondary">Referral</span>
+          <span class="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-status-red/10 text-status-red">● Stale · 45d ago</span>
+        </div>
+        <div class="lg:col-span-1 text-[11px] text-text-muted">
+          <div>Pub: Jul 2</div>
+          <div>Created: Jul 1</div>
+        </div>
+        <div class="lg:col-span-1 flex lg:justify-end items-center gap-1">
+          <a href="#" class="w-8 h-8 rounded-full flex items-center justify-center text-primary hover:bg-primary/10 transition-colors" title="View Job"><span class="material-symbols-outlined text-[18px]">visibility</span></a>
+          <div class="relative">
+            <button class="w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:bg-canvas-cream transition-colors" onclick="toggleMenu(event, this)"><span class="material-symbols-outlined text-[18px]">more_vert</span></button>
+            <div class="menu absolute right-0 top-9 z-20 bg-white border border-border-hairline rounded-xl shadow-lg py-1.5 w-44">
+              <button onclick="alert('Opening FinEdge company profile…')" class="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-text-secondary hover:bg-canvas-cream"><span class="material-symbols-outlined text-[16px]">apartment</span> Open Company</button>
+              <button onclick="alert('Update Job: archive this expired listing…')" class="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-text-secondary hover:bg-canvas-cream"><span class="material-symbols-outlined text-[16px]">update</span> Update Job</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 6: Internal, Closed -->
+      <div class="job-row bg-white border border-border-hairline rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow grid grid-cols-1 lg:grid-cols-12 gap-3 lg:items-center opacity-80"
+           data-title="junior frontend developer technova" data-status="closed" data-source="internal" data-created="2026-06-10" data-published="2026-06-11" data-freshness="60">
+        <div class="lg:col-span-4 flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-canvas-cream border border-border-hairline flex items-center justify-center font-display font-bold text-[13px] text-text-muted flex-shrink-0">T</div>
+          <div class="min-w-0">
+            <div class="text-[13.5px] font-semibold truncate text-text-secondary">Junior Frontend Developer</div>
+            <button onclick="alert('Opening TechNova company profile…')" class="text-[11.5px] text-text-muted hover:text-primary flex items-center gap-1">TechNova Solutions <span class="material-symbols-outlined text-[12px]">open_in_new</span></button>
+          </div>
+        </div>
+        <div class="lg:col-span-2 text-[12.5px] text-text-secondary">
+          <div>Cairo, Egypt</div>
+          <div class="text-text-muted text-[11.5px]">Hybrid · Full-time</div>
+        </div>
+        <div class="lg:col-span-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-canvas-cream text-text-muted border border-border-hairline">
+            <span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span> Closed
+          </span>
+        </div>
+        <div class="lg:col-span-2 flex flex-col gap-1">
+          <span class="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-primary/10 text-primary">Internal</span>
+          <span class="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-status-red/10 text-status-red">● Stale · 60d ago</span>
+        </div>
+        <div class="lg:col-span-1 text-[11px] text-text-muted">
+          <div>Pub: Jun 11</div>
+          <div>Created: Jun 10</div>
+        </div>
+        <div class="lg:col-span-1 flex lg:justify-end items-center gap-1">
+          <a href="#" class="w-8 h-8 rounded-full flex items-center justify-center text-primary hover:bg-primary/10 transition-colors" title="View Job"><span class="material-symbols-outlined text-[18px]">visibility</span></a>
+          <div class="relative">
+            <button class="w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:bg-canvas-cream transition-colors" onclick="toggleMenu(event, this)"><span class="material-symbols-outlined text-[18px]">more_vert</span></button>
+            <div class="menu absolute right-0 top-9 z-20 bg-white border border-border-hairline rounded-xl shadow-lg py-1.5 w-44">
+              <button onclick="alert('Opening TechNova company profile…')" class="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-text-secondary hover:bg-canvas-cream"><span class="material-symbols-outlined text-[16px]">apartment</span> Open Company</button>
+              <button onclick="alert('Update Job: reopen this listing…')" class="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-text-secondary hover:bg-canvas-cream"><span class="material-symbols-outlined text-[16px]">update</span> Update Job</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- No Results (filters/search yield nothing — distinct from Empty) -->
+    <div id="no-results" class="hidden py-16 text-center bg-white border border-border-hairline rounded-2xl mt-3">
+      <span class="material-symbols-outlined text-text-muted text-[26px] mb-2 block">filter_alt_off</span>
+      <p class="text-[13.5px] text-text-muted">No jobs match your search or filters.</p>
+      <button onclick="clearFilters()" class="mt-3 text-[12.5px] font-semibold text-primary">Clear filters</button>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  function setView(name){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  let filters = { status:'all', source:'all' };
+
+  function setFilter(group, value, btn){
+    filters[group] = value;
+    document.querySelectorAll('.filter-pill[data-filter-group="' + group + '"]').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  }
+
+  function clearFilters(){
+    document.getElementById('job-search').value = '';
+    filters = { status:'all', source:'all' };
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    document.querySelector('.filter-pill[data-filter-group="status"][data-filter="all"]').classList.add('active');
+    applyFilters();
+  }
+
+  function toggleMenu(e, btn){
+    e.stopPropagation();
+    const menu = btn.nextElementSibling;
+    const isOpen = menu.classList.contains('open');
+    closeMenus();
+    if(!isOpen) menu.classList.add('open');
+  }
+  function closeMenus(){
+    document.querySelectorAll('.menu.open').forEach(m => m.classList.remove('open'));
+  }
+
+  function applyFilters(){
+    const q = document.getElementById('job-search').value.trim().toLowerCase();
+    const sortBy = document.getElementById('sort-by').value;
+    const list = document.getElementById('job-list');
+    const rows = Array.from(list.querySelectorAll('.job-row'));
+
+    let visibleCount = 0;
+    rows.forEach(row => {
+      const matchesText = !q || row.dataset.title.includes(q);
+      const matchesStatus = filters.status === 'all' || row.dataset.status === filters.status;
+      const matchesSource = filters.source === 'all' || row.dataset.source === filters.source;
+      const show = matchesText && matchesStatus && matchesSource;
+      row.classList.toggle('js-hidden', !show);
+      if(show) visibleCount++;
+    });
+
+    document.getElementById('no-results').classList.toggle('hidden', visibleCount !== 0);
+
+    const sorted = rows.slice().sort((a, b) => {
+      if(sortBy === 'published-desc'){
+        return new Date(b.dataset.published || 0) - new Date(a.dataset.published || 0);
+      }
+      if(sortBy === 'freshness'){
+        return parseInt(a.dataset.freshness) - parseInt(b.dataset.freshness);
+      }
+      return new Date(b.dataset.created) - new Date(a.dataset.created);
+    });
+    sorted.forEach(row => list.appendChild(row));
+  }
+</script>
+
+</body>
+</html>

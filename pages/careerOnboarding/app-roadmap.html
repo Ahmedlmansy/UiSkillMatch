@@ -35,39 +35,18 @@ tailwind.config = {
   .view.active{ display:block; }
   .spinner{ border-radius:50%; border:3px solid var(--border-hairline,#E5E1DA); border-top-color:#1F365C; animation:spin 0.8s linear infinite; }
   @keyframes spin{ to{ transform:rotate(360deg); } }
-
-  /* Roadmap map */
-  .map-track{ position:relative; }
-  .map-line{
-    position:absolute; top:34px; left:34px; right:34px; height:3px;
-    background:#E5E1DA; z-index:0;
-  }
-  .map-line-fill{ height:100%; background:#4F7A5A; }
-  .phase-node{ position:relative; z-index:1; }
-  .node-circle{
-    width:68px; height:68px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'DM Sans',sans-serif; font-weight:700; font-size:15px;
-    border:3px solid #E5E1DA; background:#FFFFFF; color:#707780;
-    margin:0 auto; cursor:pointer; transition:transform .15s ease;
-  }
-  .node-circle:hover{ transform:scale(1.04); }
-  .phase-node.completed .node-circle{ background:#4F7A5A; border-color:#4F7A5A; color:#fff; }
-  .phase-node.in-progress .node-circle{ border-color:#1F365C; color:#1F365C; background:#FFFFFF; }
-  .phase-node.not-started .node-circle{ border-color:#E5E1DA; color:#9AA0A8; }
-  .milestone-pip{
-    width:11px; height:11px; border-radius:50%;
-    border:2px solid #E5E1DA; background:#fff; cursor:pointer;
-    transition:all .15s ease; flex-shrink:0;
-  }
-  .milestone-pip.done{ background:#4F7A5A; border-color:#4F7A5A; }
-  .milestone-pip.in-progress{ background:#C88A26; border-color:#C88A26; }
-  .milestone-pip:hover{ transform:scale(1.25); }
+  .phase-body{ display:none; }
+  .phase.open .phase-body{ display:block; }
+  .phase.open .chev{ transform:rotate(180deg); }
+  .task-row.done .task-label{ text-decoration:line-through; color:#707780; }
+  .task-row.done .task-check{ background:#4F7A5A; border-color:#4F7A5A; }
+  .task-row.done .task-check .material-symbols-outlined{ display:inline-block; }
+  .task-check .material-symbols-outlined{ display:none; }
 </style>
 </head>
 <body class="font-body text-text-primary">
 
-<!-- Demo-only state switcher -->
+<!-- Demo-only state switcher — not part of production UI -->
 <div class="bg-primary-container text-white text-[12px] flex items-center justify-center gap-2 py-2 px-4 flex-wrap sticky top-0 z-50">
   <span class="text-white/50 mr-1">Preview state:</span>
   <button onclick="setView('empty-profile')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Missing profile</button>
@@ -79,7 +58,7 @@ tailwind.config = {
 </div>
 
 <header class="border-b border-border-hairline bg-canvas-cream">
-  <div class="max-w-[980px] mx-auto px-5 h-14 flex items-center gap-3">
+  <div class="max-w-[960px] mx-auto px-5 h-14 flex items-center gap-3">
     <div class="text-[13px] text-text-muted">
       <a href="#" class="hover:text-primary">SkillMatch</a>
       <span class="mx-1">/</span>
@@ -88,7 +67,7 @@ tailwind.config = {
   </div>
 </header>
 
-<main class="max-w-[980px] mx-auto px-5 py-8">
+<main class="max-w-[960px] mx-auto px-5 py-8">
 
   <!-- ============ MISSING PROFILE CONTEXT ============ -->
   <div class="view" id="view-empty-profile">
@@ -141,7 +120,7 @@ tailwind.config = {
     <div class="bg-white border border-border-hairline rounded-[16px] py-16 px-6 text-center">
       <div class="w-10 h-10 spinner mx-auto mb-5"></div>
       <h2 class="font-display font-bold text-[17px] mb-2">Building your roadmap</h2>
-      <p class="text-[13px] text-text-muted max-w-sm mx-auto">Comparing your profile against Senior Frontend Engineer requirements and sequencing phases from your prioritized skill gaps — this takes a few seconds.</p>
+      <p class="text-[13px] text-text-muted max-w-sm mx-auto">Comparing your profile against Senior Frontend Engineer requirements and prioritizing skill gaps — this takes a few seconds.</p>
     </div>
   </div>
 
@@ -164,7 +143,7 @@ tailwind.config = {
 
     <!-- Updating banner -->
     <div id="updating-banner" class="hidden mb-5 border border-primary/20 bg-primary/5 text-primary text-[13px] font-semibold rounded-[10px] px-4 py-3 flex items-center gap-2">
-      <div class="w-4 h-4 spinner"></div> Recalculating your roadmap — priorities are being re-sequenced, not rebuilt from scratch.
+      <div class="w-4 h-4 spinner"></div> Recalculating your roadmap — your profile or target role changed.
     </div>
 
     <!-- Target Role + actions -->
@@ -222,19 +201,18 @@ tailwind.config = {
       </div>
     </div>
 
-    <!-- Priority Skill Gaps + which phase addresses each -->
+    <!-- Priority Skill Gaps + Reasons -->
     <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
-      <h2 class="font-display font-bold text-[15px] mb-1">Priority skill gaps</h2>
-      <p class="text-[12px] text-text-muted mb-4">Ranked by impact on your target role. Every gap below is addressed by a specific roadmap phase — nothing here is unlinked.</p>
+      <div class="flex items-center justify-between mb-1">
+        <h2 class="font-display font-bold text-[15px]">Priority skill gaps</h2>
+      </div>
+      <p class="text-[12px] text-text-muted mb-4">Ranked by impact on your target role — reasons are generated by the roadmap engine from job requirements and your profile.</p>
       <div class="space-y-3">
         <div class="flex items-start gap-3 border border-border-hairline rounded-[10px] p-3.5">
           <span class="inline-flex items-center px-2 py-0.5 rounded-[6px] text-[10px] font-bold bg-status-red/10 text-status-red flex-shrink-0 mt-0.5">HIGH</span>
           <div class="flex-1">
             <div class="text-[13px] font-semibold">System Design</div>
             <div class="text-[12px] text-text-secondary mt-0.5">Appears as a core requirement in 9 of 10 roles you've saved, and isn't yet confirmed on your profile.</div>
-            <a href="app-roadmap-phase-details.html" class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary mt-1.5">
-              <span class="material-symbols-outlined text-[13px]">map</span> Addressed in Phase 1: Foundations
-            </a>
           </div>
         </div>
         <div class="flex items-start gap-3 border border-border-hairline rounded-[10px] p-3.5">
@@ -242,9 +220,6 @@ tailwind.config = {
           <div class="flex-1">
             <div class="text-[13px] font-semibold">GraphQL</div>
             <div class="text-[12px] text-text-secondary mt-0.5">Requested in the target job's tech stack; you have related API experience (REST) but no confirmed GraphQL usage.</div>
-            <a href="#" class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary mt-1.5">
-              <span class="material-symbols-outlined text-[13px]">map</span> Addressed in Phase 2: Applied Skills
-            </a>
           </div>
         </div>
         <div class="flex items-start gap-3 border border-border-hairline rounded-[10px] p-3.5">
@@ -252,116 +227,175 @@ tailwind.config = {
           <div class="flex-1">
             <div class="text-[13px] font-semibold">Automated Testing (Jest)</div>
             <div class="text-[12px] text-text-secondary mt-0.5">Common requirement at senior level; not yet reflected in your CV or confirmed skills.</div>
-            <a href="#" class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary mt-1.5">
-              <span class="material-symbols-outlined text-[13px]">map</span> Addressed in Phase 2: Applied Skills
-            </a>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ============ ROADMAP MAP ============ -->
+    <!-- Roadmap Phases (with milestones inside) -->
     <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
-      <div class="flex items-center justify-between mb-1">
-        <h2 class="font-display font-bold text-[15px]">Your roadmap</h2>
-        <span class="text-[11px] text-text-muted">Tap a milestone to mark it complete · Open a phase for full task details</span>
-      </div>
-      <p class="text-[12px] text-text-muted mb-8">Each phase tracks as <span class="font-semibold text-text-muted">not started</span>, <span class="font-semibold text-primary">in progress</span>, or <span class="font-semibold text-match-forest">completed</span> — state updates persist and are never silently overwritten.</p>
+      <h2 class="font-display font-bold text-[15px] mb-4">Roadmap phases</h2>
 
-      <div class="map-track grid grid-cols-3 gap-2 mb-2">
-        <div class="map-line"><div class="map-line-fill" id="map-line-fill" style="width:38%"></div></div>
-
-        <!-- Phase 1 node -->
-        <div class="phase-node completed" data-phase="1">
-          <div class="node-circle" onclick="location.href='app-roadmap-phase-details.html'">
-            <span class="material-symbols-outlined text-[26px]">check</span>
-          </div>
-          <div class="text-center mt-3">
-            <div class="text-[13px] font-semibold">Foundations</div>
-            <div class="text-[11px] text-text-muted">System Design · 75%</div>
-          </div>
-          <div class="flex items-center justify-center gap-1.5 mt-2">
-            <div class="milestone-pip done" title="Complete SD course" onclick="toggleMilestone(this)"></div>
-            <div class="milestone-pip done" title="Design 2 systems" onclick="toggleMilestone(this)"></div>
-          </div>
-          <div class="text-center mt-3">
-            <a href="app-roadmap-phase-details.html" class="text-[11px] font-semibold text-primary">Open Phase →</a>
+      <div class="space-y-3">
+        <!-- Phase 1 -->
+        <div class="phase open border border-border-hairline rounded-[12px] overflow-hidden">
+          <button class="w-full flex items-center gap-3 p-4 text-left" onclick="this.closest('.phase').classList.toggle('open')">
+            <div class="w-8 h-8 rounded-full bg-match-forest text-white flex items-center justify-center flex-shrink-0 text-[12px] font-bold">1</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-[13px] font-semibold">Foundations — System Design Basics</div>
+              <div class="w-full h-1.5 rounded-full bg-canvas-cream mt-1.5 overflow-hidden max-w-xs">
+                <div class="h-full bg-match-forest rounded-full" style="width:75%"></div>
+              </div>
+            </div>
+            <span class="text-[11px] font-semibold text-text-muted flex-shrink-0">75%</span>
+            <span class="material-symbols-outlined chev text-[18px] text-text-muted transition-transform flex-shrink-0">expand_more</span>
+          </button>
+          <div class="phase-body px-4 pb-4">
+            <!-- Milestone -->
+            <div class="flex items-center gap-2 text-[12px] font-semibold text-text-secondary mb-3 mt-1">
+              <span class="material-symbols-outlined text-match-amber text-[16px]">flag</span> Milestone: Complete "System Design Interview" course
+            </div>
+            <div class="space-y-2">
+              <div class="task-row done flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+                <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+                  <span class="material-symbols-outlined text-white text-[13px]">check</span>
+                </button>
+                <span class="task-label text-[13px] flex-1">Watch "Scaling Web Applications" module</span>
+                <span class="text-[11px] text-text-muted">Done Aug 30</span>
+              </div>
+              <div class="task-row flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+                <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+                  <span class="material-symbols-outlined text-white text-[13px]">check</span>
+                </button>
+                <span class="task-label text-[13px] flex-1">Design a URL-shortener system on paper</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Phase 2 node -->
-        <div class="phase-node in-progress" data-phase="2">
-          <div class="node-circle" onclick="location.href='app-roadmap-phase-details.html'">2</div>
-          <div class="text-center mt-3">
-            <div class="text-[13px] font-semibold">Applied Skills</div>
-            <div class="text-[11px] text-text-muted">GraphQL &amp; Testing · 15%</div>
-          </div>
-          <div class="flex items-center justify-center gap-1.5 mt-2">
-            <div class="milestone-pip in-progress" title="Ship GraphQL + Jest project" onclick="toggleMilestone(this)"></div>
-          </div>
-          <div class="text-center mt-3">
-            <a href="app-roadmap-phase-details.html" class="text-[11px] font-semibold text-primary">Open Phase →</a>
+        <!-- Phase 2 -->
+        <div class="phase border border-border-hairline rounded-[12px] overflow-hidden">
+          <button class="w-full flex items-center gap-3 p-4 text-left" onclick="this.closest('.phase').classList.toggle('open')">
+            <div class="w-8 h-8 rounded-full border-2 border-border-hairline text-text-muted flex items-center justify-center flex-shrink-0 text-[12px] font-bold">2</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-[13px] font-semibold">Applied Skills — GraphQL &amp; Testing</div>
+              <div class="w-full h-1.5 rounded-full bg-canvas-cream mt-1.5 overflow-hidden max-w-xs">
+                <div class="h-full bg-match-amber rounded-full" style="width:15%"></div>
+              </div>
+            </div>
+            <span class="text-[11px] font-semibold text-text-muted flex-shrink-0">15%</span>
+            <span class="material-symbols-outlined chev text-[18px] text-text-muted transition-transform flex-shrink-0">expand_more</span>
+          </button>
+          <div class="phase-body px-4 pb-4">
+            <div class="flex items-center gap-2 text-[12px] font-semibold text-text-secondary mb-3 mt-1">
+              <span class="material-symbols-outlined text-match-amber text-[16px]">flag</span> Milestone: Ship one project using GraphQL + Jest
+            </div>
+            <div class="space-y-2">
+              <div class="task-row flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+                <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+                  <span class="material-symbols-outlined text-white text-[13px]">check</span>
+                </button>
+                <span class="task-label text-[13px] flex-1">Complete "GraphQL Fundamentals" module</span>
+              </div>
+              <div class="task-row flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+                <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+                  <span class="task-label text-[13px]"></span>
+                </button>
+                <span class="task-label text-[13px] flex-1">Write unit tests for an existing project with Jest</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Phase 3 node -->
-        <div class="phase-node not-started" data-phase="3">
-          <div class="node-circle" onclick="location.href='app-roadmap-phase-details.html'">3</div>
-          <div class="text-center mt-3">
-            <div class="text-[13px] font-semibold">Interview Ready</div>
-            <div class="text-[11px] text-text-muted">Mock Interviews · 0%</div>
-          </div>
-          <div class="flex items-center justify-center gap-1.5 mt-2">
-            <div class="milestone-pip" title="Pass 2 mock interviews" onclick="toggleMilestone(this)"></div>
-          </div>
-          <div class="text-center mt-3">
-            <a href="app-roadmap-phase-details.html" class="text-[11px] font-semibold text-primary">Open Phase →</a>
+        <!-- Phase 3 -->
+        <div class="phase border border-border-hairline rounded-[12px] overflow-hidden">
+          <button class="w-full flex items-center gap-3 p-4 text-left" onclick="this.closest('.phase').classList.toggle('open')">
+            <div class="w-8 h-8 rounded-full border-2 border-border-hairline text-text-muted flex items-center justify-center flex-shrink-0 text-[12px] font-bold">3</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-[13px] font-semibold">Interview Ready — Mock Interviews &amp; Portfolio</div>
+              <div class="w-full h-1.5 rounded-full bg-canvas-cream mt-1.5 overflow-hidden max-w-xs">
+                <div class="h-full bg-border-hairline rounded-full" style="width:0%"></div>
+              </div>
+            </div>
+            <span class="text-[11px] font-semibold text-text-muted flex-shrink-0">0%</span>
+            <span class="material-symbols-outlined chev text-[18px] text-text-muted transition-transform flex-shrink-0">expand_more</span>
+          </button>
+          <div class="phase-body px-4 pb-4">
+            <div class="flex items-center gap-2 text-[12px] font-semibold text-text-secondary mb-3 mt-1">
+              <span class="material-symbols-outlined text-match-amber text-[16px]">flag</span> Milestone: Pass 2 AI mock interviews at "Senior" level
+            </div>
+            <div class="space-y-2">
+              <div class="task-row flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+                <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+                  <span class="material-symbols-outlined text-white text-[13px]">check</span>
+                </button>
+                <span class="task-label text-[13px] flex-1">Schedule first AI mock interview</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- This week (condensed — full task management lives on the phase details page) -->
+    <!-- Weekly Tasks -->
     <div class="bg-white border border-border-hairline rounded-[16px] p-6 mb-5">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="font-display font-bold text-[15px]">This week's focus</h2>
-        <a href="app-roadmap-phase-details.html" class="text-[12px] font-semibold text-primary flex items-center gap-1">Open Phase 1 <span class="material-symbols-outlined text-[14px]">arrow_forward</span></a>
+        <h2 class="font-display font-bold text-[15px]">This week's tasks</h2>
+        <span class="text-[12px] text-text-muted">2 of 4 done</span>
       </div>
       <div class="space-y-2">
-        <div class="flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
-          <button class="w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="quickComplete(this)">
-            <span class="material-symbols-outlined text-white text-[13px]" style="display:none;">check</span>
+        <div class="task-row done flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+          <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+            <span class="material-symbols-outlined text-white text-[13px]">check</span>
           </button>
-          <span class="text-[13px] flex-1">Design a rate limiter and present your trade-offs</span>
+          <span class="task-label text-[13px] flex-1">Watch "Scaling Web Applications" module</span>
           <span class="text-[11px] text-text-muted">Phase 1</span>
         </div>
-        <div class="flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
-          <button class="w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="quickComplete(this)">
-            <span class="material-symbols-outlined text-white text-[13px]" style="display:none;">check</span>
+        <div class="task-row done flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+          <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+            <span class="material-symbols-outlined text-white text-[13px]">check</span>
           </button>
-          <span class="text-[13px] flex-1">Complete "GraphQL Fundamentals" module</span>
+          <span class="task-label text-[13px] flex-1">Design a URL-shortener system on paper</span>
+          <span class="text-[11px] text-text-muted">Phase 1</span>
+        </div>
+        <div class="task-row flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+          <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+            <span class="material-symbols-outlined text-white text-[13px]">check</span>
+          </button>
+          <span class="task-label text-[13px] flex-1">Complete "GraphQL Fundamentals" module</span>
+          <span class="text-[11px] text-text-muted">Phase 2</span>
+        </div>
+        <div class="task-row flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+          <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+            <span class="material-symbols-outlined text-white text-[13px]">check</span>
+          </button>
+          <span class="task-label text-[13px] flex-1">Write unit tests for an existing project with Jest</span>
           <span class="text-[11px] text-text-muted">Phase 2</span>
         </div>
       </div>
-      <p class="text-[11px] text-text-muted mt-3">Tap to complete right here — open a phase for full task detail, milestones, and undo.</p>
+      <p class="text-[11px] text-text-muted mt-3">Tap a checkbox to mark complete — tap again to undo.</p>
     </div>
 
-    <!-- Completed tasks (condensed) -->
+    <!-- Completed Tasks (collapsed by default) -->
     <div class="bg-white border border-border-hairline rounded-[16px] p-6">
       <button class="w-full flex items-center justify-between" onclick="document.getElementById('completed-body').classList.toggle('hidden'); this.querySelector('.chev').classList.toggle('rotate-180')">
         <h2 class="font-display font-bold text-[15px]">Completed tasks <span class="text-text-muted font-normal">(7)</span></h2>
         <span class="material-symbols-outlined chev text-[18px] text-text-muted transition-transform">expand_more</span>
       </button>
       <div id="completed-body" class="hidden mt-4 space-y-2">
-        <div class="flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
-          <span class="material-symbols-outlined text-match-forest text-[18px]">check_circle</span>
-          <span class="text-[13px] flex-1">Watch "Scaling Web Applications" module</span>
-          <span class="text-[11px] text-text-muted">Aug 30</span>
+        <div class="task-row done flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+          <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+            <span class="material-symbols-outlined text-white text-[13px]">check</span>
+          </button>
+          <span class="task-label text-[13px] flex-1">Confirmed React &amp; TypeScript proficiency from CV</span>
+          <span class="text-[11px] text-text-muted">Aug 24</span>
         </div>
-        <div class="flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
-          <span class="material-symbols-outlined text-match-forest text-[18px]">check_circle</span>
-          <span class="text-[13px] flex-1">Design a URL-shortener system on paper</span>
-          <span class="text-[11px] text-text-muted">Sep 1</span>
+        <div class="task-row done flex items-center gap-3 p-2.5 border border-border-hairline rounded-[8px]">
+          <button class="task-check w-5 h-5 rounded-[5px] border border-border-hairline flex items-center justify-center flex-shrink-0" onclick="toggleTask(this)">
+            <span class="material-symbols-outlined text-white text-[13px]">check</span>
+          </button>
+          <span class="task-label text-[13px] flex-1">Set up learning schedule (5 hrs/week)</span>
+          <span class="text-[11px] text-text-muted">Aug 25</span>
         </div>
       </div>
     </div>
@@ -377,6 +411,7 @@ tailwind.config = {
     window.scrollTo({top:0, behavior:'smooth'});
   }
 
+  // Show the "Generated" view underneath so the roadmap content is visible while updating
   const origSetView = setView;
   setView = function(name){
     if(name === 'updating'){
@@ -389,29 +424,8 @@ tailwind.config = {
     origSetView(name);
   };
 
-  function toggleMilestone(pip){
-    // Quick-complete right on the map. Real app: POST /roadmap/tasks/{id}/complete (or undo).
-    if(pip.classList.contains('done')){
-      pip.classList.remove('done');
-    } else {
-      pip.classList.add('done');
-      pip.classList.remove('in-progress');
-    }
-  }
-
-  function quickComplete(btn){
-    const row = btn.closest('div.flex');
-    const icon = btn.querySelector('.material-symbols-outlined');
-    const done = btn.style.background === 'rgb(79, 122, 90)';
-    if(done){
-      btn.style.background = '';
-      btn.style.borderColor = '';
-      icon.style.display = 'none';
-    } else {
-      btn.style.background = '#4F7A5A';
-      btn.style.borderColor = '#4F7A5A';
-      icon.style.display = 'inline-block';
-    }
+  function toggleTask(btn){
+    btn.closest('.task-row').classList.toggle('done');
   }
 
   function refreshRoadmap(){

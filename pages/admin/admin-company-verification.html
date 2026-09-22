@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Company Verification — SkillMatch Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary":"#1F365C","primary-container":"#0F2036","on-primary":"#FFFFFF",
+        "secondary":"#9C432A",
+        "canvas-cream":"#FAF8F4","surface-white":"#FFFFFF",
+        "border-hairline":"#E5E1DA",
+        "text-primary":"#1B1C1A","text-secondary":"#44474E","text-muted":"#707780",
+        "match-forest":"#4F7A5A","match-amber":"#C88A26","status-red":"#B3271E"
+      },
+      fontFamily: { display:["DM Sans","sans-serif"], body:["Inter","sans-serif"] }
+    }
+  }
+}
+</script>
+<style>
+  body{ background:linear-gradient(180deg,#FAF8F4 0%,#F5F2EC 240px,#FAF8F4 240px); }
+  .material-symbols-outlined{ font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20; vertical-align:middle; font-size:20px; }
+  .skeleton{ background:linear-gradient(90deg,#EFEDE8 25%,#F5F3EF 37%,#EFEDE8 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+  @keyframes shimmer{ 0%{background-position:100% 0;} 100%{background-position:0 0;} }
+  .view{ display:none; }
+  .view.active{ display:block; }
+  .spinner{ border-radius:50%; border:2.5px solid rgba(255,255,255,0.35); border-top-color:#fff; animation:spin 0.7s linear infinite; }
+  .spinner-dark{ border-radius:50%; border:2.5px solid var(--border-hairline,#E5E1DA); border-top-color:#1F365C; animation:spin 0.7s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .req-row .req-icon{ transition: all .15s ease; }
+</style>
+</head>
+<body class="font-body text-text-primary">
+
+<!-- Demo-only state switcher -->
+<div class="bg-primary-container text-white text-[12px] flex items-center justify-center gap-2 py-2 px-4 flex-wrap sticky top-0 z-50">
+  <span class="text-white/50 mr-1">Preview state:</span>
+  <button onclick="setView('loading')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Loading</button>
+  <button onclick="setView('pending')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Review Required</button>
+  <button onclick="setView('already-verified')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Already Verified</button>
+  <button onclick="setView('error')" class="px-3 py-1 rounded-[6px] border border-white/20 hover:bg-white/10">Error</button>
+</div>
+
+<header class="sticky top-[37px] z-40 bg-canvas-cream/90 backdrop-blur border-b border-border-hairline/70">
+  <div class="max-w-[920px] mx-auto px-5 h-14 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <button class="w-9 h-9 rounded-full border border-border-hairline flex items-center justify-center hover:bg-white transition-colors" onclick="history.back()">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+      </button>
+      <div class="text-[13px] text-text-muted">
+        <span class="font-semibold text-primary">SkillMatch Admin</span>
+        <span class="mx-1">/</span>
+        <a href="#" class="hover:text-primary">Companies</a>
+        <span class="mx-1">/</span>
+        <span class="text-text-primary font-semibold">Verification</span>
+      </div>
+    </div>
+    <span class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-primary/10 text-primary">
+      <span class="material-symbols-outlined text-[13px]">shield_person</span> Super Admin
+    </span>
+  </div>
+</header>
+
+<main class="max-w-[920px] mx-auto px-5 py-8">
+
+  <!-- ============ LOADING ============ -->
+  <div class="view" id="view-loading">
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <div class="flex items-start gap-4">
+        <div class="w-16 h-16 rounded-2xl skeleton flex-shrink-0"></div>
+        <div class="flex-1">
+          <div class="h-5 w-56 rounded-lg skeleton mb-3"></div>
+          <div class="h-3 w-36 rounded-lg skeleton mb-2"></div>
+          <div class="h-3 w-28 rounded-lg skeleton"></div>
+        </div>
+        <div class="h-8 w-28 rounded-full skeleton"></div>
+      </div>
+    </div>
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 shadow-sm">
+      <div class="h-4 w-40 rounded-lg skeleton mb-5"></div>
+      <div class="space-y-3">
+        <div class="h-12 w-full rounded-xl skeleton"></div>
+        <div class="h-12 w-full rounded-xl skeleton"></div>
+        <div class="h-12 w-full rounded-xl skeleton"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ERROR ============ -->
+  <div class="view" id="view-error">
+    <div class="bg-white border border-border-hairline rounded-3xl py-20 px-6 text-center shadow-sm">
+      <div class="w-16 h-16 rounded-2xl bg-status-red/10 flex items-center justify-center mx-auto mb-5">
+        <span class="material-symbols-outlined text-status-red text-[28px]">error_outline</span>
+      </div>
+      <h2 class="font-display font-bold text-[20px] mb-2">Couldn't load this company's verification data</h2>
+      <p class="text-[13.5px] text-text-muted max-w-sm mx-auto mb-7">Something went wrong on our end. Please try again.</p>
+      <button onclick="setView('pending')" class="bg-primary text-white text-[13px] font-semibold px-6 h-11 rounded-full inline-flex items-center gap-2 shadow-sm">
+        <span class="material-symbols-outlined text-[16px]">refresh</span> Retry
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ MAIN (Review Required / Verifying / Success / Already Verified share this view) ============ -->
+  <div class="view" id="view-main">
+
+    <!-- Verification Status banner — always visible, never a generic "Success" splash -->
+    <div class="rounded-2xl px-5 py-4 mb-5 flex items-start gap-3 shadow-sm border" id="status-banner">
+      <span class="material-symbols-outlined text-[22px] flex-shrink-0 mt-0.5" id="banner-icon">hourglass_top</span>
+      <div class="flex-1">
+        <div class="text-[14px] font-bold" id="banner-title">Pending review</div>
+        <div class="text-[12.5px] mt-0.5 opacity-85" id="banner-sub">Submitted Sep 3, 2026 — no verification decision has been made yet.</div>
+      </div>
+      <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/70 flex-shrink-0" id="banner-badge">PENDING</span>
+    </div>
+
+    <!-- Company Information -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center flex-shrink-0 shadow-sm">
+          <span class="font-display font-extrabold text-[22px] text-white">T</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h1 class="font-display font-extrabold text-[21px] leading-tight mb-1">TechNova Solutions</h1>
+          <div class="text-[13px] text-text-secondary">Software &amp; IT Services · 51–200 employees</div>
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-text-muted mt-1.5">
+            <a href="#" class="flex items-center gap-1 hover:text-primary"><span class="material-symbols-outlined text-[14px]">language</span> technova.com</a>
+            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">place</span> Cairo, Egypt</span>
+            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_month</span> Founded 2018</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submitted Details -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <h2 class="font-display font-bold text-[15px] mb-4">Submitted details</h2>
+      <div class="grid sm:grid-cols-2 gap-3 text-[13px] mb-5">
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Contact person</span><span class="font-medium">Nourhan Adel</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Contact email</span><span class="font-medium">nourhan@technova.com</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Business registration no.</span><span class="font-medium">EG-2018-773421</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Tax ID</span><span class="font-medium">TX-994102-EG</span></div>
+      </div>
+      <div class="text-[11px] font-semibold text-text-muted mb-2">DOCUMENTS</div>
+      <div class="space-y-2">
+        <div class="flex items-center gap-3 border border-border-hairline rounded-xl p-3">
+          <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0"><span class="material-symbols-outlined text-[17px]">description</span></div>
+          <div class="flex-1 min-w-0"><div class="text-[13px] font-semibold truncate">business_registration.pdf</div></div>
+          <a href="#" class="text-[12px] font-semibold text-primary">View</a>
+        </div>
+        <div class="flex items-center gap-3 border border-border-hairline rounded-xl p-3">
+          <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0"><span class="material-symbols-outlined text-[17px]">description</span></div>
+          <div class="flex-1 min-w-0"><div class="text-[13px] font-semibold truncate">tax_certificate.pdf</div></div>
+          <a href="#" class="text-[12px] font-semibold text-primary">View</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verification Requirements -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <h2 class="font-display font-bold text-[15px] mb-4">Verification requirements</h2>
+      <div class="space-y-2.5">
+        <div class="req-row flex items-center gap-3 border border-border-hairline rounded-xl px-4 py-3">
+          <span class="req-icon material-symbols-outlined text-match-forest text-[19px]">check_circle</span>
+          <span class="text-[13px] font-medium flex-1">Valid business registration document</span>
+          <span class="text-[11px] font-semibold text-match-forest">Passed</span>
+        </div>
+        <div class="req-row flex items-center gap-3 border border-border-hairline rounded-xl px-4 py-3">
+          <span class="req-icon material-symbols-outlined text-match-forest text-[19px]">check_circle</span>
+          <span class="text-[13px] font-medium flex-1">Verified email domain matches company website</span>
+          <span class="text-[11px] font-semibold text-match-forest">Passed</span>
+        </div>
+        <div class="req-row flex items-center gap-3 border border-border-hairline rounded-xl px-4 py-3">
+          <span class="req-icon material-symbols-outlined text-match-amber text-[19px]">schedule</span>
+          <span class="text-[13px] font-medium flex-1">No duplicate company listings found</span>
+          <span class="text-[11px] font-semibold text-match-amber">Needs manual check</span>
+        </div>
+        <div class="req-row flex items-center gap-3 border border-border-hairline rounded-xl px-4 py-3">
+          <span class="req-icon material-symbols-outlined text-match-forest text-[19px]">check_circle</span>
+          <span class="text-[13px] font-medium flex-1">Tax ID format valid for registered country</span>
+          <span class="text-[11px] font-semibold text-match-forest">Passed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Information -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <h2 class="font-display font-bold text-[15px] mb-4">Review information</h2>
+      <div class="grid sm:grid-cols-2 gap-3 text-[13px]">
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Submitted</span><span class="font-medium">Sep 3, 2026</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Assigned reviewer</span><span class="font-medium">You</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2"><span class="text-text-muted">Review SLA</span><span class="font-medium">Due Sep 6, 2026</span></div>
+        <div class="flex justify-between border-b border-border-hairline pb-2" id="review-decision-row">
+          <span class="text-text-muted">Decision</span><span class="font-medium text-text-muted">Not yet decided</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Notes -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 mb-5 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display font-bold text-[15px]">Admin notes</h2>
+        <button onclick="toggleNoteForm()" class="text-[12px] font-semibold text-primary flex items-center gap-1">
+          <span class="material-symbols-outlined text-[15px]">add</span> Add note
+        </button>
+      </div>
+      <div class="space-y-3" id="notes-list">
+        <div class="border border-border-hairline rounded-xl p-3.5">
+          <p class="text-[13px] text-text-secondary leading-relaxed">Website and registration number match. Checking for duplicate listings under a similar name before deciding.</p>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-[11px] text-text-muted">You · Sep 3, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="hidden mt-4 pt-4 border-t border-border-hairline" id="note-form">
+        <textarea rows="2" placeholder="Add an internal note about this review…" class="w-full border border-border-hairline rounded-xl p-3 text-[13px] outline-none focus:border-primary resize-none"></textarea>
+        <div class="flex justify-end gap-2 mt-2">
+          <button onclick="toggleNoteForm()" class="h-8 px-3 rounded-full text-[12px] font-semibold text-text-secondary">Cancel</button>
+          <button onclick="saveNote()" class="h-8 px-4 rounded-full bg-primary text-white text-[12px] font-semibold">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decision actions -->
+    <div class="bg-white border border-border-hairline rounded-3xl p-6 shadow-sm">
+      <h2 class="font-display font-bold text-[15px] mb-1" id="decision-heading">Make a decision</h2>
+      <p class="text-[12.5px] text-text-muted mb-4" id="decision-sub">This updates the company's verification state immediately and is visible to the company.</p>
+      <div class="flex flex-wrap gap-2" id="decision-actions">
+        <button onclick="decide('verified')" class="h-11 px-5 rounded-full bg-match-forest text-white text-[13px] font-semibold flex items-center gap-2 shadow-sm hover:opacity-90 transition-opacity">
+          <span class="material-symbols-outlined text-[17px]">verified</span> Verify Company
+        </button>
+        <button onclick="decide('pending')" class="h-11 px-5 rounded-full border border-border-hairline text-[13px] font-semibold flex items-center gap-2 hover:bg-canvas-cream transition-colors">
+          <span class="material-symbols-outlined text-[17px]">hourglass_top</span> Keep Pending
+        </button>
+        <button onclick="decide('not-verified')" class="h-11 px-5 rounded-full border border-status-red/30 text-status-red text-[13px] font-semibold flex items-center gap-2 hover:bg-status-red/5 transition-colors">
+          <span class="material-symbols-outlined text-[17px]">block</span> Reject / Mark Not Verified
+        </button>
+        <a href="#" class="h-11 px-5 rounded-full text-[13px] font-semibold flex items-center gap-2 text-text-secondary ml-auto hover:text-primary transition-colors">
+          <span class="material-symbols-outlined text-[17px]">arrow_back</span> Return to Company Details
+        </a>
+      </div>
+      <!-- Verifying overlay -->
+      <div class="hidden items-center gap-2.5 mt-4 pt-4 border-t border-border-hairline text-[13px] font-medium text-text-secondary" id="verifying-row">
+        <div class="w-4 h-4 spinner-dark"></div> Saving your decision…
+      </div>
+      <!-- Change-decision (shown once a decision has been made) -->
+      <div class="hidden mt-4 pt-4 border-t border-border-hairline" id="change-decision-row">
+        <button onclick="resetToPending()" class="text-[12.5px] font-semibold text-primary flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">edit</span> Change decision
+        </button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  function setView(name){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+    if(name === 'loading' || name === 'error'){
+      document.getElementById('view-' + name).classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+      return;
+    }
+
+    document.getElementById('view-main').classList.add('active');
+
+    if(name === 'pending'){
+      renderBanner('pending');
+      showDecisionActions();
+    } else if(name === 'already-verified'){
+      renderBanner('already-verified');
+      showChangeDecisionOnly();
+    }
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function renderBanner(state){
+    const banner = document.getElementById('status-banner');
+    const icon = document.getElementById('banner-icon');
+    const title = document.getElementById('banner-title');
+    const sub = document.getElementById('banner-sub');
+    const badge = document.getElementById('banner-badge');
+    const decisionRow = document.getElementById('review-decision-row');
+
+    const styles = {
+      pending:   { bg:'bg-match-amber/10 border-match-amber/25', text:'text-match-amber', icon:'hourglass_top',
+                   title:'Pending review', sub:'Submitted Sep 3, 2026 — no verification decision has been made yet.', badgeText:'PENDING' },
+      verified:  { bg:'bg-match-forest/10 border-match-forest/25', text:'text-match-forest', icon:'verified',
+                   title:'Verified', sub:'Verified by you just now. This company is now visible as verified across SkillMatch.', badgeText:'VERIFIED' },
+      'not-verified': { bg:'bg-status-red/10 border-status-red/25', text:'text-status-red', icon:'block',
+                   title:'Not Verified', sub:'Marked Not Verified by you just now. The company has been notified of this decision.', badgeText:'NOT VERIFIED' },
+      'already-verified': { bg:'bg-match-forest/10 border-match-forest/25', text:'text-match-forest', icon:'verified',
+                   title:'Already verified', sub:'Verified on Aug 10, 2026 by Omar Khaled. No action is required unless you want to change this.', badgeText:'VERIFIED' }
+    };
+    const s = styles[state];
+    banner.className = 'rounded-2xl px-5 py-4 mb-5 flex items-start gap-3 shadow-sm border ' + s.bg + ' ' + s.text;
+    icon.textContent = s.icon;
+    title.textContent = s.title;
+    title.className = 'text-[14px] font-bold ' + s.text;
+    sub.textContent = s.sub;
+    badge.textContent = s.badgeText;
+
+    if(state === 'pending'){
+      decisionRow.querySelector('span:last-child').textContent = 'Not yet decided';
+      decisionRow.querySelector('span:last-child').className = 'font-medium text-text-muted';
+    } else if(state === 'verified' || state === 'already-verified'){
+      decisionRow.querySelector('span:last-child').textContent = 'Verified';
+      decisionRow.querySelector('span:last-child').className = 'font-medium text-match-forest';
+    } else if(state === 'not-verified'){
+      decisionRow.querySelector('span:last-child').textContent = 'Not Verified';
+      decisionRow.querySelector('span:last-child').className = 'font-medium text-status-red';
+    }
+  }
+
+  function showDecisionActions(){
+    document.getElementById('decision-heading').textContent = 'Make a decision';
+    document.getElementById('decision-sub').classList.remove('hidden');
+    document.getElementById('decision-actions').classList.remove('hidden');
+    document.getElementById('verifying-row').classList.add('hidden');
+    document.getElementById('verifying-row').classList.remove('flex');
+    document.getElementById('change-decision-row').classList.add('hidden');
+  }
+
+  function showChangeDecisionOnly(){
+    document.getElementById('decision-heading').textContent = 'Decision recorded';
+    document.getElementById('decision-sub').classList.add('hidden');
+    document.getElementById('decision-actions').classList.add('hidden');
+    document.getElementById('verifying-row').classList.add('hidden');
+    document.getElementById('verifying-row').classList.remove('flex');
+    document.getElementById('change-decision-row').classList.remove('hidden');
+  }
+
+  function decide(outcome){
+    if(outcome === 'pending'){
+      renderBanner('pending');
+      return;
+    }
+    // Verifying state — buttons disabled, saving indicator shown
+    document.getElementById('decision-actions').classList.add('hidden');
+    document.getElementById('decision-sub').classList.add('hidden');
+    document.getElementById('verifying-row').classList.remove('hidden');
+    document.getElementById('verifying-row').classList.add('flex');
+
+    setTimeout(() => {
+      renderBanner(outcome);
+      showChangeDecisionOnly();
+    }, 1300);
+  }
+
+  function resetToPending(){
+    renderBanner('pending');
+    showDecisionActions();
+  }
+
+  function toggleNoteForm(){
+    document.getElementById('note-form').classList.toggle('hidden');
+  }
+
+  function saveNote(){
+    const textarea = document.querySelector('#note-form textarea');
+    if(!textarea.value.trim()) return;
+    const list = document.getElementById('notes-list');
+    const div = document.createElement('div');
+    div.className = 'border border-border-hairline rounded-xl p-3.5';
+    div.innerHTML = '<p class="text-[13px] text-text-secondary leading-relaxed">' + textarea.value.trim() + '</p>' +
+      '<div class="flex items-center justify-between mt-2"><span class="text-[11px] text-text-muted">You · Just now</span></div>';
+    list.prepend(div);
+    textarea.value = '';
+    toggleNoteForm();
+  }
+
+  setView('pending');
+</script>
+
+</body>
+</html>

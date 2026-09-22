@@ -447,7 +447,15 @@ const screens = {
   roadmapDetails: { path:'/app/roadmap/:id', group:'Career growth', title:'Career Roadmap Details', authed:true, file: 'careerOnboarding/app-roadmap-phase-details.html' },
   mentor: { path:'/app/mentor', group:'Career growth', title:'AI Mentor', authed:true, file: 'careerOnboarding/app-ai-mentor-chat.html' },
   cvManagement: { path:'/app/profile/cv', group:'Career growth', title:'CV Management', authed:true, file: 'careerOnboarding/cv_management_en.html' },
-  interviewPrep: { path:'/app/interview', group:'Phase 2', title:'Interview Preparation', authed:true, phase2:true, file: 'interviewPrep.html' },
+  adminDashboard: { path:'/admin', group:'super admin', title:'Admin Dashboard', authed:true ,file: "admin/admin-dashboard.html" },
+  adminCompanies: { path:'/admin/companies', group:'super admin', title:'Company Management', authed:true , file : "admin/admin-companies.html" },
+  adminCompanyDetails: { path:'/admin/companies/:companyId', group:'super admin', title:'Company Details / Manage Company', authed:true , file : "admin/admin-companies-details.html"},
+  adminCompanyVerification: { path:'/admin/companies/:companyId/verification', group:'super admin', title:'Company Verification', authed:true , file : "admin/admin-company-verification.html"},
+  adminJobs: { path:'/admin/jobs', group:'super admin', title:'Job Management', authed:true , file : "admin/admin-job-management.html" },
+  adminJobDetails: { path:'/admin/jobs/:jobId', group:'super admin', title:'Job Details', authed:true , file: "admin/admin-job-details.html"},
+  adminJobEdit: { path:'/admin/jobs/:jobId/edit', group:'super admin', title:'Edit Job', authed:true,  file: "admin/admin-edit-job.html"},
+  adminAuditLogs: { path:'/admin/audit-logs', group:'super admin', title:'Audit Logs', authed:true , file : "admin/admin-audit-logs.html" },
+  adminAuditLogDetails: { path:'/admin/audit-logs/:id', group:'super admin', title:'Audit Log Details', authed:true , file : "admin/admin-audit-logs-details.html" },
 };
 
 /* ============================================================
@@ -461,11 +469,11 @@ function renderRail(){
   Object.entries(screens).forEach(([id, s])=>{
     (groups[s.group] = groups[s.group] || []).push([id, s]);
   });
-  const order = ['Auth','Core app','Career growth','Phase 2'];
-  document.getElementById('railScroll').innerHTML = order.map(g=>`
+  const order = ['Auth','Core app','Career growth','super admin','Phase 2'];
+  document.getElementById('railScroll').innerHTML = order?.map(g=>`
     <div class="rail-group">
       <div class="rail-group-label">${g}</div>
-      ${groups[g].map(([id,s])=>`
+      ${groups[g]?.map(([id,s])=>`
         <button class="rail-item" id="rail-${id}" onclick="go('${id}')">
           <span class="rdot"></span>
           <span class="rname">${s.title}</span>
@@ -495,6 +503,12 @@ async function render(){
   // جلب العنصر الذي سنعرض فيه المحتوى
   const screenEl = document.getElementById('screen');
   screenEl.innerHTML = '<p style="text-align:center; color:var(--ink-soft); margin-top:20px;">جاري التحميل...</p>';
+
+  if(!s.file){
+    screenEl.innerHTML = '<p style="text-align:center; color:var(--ink-soft); margin-top:20px;">Page definition only</p>';
+    document.getElementById('device').scrollTop = 0;
+    return;
+  }
 
   try {
     // محاولة جلب ملف الـ HTML (تأكد أن الملفات في نفس المجلد أو قم بتعديل المسار هنا)

@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MatchIn — Audit Log Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-primary: #1f365c;
+      --color-secondary: #d06b4f;
+      --color-accent: #d4a72c;
+      --color-background: #faf8f4;
+      --color-surface: #ffffff;
+      --color-ink: #222831;
+      --color-muted: #707780;
+      --color-border: #e5e1da;
+      --color-success: #4f7a5a;
+      --color-warning: #c88a26;
+      --color-error: #b85450;
+      --color-primary-foreground: #ffffff;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-card: 0 2px 8px rgba(0,0,0,0.03);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--color-background);
+      color: var(--color-ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 32px 28px 64px;
+      min-height: 100vh;
+    }
+
+    .page { max-width: 900px; margin: 0 auto; }
+
+    /* ========== Buttons ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      padding: 0 16px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 600;
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+      background: var(--color-surface);
+      color: var(--color-ink);
+    }
+    .btn:hover { background: #f5f2ec; border-color: #d9d4cb; }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn-primary {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+    .btn-primary:hover { background: #182a4a; border-color: #182a4a; }
+    .btn-ghost {
+      background: transparent;
+      border-color: transparent;
+      color: var(--color-muted);
+    }
+    .btn-ghost:hover {
+      background: rgba(0,0,0,0.04);
+      color: var(--color-ink);
+    }
+
+    /* ========== Breadcrumb + Header ========== */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--color-muted);
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .breadcrumb a {
+      color: var(--color-muted);
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { color: var(--color-primary); }
+    .breadcrumb svg { width: 14px; height: 14px; opacity: 0.55; }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    .page-header .log-id {
+      font-size: 13.5px;
+      color: var(--color-muted);
+      margin-top: 4px;
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    }
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* ========== Status Strip ========== */
+    .status-strip {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-card);
+    }
+    .action-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 32px;
+      padding: 0 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+    .action-badge svg { width: 15px; height: 15px; }
+    .badge-status {
+      background: rgba(208,107,79,0.12);
+      color: var(--color-secondary);
+    }
+    .badge-verified {
+      background: rgba(79,122,90,0.12);
+      color: var(--color-success);
+    }
+    .badge-updated {
+      background: rgba(31,54,92,0.1);
+      color: var(--color-primary);
+    }
+    .badge-rejected {
+      background: rgba(184,84,80,0.12);
+      color: var(--color-error);
+    }
+    .badge-created {
+      background: rgba(212,167,44,0.14);
+      color: #a07e1a;
+    }
+    .badge-login {
+      background: rgba(112,119,128,0.12);
+      color: var(--color-muted);
+    }
+
+    .strip-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      color: var(--color-muted);
+      flex-wrap: wrap;
+    }
+    .strip-meta .dot {
+      width: 3px; height: 3px; border-radius: 50%; background: var(--color-border);
+    }
+    .strip-meta strong {
+      color: var(--color-ink);
+      font-weight: 600;
+    }
+
+    .immutable-tag {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 550;
+      color: var(--color-muted);
+      background: rgba(112,119,128,0.08);
+      padding: 5px 10px;
+      border-radius: 999px;
+    }
+    .immutable-tag svg { width: 13px; height: 13px; }
+
+    /* ========== Cards ========== */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .card-header h2 {
+      font-size: 14.5px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+    }
+    .card-header .hint {
+      font-size: 12.5px;
+      color: var(--color-muted);
+      font-weight: 400;
+    }
+    .card-body {
+      padding: 20px;
+    }
+
+    /* ========== Info Grid ========== */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 28px;
+    }
+    @media (max-width: 640px) {
+      .info-grid { grid-template-columns: 1fr; }
+    }
+    .info-field label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-muted);
+      margin-bottom: 5px;
+    }
+    .info-field .value {
+      font-size: 14.5px;
+      font-weight: 550;
+      color: var(--color-ink);
+    }
+    .info-field .value.mono {
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 13.5px;
+      font-weight: 500;
+    }
+    .info-field .value.muted {
+      color: var(--color-muted);
+      font-weight: 400;
+    }
+    .info-field.full { grid-column: 1 / -1; }
+
+    /* Actor block */
+    .actor-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .actor-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--color-secondary);
+      flex-shrink: 0;
+    }
+    .actor-name {
+      font-size: 15px;
+      font-weight: 650;
+      color: var(--color-ink);
+    }
+    .actor-role {
+      font-size: 13px;
+      color: var(--color-muted);
+    }
+
+    /* Entity link */
+    .entity-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14.5px;
+    }
+    .entity-link:hover { text-decoration: underline; }
+    .entity-link svg { width: 14px; height: 14px; }
+
+    /* ========== Diff Section ========== */
+    .diff-summary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(31,54,92,0.04);
+      border: 1px solid rgba(31,54,92,0.1);
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+      font-size: 13.5px;
+      color: var(--color-ink);
+    }
+    .diff-summary svg {
+      width: 18px;
+      height: 18px;
+      color: var(--color-primary);
+      flex-shrink: 0;
+    }
+    .diff-summary strong { font-weight: 650; }
+
+    .diff-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 640px) {
+      .diff-grid { grid-template-columns: 1fr; }
+    }
+
+    .diff-panel {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid;
+    }
+    .diff-panel-header {
+      padding: 10px 14px;
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .diff-panel-header svg { width: 14px; height: 14px; }
+    .diff-panel-body {
+      padding: 14px 16px;
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .diff-prev {
+      border-color: rgba(184,84,80,0.22);
+    }
+    .diff-prev .diff-panel-header {
+      background: rgba(184,84,80,0.08);
+      color: var(--color-error);
+    }
+    .diff-prev .diff-panel-body {
+      background: rgba(184,84,80,0.03);
+      color: #8a3a37;
+    }
+
+    .diff-new {
+      border-color: rgba(79,122,90,0.25);
+    }
+    .diff-new .diff-panel-header {
+      background: rgba(79,122,90,0.1);
+      color: var(--color-success);
+    }
+    .diff-new .diff-panel-body {
+      background: rgba(79,122,90,0.03);
+      color: #3a5c44;
+    }
+
+    /* Field-level changes list */
+    .field-changes {
+      margin-top: 16px;
+      border-top: 1px solid var(--color-border);
+      padding-top: 16px;
+    }
+    .field-changes h3 {
+      font-size: 12.5px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--color-muted);
+      margin-bottom: 12px;
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: 140px 1fr 1fr;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+      align-items: start;
+      font-size: 13.5px;
+    }
+    .field-row:last-child { border-bottom: none; }
+    @media (max-width: 640px) {
+      .field-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+        padding: 12px 0;
+      }
+    }
+    .field-name {
+      font-weight: 600;
+      color: var(--color-ink);
+    }
+    .field-old {
+      color: var(--color-error);
+      text-decoration: line-through;
+      opacity: 0.85;
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+    }
+    .field-new {
+      color: var(--color-success);
+      font-weight: 550;
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+    }
+
+    /* ========== Related Entities ========== */
+    .related-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 560px) {
+      .related-grid { grid-template-columns: 1fr; }
+    }
+    .related-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+      background: var(--color-surface);
+    }
+    .related-card:hover {
+      border-color: rgba(31,54,92,0.3);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+    .related-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .related-icon svg { width: 20px; height: 20px; }
+    .related-icon.job {
+      background: rgba(212,167,44,0.14);
+      color: #a07e1a;
+    }
+    .related-icon.company {
+      background: rgba(31,54,92,0.1);
+      color: var(--color-primary);
+    }
+    .related-info { flex: 1; min-width: 0; }
+    .related-label {
+      font-size: 11.5px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--color-muted);
+    }
+    .related-title {
+      font-size: 14.5px;
+      font-weight: 650;
+      color: var(--color-ink);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .related-id {
+      font-size: 12px;
+      color: var(--color-muted);
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      margin-top: 1px;
+    }
+    .related-arrow {
+      color: var(--color-primary);
+      flex-shrink: 0;
+    }
+    .related-arrow svg { width: 18px; height: 18px; }
+
+    /* ========== Metadata ========== */
+    .meta-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 13.5px;
+    }
+    .meta-row:last-child { border-bottom: none; }
+    .meta-key {
+      color: var(--color-muted);
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .meta-val {
+      color: var(--color-ink);
+      font-weight: 550;
+      text-align: right;
+      word-break: break-all;
+    }
+    .meta-val.mono {
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 12.5px;
+      font-weight: 500;
+    }
+
+    /* ========== Footer ========== */
+    .page-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ========== Read-only banner ========== */
+    .readonly-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 16px;
+      background: rgba(112,119,128,0.06);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--color-muted);
+      line-height: 1.45;
+    }
+    .readonly-banner svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      opacity: 0.75;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ========== BREADCRUMB ========== -->
+    <div class="breadcrumb">
+      <a href="#">Audit Logs</a>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+      <span>AL-94821</span>
+    </div>
+
+    <!-- ========== PAGE HEADER ========== -->
+    <div class="page-header">
+      <div>
+        <h1>Audit Log Details</h1>
+        <div class="log-id">#AL-94821</div>
+      </div>
+      <div class="header-actions">
+        <a href="#" class="btn btn-ghost">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
+          Return to Audit Logs
+        </a>
+      </div>
+    </div>
+
+    <!-- ========== READ-ONLY NOTE ========== -->
+    <div class="readonly-banner">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+      <span>This is an immutable record. Audit logs cannot be edited or deleted. They exist for full administrative traceability.</span>
+    </div>
+
+    <!-- ========== STATUS STRIP ========== -->
+    <div class="status-strip">
+      <span class="action-badge badge-status">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182"/></svg>
+        Job Status Changed
+      </span>
+      <div class="strip-meta">
+        <span>by <strong>Omar Hassan</strong></span>
+        <span class="dot"></span>
+        <span>Sep 22, 2026 · 14:18:07 EEST</span>
+        <span class="dot"></span>
+        <span>26 min ago</span>
+      </div>
+      <span class="immutable-tag">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+        Read-only
+      </span>
+    </div>
+
+    <!-- ========== 1. ACTOR ========== -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Admin / Actor</h2>
+        <span class="hint">Who performed this action</span>
+      </div>
+      <div class="card-body">
+        <div class="actor-block">
+          <div class="actor-avatar">OH</div>
+          <div>
+            <div class="actor-name">Omar Hassan</div>
+            <div class="actor-role">Super Admin · ADM-002</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 2. ENTITY ========== -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Entity</h2>
+        <span class="hint">What was affected</span>
+      </div>
+      <div class="card-body">
+        <div class="info-grid">
+          <div class="info-field">
+            <label>Entity Type</label>
+            <div class="value">Job</div>
+          </div>
+          <div class="info-field">
+            <label>Entity ID</label>
+            <div class="value mono">JOB-2841</div>
+          </div>
+          <div class="info-field full">
+            <label>Entity Title</label>
+            <div class="value">
+              <a href="#" class="entity-link">
+                Senior Frontend Engineer
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 3. TIMESTAMP ========== -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Timestamp</h2>
+        <span class="hint">When it happened</span>
+      </div>
+      <div class="card-body">
+        <div class="info-grid">
+          <div class="info-field">
+            <label>Date &amp; Time</label>
+            <div class="value">September 22, 2026 · 14:18:07</div>
+          </div>
+          <div class="info-field">
+            <label>Timezone</label>
+            <div class="value">EEST (UTC+3)</div>
+          </div>
+          <div class="info-field">
+            <label>Relative</label>
+            <div class="value muted">26 minutes ago</div>
+          </div>
+          <div class="info-field">
+            <label>Unix Timestamp</label>
+            <div class="value mono">1727103487</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 4. PREVIOUS / NEW DATA ========== -->
+    <div class="card">
+      <div class="card-header">
+        <h2>What Changed</h2>
+        <span class="hint">Previous value → New value</span>
+      </div>
+      <div class="card-body">
+        <div class="diff-summary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg>
+          <span><strong>status</strong> changed from <strong>open</strong> to <strong>suspended</strong></span>
+        </div>
+
+        <div class="diff-grid">
+          <div class="diff-panel diff-prev">
+            <div class="diff-panel-header">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+              Previous Data
+            </div>
+            <div class="diff-panel-body">{
+  "status": "open",
+  "visibility": "public",
+  "updatedAt": "2026-09-20T11:02:00Z"
+}</div>
+          </div>
+          <div class="diff-panel diff-new">
+            <div class="diff-panel-header">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+              New Data
+            </div>
+            <div class="diff-panel-body">{
+  "status": "suspended",
+  "visibility": "hidden",
+  "updatedAt": "2026-09-22T14:18:07Z"
+}</div>
+          </div>
+        </div>
+
+        <div class="field-changes">
+          <h3>Field-level changes</h3>
+          <div class="field-row">
+            <div class="field-name">status</div>
+            <div class="field-old">open</div>
+            <div class="field-new">suspended</div>
+          </div>
+          <div class="field-row">
+            <div class="field-name">visibility</div>
+            <div class="field-old">public</div>
+            <div class="field-new">hidden</div>
+          </div>
+          <div class="field-row">
+            <div class="field-name">updatedAt</div>
+            <div class="field-old">2026-09-20T11:02:00Z</div>
+            <div class="field-new">2026-09-22T14:18:07Z</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 5. RELATED COMPANY / JOB ========== -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Related Entities</h2>
+        <span class="hint">Jump to linked records</span>
+      </div>
+      <div class="card-body">
+        <div class="related-grid">
+          <a href="#" class="related-card">
+            <div class="related-icon job">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.875m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+            </div>
+            <div class="related-info">
+              <div class="related-label">Related Job</div>
+              <div class="related-title">Senior Frontend Engineer</div>
+              <div class="related-id">JOB-2841</div>
+            </div>
+            <div class="related-arrow">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+            </div>
+          </a>
+
+          <a href="#" class="related-card">
+            <div class="related-icon company">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
+            </div>
+            <div class="related-info">
+              <div class="related-label">Related Company</div>
+              <div class="related-title">BrightPath Inc.</div>
+              <div class="related-id">CMP-0881</div>
+            </div>
+            <div class="related-arrow">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 6. METADATA ========== -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Metadata</h2>
+        <span class="hint">Technical context of the request</span>
+      </div>
+      <div class="card-body" style="padding-top:8px;padding-bottom:8px;">
+        <div class="meta-list">
+          <div class="meta-row">
+            <span class="meta-key">IP Address</span>
+            <span class="meta-val mono">41.68.102.9</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Location</span>
+            <span class="meta-val">Cairo, Egypt</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">User Agent</span>
+            <span class="meta-val" style="font-size:12.5px;font-weight:400;color:var(--color-muted);max-width:420px;">Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) Chrome/128.0.0.0</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Request ID</span>
+            <span class="meta-val mono">req_8f3a2c91b4e0</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Session ID</span>
+            <span class="meta-val mono">sess_omar_20260922</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Source</span>
+            <span class="meta-val">Admin Panel · /admin/jobs/JOB-2841/edit</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== FOOTER ACTIONS ========== -->
+    <div class="page-footer">
+      <a href="#" class="btn btn-ghost">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
+        Return to Audit Logs
+      </a>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="#" class="btn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
+          View Related Company
+        </a>
+        <a href="#" class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.875m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+          View Related Job
+        </a>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
