@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MatchIn — User Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-primary: #1f365c;
+      --color-secondary: #d06b4f;
+      --color-accent: #d4a72c;
+      --color-background: #faf8f4;
+      --color-surface: #ffffff;
+      --color-ink: #222831;
+      --color-muted: #707780;
+      --color-border: #e5e1da;
+      --color-success: #4f7a5a;
+      --color-warning: #c88a26;
+      --color-error: #b85450;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-card: 0 2px 8px rgba(0,0,0,0.03);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--color-background);
+      color: var(--color-ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 32px 28px 64px;
+      min-height: 100vh;
+    }
+
+    .page { max-width: 1280px; margin: 0 auto; }
+
+    /* ========== Buttons ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      padding: 0 16px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 600;
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+      background: var(--color-surface);
+      color: var(--color-ink);
+    }
+    .btn:hover { background: #f5f2ec; border-color: #d9d4cb; }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn-primary {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+    .btn-primary:hover { background: #182a4a; border-color: #182a4a; }
+    .btn-success {
+      background: transparent;
+      color: var(--color-success);
+      border-color: rgba(79,122,90,0.35);
+    }
+    .btn-success:hover {
+      background: rgba(79,122,90,0.08);
+      border-color: var(--color-success);
+    }
+    .btn-danger {
+      background: transparent;
+      color: var(--color-error);
+      border-color: rgba(184,84,80,0.35);
+    }
+    .btn-danger:hover {
+      background: rgba(184,84,80,0.08);
+      border-color: var(--color-error);
+    }
+    .btn-sm {
+      height: 32px;
+      padding: 0 11px;
+      font-size: 12.5px;
+      border-radius: var(--radius-sm);
+      gap: 6px;
+    }
+    .btn-sm svg { width: 14px; height: 14px; }
+    .btn-ghost {
+      background: transparent;
+      border-color: transparent;
+      color: var(--color-muted);
+    }
+    .btn-ghost:hover {
+      background: rgba(0,0,0,0.04);
+      color: var(--color-ink);
+    }
+
+    /* ========== Header ========== */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    .page-header p {
+      font-size: 14px;
+      color: var(--color-muted);
+      margin-top: 4px;
+    }
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* ========== Stats strip ========== */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    @media (max-width: 800px) {
+      .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 440px) {
+      .stats-strip { grid-template-columns: 1fr; }
+    }
+    .stat-pill {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .stat-pill-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .stat-pill-icon svg { width: 20px; height: 20px; }
+    .stat-pill-icon.all { background: rgba(31,54,92,0.1); color: var(--color-primary); }
+    .stat-pill-icon.active { background: rgba(79,122,90,0.12); color: var(--color-success); }
+    .stat-pill-icon.inactive { background: rgba(112,119,128,0.12); color: var(--color-muted); }
+    .stat-pill-icon.admin { background: rgba(208,107,79,0.12); color: var(--color-secondary); }
+    .stat-pill-value {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .stat-pill-label {
+      font-size: 12.5px;
+      color: var(--color-muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* ========== Toolbar ========== */
+    .toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .toolbar-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .search-wrap {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--color-muted);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      height: 42px;
+      padding: 0 14px 0 42px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--color-ink);
+      background: var(--color-surface);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .search-input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(31,54,92,0.12);
+    }
+    .search-input::placeholder { color: var(--color-muted); }
+
+    .filter-select {
+      height: 42px;
+      padding: 0 36px 0 14px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-family: inherit;
+      font-weight: 500;
+      color: var(--color-ink);
+      background: var(--color-surface);
+      appearance: none;
+      cursor: pointer;
+      outline: none;
+      min-width: 140px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%707780' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      transition: border-color 0.15s;
+    }
+    .filter-select:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(31,54,92,0.12);
+    }
+
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 28px;
+      padding: 0 10px;
+      background: rgba(31,54,92,0.08);
+      color: var(--color-primary);
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 550;
+    }
+    .filter-chip button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      color: var(--color-primary);
+      opacity: 0.65;
+    }
+    .filter-chip button:hover { opacity: 1; }
+    .filter-chip button svg { width: 12px; height: 12px; }
+    .clear-filters {
+      font-size: 12.5px;
+      font-weight: 550;
+      color: var(--color-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+    .clear-filters:hover { color: var(--color-ink); text-decoration: underline; }
+
+    /* ========== Results bar ========== */
+    .results-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .results-count {
+      font-size: 13.5px;
+      color: var(--color-muted);
+    }
+    .results-count strong { color: var(--color-ink); font-weight: 600; }
+    .sort-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--color-muted);
+    }
+
+    /* ========== Table ========== */
+    .table-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .table-scroll { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1000px;
+    }
+    thead {
+      background: #f7f4ef;
+      border-bottom: 1px solid var(--color-border);
+    }
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 11.5px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-muted);
+      white-space: nowrap;
+    }
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { color: var(--color-ink); }
+    th .sort-icon {
+      display: inline-flex;
+      margin-left: 4px;
+      opacity: 0.45;
+      vertical-align: middle;
+    }
+    th.sorted .sort-icon { opacity: 1; color: var(--color-primary); }
+
+    td {
+      padding: 14px 16px;
+      font-size: 13.5px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background 0.12s; }
+    tbody tr:hover { background: #faf9f6; }
+    tbody tr.inactive-row { opacity: 0.72; }
+
+    /* User cell */
+    .user-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .user-avatar.c1 { background: var(--color-primary); }
+    .user-avatar.c2 { background: var(--color-secondary); }
+    .user-avatar.c3 { background: #3d6b8a; }
+    .user-avatar.c4 { background: var(--color-accent); color: var(--color-ink); }
+    .user-avatar.c5 { background: #5a6b4f; }
+    .user-avatar.c6 { background: #6b4f6b; }
+    .user-avatar.c7 { background: #4a6fa5; }
+    .user-name {
+      font-weight: 650;
+      color: var(--color-ink);
+      font-size: 14px;
+    }
+    .user-id {
+      font-size: 12px;
+      color: var(--color-muted);
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      margin-top: 1px;
+    }
+
+    .email-cell {
+      font-size: 13.5px;
+      color: var(--color-ink);
+    }
+
+    /* Role badge */
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+    .role-admin {
+      background: rgba(208,107,79,0.12);
+      color: var(--color-secondary);
+      border: 1px solid rgba(208,107,79,0.22);
+    }
+    .role-recruiter {
+      background: rgba(31,54,92,0.1);
+      color: var(--color-primary);
+      border: 1px solid rgba(31,54,92,0.15);
+    }
+    .role-candidate {
+      background: rgba(79,122,90,0.1);
+      color: var(--color-success);
+      border: 1px solid rgba(79,122,90,0.18);
+    }
+
+    /* Account status */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+    .status-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+    .status-active {
+      background: rgba(79,122,90,0.12);
+      color: var(--color-success);
+    }
+    .status-active .dot { background: var(--color-success); }
+    .status-inactive {
+      background: rgba(112,119,128,0.1);
+      color: var(--color-muted);
+    }
+    .status-inactive .dot { background: var(--color-muted); }
+    .status-suspended {
+      background: rgba(184,84,80,0.12);
+      color: var(--color-error);
+    }
+    .status-suspended .dot { background: var(--color-error); }
+
+    .date-cell {
+      font-size: 13.5px;
+      color: var(--color-ink);
+      white-space: nowrap;
+    }
+    .date-rel {
+      font-size: 12px;
+      color: var(--color-muted);
+    }
+
+    /* Row actions */
+    .row-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: flex-end;
+    }
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--color-muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all 0.12s;
+    }
+    .icon-btn:hover {
+      background: rgba(31,54,92,0.08);
+      color: var(--color-primary);
+      border-color: rgba(31,54,92,0.12);
+    }
+    .icon-btn.danger:hover {
+      background: rgba(184,84,80,0.1);
+      color: var(--color-error);
+      border-color: rgba(184,84,80,0.2);
+    }
+    .icon-btn.success:hover {
+      background: rgba(79,122,90,0.1);
+      color: var(--color-success);
+      border-color: rgba(79,122,90,0.2);
+    }
+    .icon-btn svg { width: 16px; height: 16px; }
+
+    /* ========== Pagination ========== */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-top: 1px solid var(--color-border);
+      flex-wrap: wrap;
+    }
+    .pagination-info {
+      font-size: 13px;
+      color: var(--color-muted);
+    }
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .page-btn {
+      min-width: 34px;
+      height: 34px;
+      padding: 0 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      font-size: 13px;
+      font-weight: 550;
+      color: var(--color-ink);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.12s;
+    }
+    .page-btn:hover:not(:disabled):not(.active) { background: #f5f2ec; }
+    .page-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+      font-size: 12.5px;
+      color: var(--color-muted);
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ========== PAGE HEADER ========== -->
+    <div class="page-header">
+      <div>
+        <h1>User Management</h1>
+        <p>Search, view, and manage all platform users</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+          Export
+        </button>
+        <button class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Add User
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== STATS ========== -->
+    <div class="stats-strip">
+      <div class="stat-pill">
+        <div class="stat-pill-icon all">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
+        </div>
+        <div>
+          <div class="stat-pill-value">6,892</div>
+          <div class="stat-pill-label">Total Users</div>
+        </div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-icon active">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+        </div>
+        <div>
+          <div class="stat-pill-value">6,410</div>
+          <div class="stat-pill-label">Active</div>
+        </div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-icon inactive">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+        </div>
+        <div>
+          <div class="stat-pill-value">482</div>
+          <div class="stat-pill-label">Inactive / Suspended</div>
+        </div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-icon admin">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/></svg>
+        </div>
+        <div>
+          <div class="stat-pill-value">12</div>
+          <div class="stat-pill-label">Admins</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SEARCH + FILTERS ========== -->
+    <div class="toolbar">
+      <div class="toolbar-row">
+        <div class="search-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+          <input class="search-input" type="search" placeholder="Search by name, email, or user ID…" />
+        </div>
+        <select class="filter-select" aria-label="Role">
+          <option value="">All Roles</option>
+          <option>Candidate</option>
+          <option>Recruiter</option>
+          <option>Admin</option>
+        </select>
+        <select class="filter-select" aria-label="Account status">
+          <option value="">All Statuses</option>
+          <option selected>Active</option>
+          <option>Inactive</option>
+          <option>Suspended</option>
+        </select>
+        <select class="filter-select" aria-label="Date range">
+          <option value="">Any time</option>
+          <option>Last 7 days</option>
+          <option>Last 30 days</option>
+          <option>Last 90 days</option>
+        </select>
+      </div>
+      <div class="active-filters">
+        <span class="filter-chip">
+          Status: Active
+          <button type="button" aria-label="Remove filter">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+          </button>
+        </span>
+        <button class="clear-filters" type="button">Clear all</button>
+      </div>
+    </div>
+
+    <!-- ========== RESULTS BAR ========== -->
+    <div class="results-bar">
+      <div class="results-count">
+        Showing <strong>1–8</strong> of <strong>6,410</strong> users
+      </div>
+      <div class="sort-wrap">
+        <span>Sort by</span>
+        <select class="filter-select" style="height:34px;min-width:160px;font-size:13px;">
+          <option selected>Newest first</option>
+          <option>Oldest first</option>
+          <option>Name A–Z</option>
+          <option>Last activity</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ========== USERS TABLE ========== -->
+    <div class="table-card">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable sorted">
+                User
+                <span class="sort-icon">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m18 15-6-6-6 6"/></svg>
+                </span>
+              </th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th class="sortable">
+                Created
+                <span class="sort-icon">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </th>
+              <th>Last Activity</th>
+              <th style="text-align:right;padding-right:20px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- Candidate active -->
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar c1">MK</div>
+                  <div>
+                    <div class="user-name">Maya Khaled</div>
+                    <div class="user-id">USR-4821</div>
+                  </div>
+                </div>
+              </td>
+              <td><div class="email-cell">maya.k@matchin.io</div></td>
+              <td><span class="role-badge role-candidate">Candidate</span></td>
+              <td>
+                <span class="status-badge status-active">
+                  <span class="dot"></span> Active
+                </span>
+              </td>
+              <td>
+                <div class="date-cell">Sep 18, 2026</div>
+                <div class="date-rel">4 days ago</div>
+              </td>
+              <td>
+                <div class="date-cell">Sep 22, 2026</div>
+                <div class="date-rel">1 hr ago</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Edit user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Change role">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Deactivate">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Delete user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Recruiter -->
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar c2">AH</div>
+                  <div>
+                    <div class="user-name">Ahmed Hassan</div>
+                    <div class="user-id">USR-3902</div>
+                  </div>
+                </div>
+              </td>
+              <td><div class="email-cell">ahmed@brightpath.io</div></td>
+              <td><span class="role-badge role-recruiter">Recruiter</span></td>
+              <td>
+                <span class="status-badge status-active">
+                  <span class="dot"></span> Active
+                </span>
+              </td>
+              <td>
+                <div class="date-cell">Aug 5, 2026</div>
+                <div class="date-rel">48 days ago</div>
+              </td>
+              <td>
+                <div class="date-cell">Sep 22, 2026</div>
+                <div class="date-rel">3 hr ago</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Edit user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Change role">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Deactivate">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Delete user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Admin -->
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar c2">SA</div>
+                  <div>
+                    <div class="user-name">Sara Ahmed</div>
+                    <div class="user-id">ADM-001</div>
+                  </div>
+                </div>
+              </td>
+              <td><div class="email-cell">sara@matchin.io</div></td>
+              <td><span class="role-badge role-admin">Admin</span></td>
+              <td>
+                <span class="status-badge status-active">
+                  <span class="dot"></span> Active
+                </span>
+              </td>
+              <td>
+                <div class="date-cell">Jan 10, 2026</div>
+                <div class="date-rel">255 days ago</div>
+              </td>
+              <td>
+                <div class="date-cell">Sep 22, 2026</div>
+                <div class="date-rel">5 min ago</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Edit user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Change role">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Deactivate">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Delete user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Candidate -->
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar c3">YR</div>
+                  <div>
+                    <div class="user-name">Youssef Rami</div>
+                    <div class="user-id">USR-5103</div>
+                  </div>
+                </div>
+              </td>
+              <td><div class="email-cell">youssef.r@gmail.com</div></td>
+              <td><span class="role-badge role-candidate">Candidate</span></td>
+              <td>
+                <span class="status-badge status-active">
+                  <span class="dot"></span> Active
+                </span>
+              </td>
+              <td>
+                <div class="date-cell">Sep 21, 2026</div>
+                <div class="date-rel">Yesterday</div>
+              </td>
+              <td>
+                <div class="date-cell">Sep 22, 2026</div>
+                <div class="date-rel">6 hr ago</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Edit user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Change role">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Deactivate">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Delete user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Inactive user -->
+            <tr class="inactive-row">
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar c5">LN</div>
+                  <div>
+                    <div class="user-name">Lina Nour</div>
+                    <div class="user-id">USR-2210</div>
+                  </div>
+                </div>
+              </td>
+              <td><div class="email-cell">lina.nour@outlook.com</div></td>
+              <td><span class="role-badge role-candidate">Candidate</span></td>
+              <td>
+                <span class="status-badge status-inactive">
+                  <span class="dot"></span> Inactive
+                </span>
+              </td>
+              <td>
+                <div class="date-cell">Mar 14, 2026</div>
+                <div class="date-rel">192 days ago</div>
+              </td>
+              <td>
+                <div class="date-cell">Jun 2, 2026</div>
+                <div class="date-rel">112 days ago</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Edit user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+                  </button>
+                  <button class="icon-btn success" title="Activate user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Delete user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Recruiter -->
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar c4">NF</div>
+                  <div>
+                    <div class="user-name">Nour Fadel</div>
+                    <div class="user-id">USR-3550</div>
+                  </div>
+                </div>
+              </td>
+              <td><div class="email-cell">nour@nexuslabs.co</div></td>
+              <td><span class="role-badge role-recruiter">Recruiter</span></td>
+              <td>
+                <span class="status-badge status-active">
+                  <span class="dot"></span> Active
+                </span>
+              </td>
+              <td>
+                <div class="date-cell">Jul 22, 2026</div>
+                <div class="date-rel">62 days ago</div>
+              </td>
+              <td>
+                <div class="date-cell">Sep 21, 2026</div>
+                <div class="date-rel">Yesterday</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Edit user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Change role">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Deactivate">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Delete user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Suspended -->
+            <tr class="inactive-row">
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar c6">KM</div>
+                  <div>
+                    <div class="user-name">Karim Mostafa</div>
+                    <div class="user-id">USR-1788</div>
+                  </div>
+                </div>
+              </td>
+              <td><div class="email-cell">karim.m@yahoo.com</div></td>
+              <td><span class="role-badge role-candidate">Candidate</span></td>
+              <td>
+                <span class="status-badge status-suspended">
+                  <span class="dot"></span> Suspended
+                </span>
+              </td>
+              <td>
+                <div class="date-cell">Feb 8, 2026</div>
+                <div class="date-rel">226 days ago</div>
+              </td>
+              <td>
+                <div class="date-cell">Aug 30, 2026</div>
+                <div class="date-rel">23 days ago</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Edit user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+                  </button>
+                  <button class="icon-btn success" title="Activate user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Delete user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Candidate -->
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar c7">DS</div>
+                  <div>
+                    <div class="user-name">Dina Saleh</div>
+                    <div class="user-id">USR-4990</div>
+                  </div>
+                </div>
+              </td>
+              <td><div class="email-cell">dina.saleh@icloud.com</div></td>
+              <td><span class="role-badge role-candidate">Candidate</span></td>
+              <td>
+                <span class="status-badge status-active">
+                  <span class="dot"></span> Active
+                </span>
+              </td>
+              <td>
+                <div class="date-cell">Sep 20, 2026</div>
+                <div class="date-rel">2 days ago</div>
+              </td>
+              <td>
+                <div class="date-cell">Sep 22, 2026</div>
+                <div class="date-rel">20 min ago</div>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="icon-btn" title="View user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Edit user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Change role">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+                  </button>
+                  <button class="icon-btn" title="Deactivate">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                  </button>
+                  <button class="icon-btn danger" title="Delete user">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <div class="pagination-info">Page 1 of 802</div>
+        <div class="pagination-controls">
+          <button class="page-btn" disabled aria-label="Previous">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn" style="pointer-events:none;border:none;background:transparent;">…</button>
+          <button class="page-btn">802</button>
+          <button class="page-btn" aria-label="Next">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <span class="legend-item">
+        <span class="role-badge role-candidate" style="height:22px;padding:0 8px;font-size:11px;">Candidate</span>
+      </span>
+      <span class="legend-item">
+        <span class="role-badge role-recruiter" style="height:22px;padding:0 8px;font-size:11px;">Recruiter</span>
+      </span>
+      <span class="legend-item">
+        <span class="role-badge role-admin" style="height:22px;padding:0 8px;font-size:11px;">Admin</span>
+      </span>
+      <span class="legend-item" style="margin-left:8px;">
+        <span class="status-badge status-active" style="height:22px;padding:0 8px;font-size:11px;"><span class="dot"></span> Active</span>
+      </span>
+      <span class="legend-item">
+        <span class="status-badge status-inactive" style="height:22px;padding:0 8px;font-size:11px;"><span class="dot"></span> Inactive</span>
+      </span>
+      <span class="legend-item">
+        <span class="status-badge status-suspended" style="height:22px;padding:0 8px;font-size:11px;"><span class="dot"></span> Suspended</span>
+      </span>
+    </div>
+
+  </div>
+</body>
+</html>
